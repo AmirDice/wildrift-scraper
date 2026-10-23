@@ -1019,3 +1019,21 @@ body {
   bottom: calc(5rem + var(--anchor-h, 0px));
   transform: none;
 }
+
+/* Champion-page region switch (components/region-scope.tsx). A steady accent
+   glow so it reads as a control, not a label, and a slow pulse until the
+   visitor first uses it. The glow is a ring on the control itself, not a
+   reading halo, so the one-material rule for text backings does not apply. */
+.region-toggle {
+  box-shadow: 0 0 0 1px rgba(114, 167, 255, 0.28), 0 0 14px rgba(114, 167, 255, 0.22);
+}
+.region-toggle[data-fresh] {
+  animation: region-glow 2.4s ease-in-out infinite;
+}
+@keyframes region-glow {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(114, 167, 255, 0.3), 0 0 12px rgba(114, 167, 255, 0.2); }
+  50% { box-shadow: 0 0 0 1px rgba(114, 167, 255, 0.75), 0 0 24px 3px rgba(114, 167, 255, 0.5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .region-toggle[data-fresh] { animation: none; }
+}

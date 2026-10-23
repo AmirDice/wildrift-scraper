@@ -17,17 +17,25 @@ import { REGIONS, REGION_LONG, REGION_LABEL, type Region } from "@/lib/region-la
 export { REGIONS, REGION_LONG, REGION_LABEL, type Region };
 
 const STORAGE_KEY = "wtm-champion-region";
+/** Set once the visitor has used the switch; until then it pulses. */
+const SEEN_KEY = "wtm-region-toggle-seen";
 
-type Scope = { region: Region; setRegion: (region: Region) => void };
+type Scope = { region: Region; setRegion: (region: Region) => void; fresh: boolean };
 const RegionContext = createContext<Scope | null>(null);
 
 const isRegion = (value: unknown): value is Region => REGIONS.includes(value as Region);
 
 export function RegionProvider({ children }: { children: ReactNode }) {
   const [region, setRegionState] = useState<Region>("global");
+  // False on the server and first paint, so the static HTML never pulses
+  // for someone who has already found the switch.
+  const [fresh, setFresh] = useState(false);
 
   // After hydration, so the static HTML is always the Global view.
   useEffect(() => {
+    let seen = false;
+    try { seen = Boolean(localStorage.getItem(SEEN_KEY)); } catch { /* storage blocked */ }
+    const pulse = seen ? null : setTimeout(() => setFresh(true), 0);
     let initial: unknown = new URLSearchParams(window.location.search).get("region");
     if (!isRegion(initial)) {
       try { initial = localStorage.getItem(STORAGE_KEY); } catch { /* storage blocked */ }
@@ -36,20 +44,25 @@ export function RegionProvider({ children }: { children: ReactNode }) {
       // A timer, not requestAnimationFrame: a background tab draws no
       // frames, so a link opened there would sit on Global.
       const timer = setTimeout(() => setRegionState(initial as Region), 0);
-      return () => clearTimeout(timer);
+      return () => { clearTimeout(timer); if (pulse) clearTimeout(pulse); };
     }
+    return () => { if (pulse) clearTimeout(pulse); };
   }, []);
 
   const setRegion = useCallback((next: Region) => {
     setRegionState(next);
-    try { localStorage.setItem(STORAGE_KEY, next); } catch { /* storage blocked */ }
+    setFresh(false);
+    try {
+      localStorage.setItem(STORAGE_KEY, next);
+      localStorage.setItem(SEEN_KEY, "1");
+    } catch { /* storage blocked */ }
     const url = new URL(window.location.href);
     if (next === "global") url.searchParams.delete("region");
     else url.searchParams.set("region", next);
     window.history.replaceState(null, "", url);
   }, []);
 
-  return <RegionContext.Provider value={{ region, setRegion }}>{children}</RegionContext.Provider>;
+  return <RegionContext.Provider value={{ region, setRegion, fresh }}>{children}</RegionContext.Provider>;
 }
 
 /** The page's region, or null outside a RegionProvider (Build Studio etc.). */
@@ -67,8 +80,8 @@ export function RegionToggle({ className = "", available }: { className?: string
   const scope = useContext(RegionContext);
   if (!scope) return null;
   return (
-    <div role="radiogroup" aria-label="Which server's data to show"
-      className={`inline-flex shrink-0 items-center gap-0.5 rounded-lg border border-white/[0.1] bg-black/25 p-0.5 ${className}`}>
+    <div role="radiogroup" aria-label="Which server's data to show" data-fresh={scope.fresh || undefined}
+      className={`region-toggle inline-flex shrink-0 items-center gap-0.5 rounded-lg border border-accent/40 bg-black/25 p-0.5 ${className}`}>
       {REGIONS.map((region) => {
         const active = scope.region === region;
         const disabled = available ? available[region] === false : false;
