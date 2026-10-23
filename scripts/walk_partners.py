@@ -15,9 +15,9 @@ The rank is set from the filter at the top right (钻石以上 and so on), from
 the same --bracket as the loadouts.
 
 Everything is read from the UI hierarchy, not pixels. The app is React
-Native, so names and percentages are real TextViews, and Android reports a
-whole list in one dump, scrolled-out rows included. The walker still scrolls
-and merges in case a list loads lazily. Each list's raw nodes are saved
+Native, so names and percentages are real TextViews, and the hierarchy holds
+all 100 rows of a list at once (off-screen ones with zero size but full
+text), so each list is ONE dump read in document order: no scrolling. Each list's raw nodes are saved
 beside the parsed rows, so a parsing fix can be re-run without the phone.
 
 Standalone, from the 英雄榜 page:
@@ -78,7 +78,7 @@ LIST_ROWS = 100
 PERCENT = re.compile(r"^\s*(\d{1,3}(?:\.\d+)?)\s*%\s*$")
 #: The sidebar is the left strip of the screen.
 SIDEBAR_MAX_X = 0.2
-DRY_SCROLLS = 2
+
 
 
 def _nodes_json(nodes) -> list[dict]:
@@ -105,103 +105,69 @@ def chips(nodes, width):
 
 
 def parse_rows(nodes, width, names: dict[str, str]) -> list[dict]:
-    """Every pair row: two champions, each with the lane printed under its
-    name, plus win rate and appearance rate.
+    """Every row of the list, read in DOCUMENT order, bounds ignored.
 
-    The order inside a row is NOT yours-then-partner: with 打野 picked on the
-    left and 上路 on the chips, and the other way round, the app shows the
-    same list with the 上路 champion on top. So each champion's lane is read
-    from the label under its name, never inferred from position.
+    The hierarchy carries the whole list, all 100 rows: those on screen with
+    real bounds, the rest with zero size but their full text. In document
+    order each row is: rank, name, lane, name, lane, win rate, appearance.
+    So one dump is the whole list, with no scrolling, no rows lost to the
+    sticky header and no boundary row skipped between scrolls; all three
+    happened when rows were read by position (first device captures,
+    2026-10-23).
 
-    A row is anchored on its two percentages, which share a line; the
-    champions are the name nodes in that row's band, top to bottom. The
-    band is half the median row pitch either side, measured from this very
-    dump, so it holds on any screen size.
+    Each champion's lane is the label after its name: the order inside a row
+    is not yours-then-partner (打野 picked with 上路, and the other way round,
+    show the same list with the 上路 champion first).
     """
-    # Only nodes really on screen, below the sticky header. Measured on the
-    # first device capture: 644 of 731 labelled nodes had ZERO size, every
-    # off-screen row squashed onto one line at the bottom of the list, and
-    # parsed as rows they produced pairs like Fiora + Darius at "61.58%"
-    # appearance. And a row scrolling under the header keeps its bottom half
-    # (赵信 with no partner above it), so nothing above the 搭档 chip row is
-    # read at all.
-    nodes = [n for n in nodes if n.bounds[2] > n.bounds[0] and n.bounds[3] > n.bounds[1]]
-    anchor = uiauto.find(nodes, PARTNER_LABEL, exact=True)
-    top = anchor.bounds[3] if anchor is not None else 0
-    nodes = [n for n in nodes if n.bounds[1] >= top]
-    pct = [(n, float(PERCENT.match(n.label).group(1))) for n in nodes
-           if n.label and PERCENT.match(n.label) and n.center[0] > width * SIDEBAR_MAX_X]
-    pct.sort(key=lambda p: (p[0].center[1], p[0].center[0]))
-    lines: list[list] = []
-    for node, value in pct:
-        tol = max(20, (node.bounds[3] - node.bounds[1]) // 2)
-        if lines and abs(lines[-1][0][0].center[1] - node.center[1]) <= tol:
-            lines[-1].append((node, value))
-        else:
-            lines.append([(node, value)])
-    lines = [sorted(line, key=lambda p: p[0].center[0]) for line in lines if len(line) >= 2]
-    if not lines:
-        return []
-    ys = [line[0][0].center[1] for line in lines]
-    pitch = statistics.median([b - a for a, b in zip(ys, ys[1:])]) if len(ys) > 1 else 200
-
-    # Which column is which, from the headers when present; else the app's
-    # order on screen, win rate first.
+    seq = [n for n in nodes
+           if (n.label or "").strip() and (n.bounds[0] + n.bounds[2]) / 2 > width * SIDEBAR_MAX_X]
+    start = 0
+    for i, n in enumerate(seq):
+        if n.label.strip() == PARTNER_LABEL:
+            start = i + 1
+    wr_first = True
     head_wr = uiauto.find(nodes, *HEAD_WR)
     head_pick = uiauto.find(nodes, *HEAD_PICK)
-    wr_first = True
     if head_wr and head_pick:
         wr_first = head_wr.center[0] < head_pick.center[0]
 
-    numbers = [n for n in nodes
-               if (n.label or "").strip().isdigit() and n.center[0] > width * SIDEBAR_MAX_X
-               and 1 <= int(n.label.strip()) <= LIST_ROWS]
-    named = []
-    lane_labels = []
-    for n in nodes:
-        label = (n.label or "").strip()
-        if not label or PERCENT.match(label) or label.isdigit():
+    rows, cur = [], None
+    for n in seq[start:]:
+        label = n.label.strip()
+        if "到底" in label:                       # 已经到底啦~, the list's end
+            break
+        if label.isdigit() and 1 <= int(label) <= LIST_ROWS:
+            cur = {"rank": int(label), "champs": [], "lanes": [], "cn": [], "pct": []}
+            rows.append(cur)
             continue
-        if label in LANE_CN:
-            if n.center[0] > width * SIDEBAR_MAX_X:
-                lane_labels.append(n)
+        if cur is None:
             continue
-        champion = names.get(label) or match_cn_name(label, names)
-        if champion:
-            named.append((n, champion, label))
-
-    def lane_under(name_node):
-        """The lane label just below a champion's name, inside its row."""
-        x0 = name_node.bounds[0]
-        below = [n for n in lane_labels
-                 if 0 < n.center[1] - name_node.center[1] <= pitch / 3 and abs(n.bounds[0] - x0) <= 60]
-        return LANE_EN.get(min(below, key=lambda n: n.center[1]).label.strip()) if below else None
-
-    rows = []
-    for line, y in zip(lines, ys):
-        band = [(n, c, raw) for n, c, raw in named if abs(n.center[1] - y) <= pitch / 2]
-        band.sort(key=lambda t: t[0].center[1])
-        # A complete row only: exactly two champions, one above the
-        # percentages and one below, each with its lane label. Anything else
-        # is a row cut by the header or the bottom of the list, and the next
-        # scroll reads it whole.
-        if len(band) != 2:
+        m = PERCENT.match(label)
+        if m:
+            cur["pct"].append(float(m.group(1)))
+        elif label in LANE_EN:
+            cur["lanes"].append(LANE_EN[label])
+        else:
+            champion = names.get(label) or match_cn_name(label, names)
+            if champion:
+                cur["champs"].append(champion)
+                cur["cn"].append(label)
+    out = []
+    for r in rows:
+        # A complete row only; anything else is reported by the caller as a
+        # missing rank rather than guessed.
+        if len(r["champs"]) != 2 or len(r["lanes"]) != 2 or len(r["pct"]) != 2:
             continue
-        a, b = band
-        if not (a[0].center[1] < y < b[0].center[1]):
-            continue
-        if lane_under(a[0]) is None or lane_under(b[0]) is None:
-            continue
-        first, second = line[0][1], line[1][1]
-        rank = next((int(n.label.strip()) for n in numbers if abs(n.center[1] - y) <= pitch / 2), None)
-        rows.append({
-            "rank": rank,
-            "a": a[1], "aLane": lane_under(a[0]), "b": b[1], "bLane": lane_under(b[0]),
-            "cn": [a[2], b[2]],
+        first, second = r["pct"]
+        out.append({
+            "rank": r["rank"],
+            "a": r["champs"][0], "aLane": r["lanes"][0],
+            "b": r["champs"][1], "bLane": r["lanes"][1],
+            "cn": r["cn"],
             "winRate": first if wr_first else second,
             "pickRate": second if wr_first else first,
         })
-    return rows
+    return out
 
 
 def in_order(rows: list[dict], field: str) -> list[dict]:
@@ -264,38 +230,20 @@ def rows_from_dumps(dumps: list[list[dict]], width: int, names: dict[str, str], 
 
 
 def capture_list(client, width, height, names) -> tuple[list[dict], list[list[dict]]]:
-    """All rows of the list on screen: until ranks 1..100 are read, or
-    scrolling stops revealing new pairs (a list shorter than 100).
-
-    The hierarchy often holds the whole list at once, which makes this one
-    dump; if the app renders rows lazily, it scrolls about a screen at a time
-    and merges, keyed by the pair.
-    """
-    seen: dict[tuple[str, str], dict] = {}
-    raw_dumps = []
-    dry = 0
-    while dry < DRY_SCROLLS:
-        ranks = {r["rank"] for r in seen.values() if r.get("rank")}
-        if len(ranks) >= LIST_ROWS:
-            break
-        nodes = uiauto.dump(client)
-        raw_dumps.append(_nodes_json(nodes))
-        new = 0
-        for row in parse_rows(nodes, width, names):
-            key = (row["a"], row["b"], row.get("rank"))
-            if key not in seen:
-                seen[key] = row
-                new += 1
-        if new == 0:
-            dry += 1
-        else:
-            dry = 0
-        # Slow and short: a fast swipe flings past a screen, and on the first
-        # capture skipped the boundary row every time (ranks 7-8, 15-16, ...).
-        # Half a screen at 1.2s keeps consecutive views overlapping.
-        client.swipe(int(width * 0.6), int(height * 0.75), int(width * 0.6), int(height * 0.25), 1200)
-        time.sleep(0.6)
-    return list(seen.values()), raw_dumps
+    """The whole list from one dump (see parse_rows). A second dump is taken
+    if the first came back short, which happens when it lands mid-render
+    straight after a tap; the fuller of the two wins."""
+    nodes = uiauto.dump(client)
+    dumps = [_nodes_json(nodes)]
+    rows = parse_rows(nodes, width, names)
+    if len(rows) < LIST_ROWS:
+        time.sleep(1.0)
+        again = uiauto.dump(client)
+        dumps.append(_nodes_json(again))
+        more = parse_rows(again, width, names)
+        if len(more) > len(rows):
+            rows = more
+    return rows, dumps
 
 
 def _tap(client, node):
@@ -437,9 +385,6 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
             missing = sorted(set(range(1, LIST_ROWS + 1)) - {r["rank"] for r in rows if r.get("rank")})
             print(f"  partners: {own_en} + {partner_en}: {len(rows)} pairs"
                   + (f" (ranks not read by win rate: {len(missing)})" if missing and len(rows) < LIST_ROWS else ""))
-            for _ in range(3):
-                client.swipe(int(width * 0.6), int(height * 0.3), int(width * 0.6), int(height * 0.85), 300)
-            time.sleep(0.6)
             nodes = uiauto.dump(client)
     (out / "partners.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
     total = sum(len(lst["rows"]) for lst in result["lists"])

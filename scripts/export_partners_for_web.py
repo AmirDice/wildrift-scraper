@@ -31,8 +31,16 @@ def main() -> int:
     slugs = {c["name"]: c["slug"] for c in json.loads(SITE.read_text(encoding="utf-8"))["champions"]}
 
     pairs, seen, unknown = [], set(), set()
+    off_list = 0
     for lst in data.get("lists", []):
         for row in lst.get("rows", []):
+            # The app slips a few pairs into the wrong list: Baron + Mid held
+            # four Baron + Support pairs (Yasuo 上路 with Malphite 辅助) on the
+            # first capture. A pair is kept only in the list its lanes match.
+            lanes = {row.get("aLane"), row.get("bLane")}
+            if None not in lanes and lanes != {lst.get("lane"), lst.get("partnerLane")}:
+                off_list += 1
+                continue
             a, b = slugs.get(row.get("a")), slugs.get(row.get("b"))
             if not a or not b:
                 unknown.update(name for name, slug in ((row.get("a"), a), (row.get("b"), b)) if not slug)
@@ -50,13 +58,15 @@ def main() -> int:
     out = {
         "capturedAt": data.get("capturedAt"),
         "bracket": data.get("bracket"),
-        "source": "CN companion app, 最佳搭档",
+        "source": "CN companion app, 最佳拍档",
         "lanePairs": sorted({f"{p['aLane']}+{p['bLane']}" for p in pairs}),
         "pairs": pairs,
     }
     OUT.write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)}: {len(pairs)} pairs from {source.parent.name}"
           f"{' (' + stamp.group(1) + ')' if stamp else ''}")
+    if off_list:
+        print(f"dropped {off_list} pairs listed under the wrong lane pairing")
     if unknown:
         print("names not on our roster:", ", ".join(sorted(unknown)))
     return 0

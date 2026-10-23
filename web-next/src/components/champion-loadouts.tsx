@@ -333,7 +333,7 @@ function EmptyState({ champion }: { champion: string }) {
   );
 }
 
-/** Best duo partners for this lane, from China's 最佳搭档 lists. */
+/** Best duo partners for this lane, from China's 最佳拍档 lists. */
 type PartnerGroup = { lane: string; partners: { slug: string; name: string; icon: string; lane: string; winRate: number; pickRate: number }[] };
 
 function PartnersPanel({ champion, lane, groups, capturedAt }: { champion: string; lane: string; groups: PartnerGroup[]; capturedAt: string | null }) {

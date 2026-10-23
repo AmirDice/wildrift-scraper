@@ -2,7 +2,7 @@ import partnerData from "@/data/cn_partners.json";
 import siteData from "@/data/site.json";
 
 /**
- * Best duo partners from the CN companion app's 最佳搭档 lists
+ * Best duo partners from the CN companion app's 最佳拍档 lists
  * (scripts/walk_partners.py -> export_partners_for_web.py).
  *
  * Each pair's appearance rate is tiny (around 1% of games), so ranking by
