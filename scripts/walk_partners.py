@@ -118,6 +118,17 @@ def parse_rows(nodes, width, names: dict[str, str]) -> list[dict]:
     band is half the median row pitch either side, measured from this very
     dump, so it holds on any screen size.
     """
+    # Only nodes really on screen, below the sticky header. Measured on the
+    # first device capture: 644 of 731 labelled nodes had ZERO size, every
+    # off-screen row squashed onto one line at the bottom of the list, and
+    # parsed as rows they produced pairs like Fiora + Darius at "61.58%"
+    # appearance. And a row scrolling under the header keeps its bottom half
+    # (赵信 with no partner above it), so nothing above the 搭档 chip row is
+    # read at all.
+    nodes = [n for n in nodes if n.bounds[2] > n.bounds[0] and n.bounds[3] > n.bounds[1]]
+    anchor = uiauto.find(nodes, PARTNER_LABEL, exact=True)
+    top = anchor.bounds[3] if anchor is not None else 0
+    nodes = [n for n in nodes if n.bounds[1] >= top]
     pct = [(n, float(PERCENT.match(n.label).group(1))) for n in nodes
            if n.label and PERCENT.match(n.label) and n.center[0] > width * SIDEBAR_MAX_X]
     pct.sort(key=lambda p: (p[0].center[1], p[0].center[0]))
@@ -170,9 +181,17 @@ def parse_rows(nodes, width, names: dict[str, str]) -> list[dict]:
     for line, y in zip(lines, ys):
         band = [(n, c, raw) for n, c, raw in named if abs(n.center[1] - y) <= pitch / 2]
         band.sort(key=lambda t: t[0].center[1])
-        if len(band) < 2:
+        # A complete row only: exactly two champions, one above the
+        # percentages and one below, each with its lane label. Anything else
+        # is a row cut by the header or the bottom of the list, and the next
+        # scroll reads it whole.
+        if len(band) != 2:
             continue
-        a, b = band[0], band[-1]
+        a, b = band
+        if not (a[0].center[1] < y < b[0].center[1]):
+            continue
+        if lane_under(a[0]) is None or lane_under(b[0]) is None:
+            continue
         first, second = line[0][1], line[1][1]
         rank = next((int(n.label.strip()) for n in numbers if abs(n.center[1] - y) <= pitch / 2), None)
         rows.append({
@@ -183,6 +202,65 @@ def parse_rows(nodes, width, names: dict[str, str]) -> list[dict]:
             "pickRate": second if wr_first else first,
         })
     return rows
+
+
+def in_order(rows: list[dict], field: str) -> list[dict]:
+    """Keep the rows consistent with the list's sort, by rank.
+
+    The app repeats earlier rows at the end of a list: on the first device
+    capture rank 98 showed Aatrox + Jarvan IV with rank 26's numbers, 99
+    repeated rank 60 and 100 rank 29, right above its own 已经到底啦~. A list
+    sorted by `field` never rises down the ranks, so the rows kept are the
+    LARGEST set that does not: a longest non-increasing run by rank. A rule
+    that compared each row to everything after it let one repeat at rank 100
+    throw out every genuine row from 28 to 96. A pair read at two ranks then
+    keeps its first.
+    """
+    ranked = sorted((r for r in rows if r.get("rank")), key=lambda r: (r["rank"], -r[field]))
+    n = len(ranked)
+    best = [1] * n
+    prev = [-1] * n
+    for i in range(n):
+        for j in range(i):
+            if ranked[j]["rank"] < ranked[i]["rank"] and ranked[j][field] + 0.005 >= ranked[i][field] and best[j] + 1 > best[i]:
+                best[i], prev[i] = best[j] + 1, j
+    if not n:
+        return []
+    i = max(range(n), key=lambda k: best[k])
+    chain = []
+    while i != -1:
+        chain.append(ranked[i])
+        i = prev[i]
+    chain.reverse()
+    seen, out = set(), []
+    for row in chain:
+        key = (row["a"], row["b"])
+        if key not in seen:
+            seen.add(key)
+            out.append(row)
+    return out
+
+
+def merge_sorts(by_wr: list[dict], by_pick: list[dict]) -> list[dict]:
+    """One row per pair from the two sorts. The sorts number their rows
+    separately, so a pair keeps its win-rate rank as `rank` and its
+    appearance rank as `pickRank`."""
+    rows = {(r["a"], r["b"]): dict(r) for r in by_wr}
+    for r in by_pick:
+        key = (r["a"], r["b"])
+        if key in rows:
+            rows[key]["pickRank"] = r.get("rank")
+        else:
+            rows[key] = {**r, "rank": None, "pickRank": r.get("rank")}
+    return list(rows.values())
+
+
+def rows_from_dumps(dumps: list[list[dict]], width: int, names: dict[str, str], field: str) -> list[dict]:
+    seen: dict[tuple, dict] = {}
+    for raw in dumps:
+        for row in parse_rows(_from_json(raw), width, names):
+            seen.setdefault((row["a"], row["b"], row.get("rank")), row)
+    return in_order(list(seen.values()), field)
 
 
 def capture_list(client, width, height, names) -> tuple[list[dict], list[list[dict]]]:
@@ -198,13 +276,13 @@ def capture_list(client, width, height, names) -> tuple[list[dict], list[list[di
     dry = 0
     while dry < DRY_SCROLLS:
         ranks = {r["rank"] for r in seen.values() if r.get("rank")}
-        if len(ranks) >= LIST_ROWS or len(seen) >= LIST_ROWS:
+        if len(ranks) >= LIST_ROWS:
             break
         nodes = uiauto.dump(client)
         raw_dumps.append(_nodes_json(nodes))
         new = 0
         for row in parse_rows(nodes, width, names):
-            key = (row["a"], row["b"])
+            key = (row["a"], row["b"], row.get("rank"))
             if key not in seen:
                 seen[key] = row
                 new += 1
@@ -212,8 +290,11 @@ def capture_list(client, width, height, names) -> tuple[list[dict], list[list[di
             dry += 1
         else:
             dry = 0
-        client.swipe(int(width * 0.6), int(height * 0.8), int(width * 0.6), int(height * 0.3), 400)
-        time.sleep(0.8)
+        # Slow and short: a fast swipe flings past a screen, and on the first
+        # capture skipped the boundary row every time (ranks 7-8, 15-16, ...).
+        # Half a screen at 1.2s keeps consecutive views overlapping.
+        client.swipe(int(width * 0.6), int(height * 0.75), int(width * 0.6), int(height * 0.25), 1200)
+        time.sleep(0.6)
     return list(seen.values()), raw_dumps
 
 
@@ -334,28 +415,24 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
             _tap(client, chip)
             time.sleep(1.0)
             rows, dumps = capture_list(client, width, height, names)
-            # Again sorted by appearance, merged: if the app cuts a list
-            # short, the default win-rate order would keep only rare pairs
-            # that happened to win and drop the ones people actually play.
+            rows = in_order(rows, "winRate")
+            more, more_dumps = [], []
+            # Again sorted by appearance: if the app cuts a list short, the
+            # default win-rate order keeps only rare pairs that happened to
+            # win and drops the ones people actually play.
             head = uiauto.find(uiauto.dump(client), *HEAD_PICK)
             if head is not None:
                 _tap(client, head)
                 time.sleep(1.0)
                 more, more_dumps = capture_list(client, width, height, names)
-                # The two sorts number their rows separately: keep both.
-                by_pair = {(r["a"], r["b"]): r for r in rows}
-                for r in more:
-                    pick_rank = r.pop("rank", None)
-                    if (r["a"], r["b"]) in by_pair:
-                        by_pair[(r["a"], r["b"])]["pickRank"] = pick_rank
-                    else:
-                        rows.append({**r, "rank": None, "pickRank": pick_rank})
-                dumps += more_dumps
+                more = in_order(more, "pickRate")
                 back = uiauto.find(uiauto.dump(client), *HEAD_WR)
                 if back is not None:
                     _tap(client, back)
                     time.sleep(0.8)
-            (out / f"{own_en}__{partner_en}.nodes.json").write_text(json.dumps(dumps, ensure_ascii=False), encoding="utf-8")
+            rows = merge_sorts(rows, more)
+            (out / f"{own_en}__{partner_en}.nodes.json").write_text(
+                json.dumps({"winRate": dumps, "pickRate": more_dumps}, ensure_ascii=False), encoding="utf-8")
             result["lists"].append({"lane": own_en, "partnerLane": partner_en, "rows": rows})
             missing = sorted(set(range(1, LIST_ROWS + 1)) - {r["rank"] for r in rows if r.get("rank")})
             print(f"  partners: {own_en} + {partner_en}: {len(rows)} pairs"
@@ -376,19 +453,32 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
 
 
 def reparse(folder: Path, width: int) -> int:
+    """Rebuild partners.json from the saved nodes alone, so a parsing fix
+    needs no phone, and a run stopped part-way still yields its lists."""
     names = cn_champion_names()
-    data = json.loads((folder / "partners.json").read_text(encoding="utf-8"))
-    for lst in data["lists"]:
-        path = folder / f"{lst['lane']}__{lst['partnerLane']}.nodes.json"
-        if not path.exists():
-            continue
-        seen: dict[tuple[str, str], dict] = {}
-        for raw in json.loads(path.read_text(encoding="utf-8")):
-            for row in parse_rows(_from_json(raw), width, names):
-                seen.setdefault((row["a"], row["b"]), row)
-        lst["rows"] = list(seen.values())
-        print(f"  {lst['lane']} + {lst['partnerLane']}: {len(lst['rows'])} pairs")
-    (folder / "partners.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    path = folder / "partners.json"
+    data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {
+        "capturedAt": None, "bracket": folder.name.split("_")[1] if "_" in folder.name else None,
+        "source": "cn-companion-app 最佳拍档"}
+    lists = []
+    for nodes_file in sorted(folder.glob("*__*.nodes.json")):
+        lane, partner_lane = nodes_file.name.removesuffix(".nodes.json").split("__")
+        raw = json.loads(nodes_file.read_text(encoding="utf-8"))
+        # The first captures saved one list of dumps, win-rate order only.
+        by_wr = raw["winRate"] if isinstance(raw, dict) else raw
+        by_pick = raw.get("pickRate", []) if isinstance(raw, dict) else []
+        rows = merge_sorts(rows_from_dumps(by_wr, width, names, "winRate"),
+                           rows_from_dumps(by_pick, width, names, "pickRate"))
+        lists.append({"lane": lane, "partnerLane": partner_lane, "rows": rows})
+        ranks = {r["rank"] for r in rows if r.get("rank")}
+        print(f"  {lane} + {partner_lane}: {len(rows)} pairs, win-rate ranks {len(ranks)}")
+    data["lists"] = lists
+    if not data.get("capturedAt"):
+        stamp = re.search(r"(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})", folder.name)
+        if stamp:
+            y, mo, d, h, mi = stamp.groups()
+            data["capturedAt"] = f"{y}-{mo}-{d}T{h}:{mi}:00"
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     return 0
 
 
