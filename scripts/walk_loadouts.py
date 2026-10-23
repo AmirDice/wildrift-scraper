@@ -21,9 +21,14 @@ champion 90 picks up at 90.
 --lanes narrows which hero-list TABS are walked, not what is captured from
 the champions found there.
 
+--partners also captures the 最佳拍档 duo lists first (scripts/walk_partners,
+under a minute, same rank), then walks the champions as usual.
+--partners-only stops after them.
+
 Run:
     python -m scripts.walk_loadouts --bracket challenger --mode classic-ranked
     python -m scripts.walk_loadouts --bracket challenger --mode classic-ranked --lanes baron,jungle
+    python -m scripts.walk_loadouts --bracket legendary --mode classic-ranked --partners
 """
 from __future__ import annotations
 
@@ -697,6 +702,11 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=0,
                     help="stop after this many captures. Use --limit 2 for a "
                          "smoke test before committing to the full roster.")
+    ap.add_argument("--partners", action="store_true",
+                    help="also capture the 最佳拍档 duo lists, before the champion "
+                         "walk, at the same --bracket (scripts/walk_partners)")
+    ap.add_argument("--partners-only", action="store_true",
+                    help="capture the duo lists and stop, without walking champions")
     ap.add_argument("--probe", action="store_true",
                     help="dump what the device reports on the current screen "
                          "and exit. Run this once before a full walk: if the "
@@ -732,6 +742,17 @@ def main() -> int:
               "so scripts.scrape_loadouts still works one champion at a time.",
               file=sys.stderr)
         return 2
+
+    if args.partners or args.partners_only:
+        # First, because it is quick and starts where the walk starts: on
+        # 英雄榜. It returns there, so the champion walk is unaffected.
+        from scripts.walk_partners import capture_partners
+        print(f"partners: capturing duo lists at {args.bracket_cn}")
+        folder = capture_partners(client, args.bracket, args.bracket_cn)
+        if folder is None:
+            print("partners: capture failed; the loadout walk continues without it")
+        if args.partners_only:
+            return 0 if folder else 1
 
     args.out.mkdir(parents=True, exist_ok=True)
     lanes_label = "all" if not args.lanes else ",".join(sorted(args.lanes))

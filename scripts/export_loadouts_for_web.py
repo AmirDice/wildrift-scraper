@@ -757,6 +757,13 @@ def main() -> None:
     lanes, rows = attach_week_and_trend(output)
     print(f"Week and trend: {lanes} lanes, {rows} rows trended")
     print(f"Across patches: {attach_patches(output)} tabs scored")
+    # Duo partners publish with the loadouts, from the newest partner capture.
+    partners = ROOT / "data" / "captures_partners"
+    if any(partners.glob("partners_*/partners.json")):
+        import sys
+        sys.path.insert(0, str(ROOT))   # run as a file, scripts/ is not a package root
+        from scripts.export_partners_for_web import main as export_partners
+        export_partners()
     impact = export_patch_impact()
     if impact:
         print(f"Patch impact {impact['previous']} -> {impact['patch']}: {impact['lanes']} lanes, "
