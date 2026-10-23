@@ -5,6 +5,9 @@ import { AdSlot } from "@/components/ad-slot";
 import { Container, Card, SectionHeading } from "@/components/ui";
 import { LadderPulseSection } from "@/components/ladder-pulse-section";
 import { UsageTables } from "@/components/usage-tables";
+import { ChinaThisWeek } from "@/components/china-this-week";
+import { chinaThisWeek } from "@/lib/china-meta";
+import { SKIPPED_PATCH } from "@/lib/announcement";
 import { DeepDiveSections } from "@/components/deep-dive";
 import {
   tierDistribution, wrHistogram, wrVsGames, classMeta, roleMeta,
@@ -76,6 +79,8 @@ export default function MetaPage() {
 
       {/* rune and item usage, ordered, with the win rate behind each choice */}
       <UsageTables />
+
+      <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
 
       {/* everything that used to run down the home page */}
       <DeepDiveSections />
