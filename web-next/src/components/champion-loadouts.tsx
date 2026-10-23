@@ -210,8 +210,10 @@ function StandardRow({ row, kind, since, position, recommended = false, week, tr
           {/* Scrolls when the names do not fit, instead of cutting a core
               off mid-item on a phone ("Lich Bane · Rabadon's Deathcap · Infi..."). */}
           <Marquee text={names} className="text-xs font-semibold" textClassName="text-text" />
-          <p className="mt-0.5 flex items-center gap-1.5 text-[0.64rem] text-faint">
-            {kind === "items" ? "Three-item core" : kind === "runes" ? "Full rune page" : kind === "boots" ? "Tier 2 boots" : kind === "spells" ? "Spell pair" : "Opponent"}
+          {/* Wraps: on a phone the Recommended and captures chips beside the
+              label pushed "Three-item core" onto three lines and ran off the card. */}
+          <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.64rem] text-faint">
+            <span className="whitespace-nowrap">{kind === "items" ? "Three-item core" : kind === "runes" ? "Full rune page" : kind === "boots" ? "Tier 2 boots" : kind === "spells" ? "Spell pair" : "Opponent"}</span>
             {recommended && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold">Recommended</span>}
             {week && row.seen != null && (
               <span title={`Listed in ${row.seen} of the week's ${week} captures${row.bestIn ? `, and the day's pick in ${row.bestIn}` : ""}`}
