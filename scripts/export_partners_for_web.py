@@ -34,13 +34,14 @@ def main() -> int:
     off_list = 0
     for lst in data.get("lists", []):
         for row in lst.get("rows", []):
-            # The app slips a few pairs into the wrong list: Baron + Mid held
-            # four Baron + Support pairs (Yasuo 上路 with Malphite 辅助) on the
-            # first capture. A pair is kept only in the list its lanes match.
+            # A pair is filed under the lanes printed under its names, not the
+            # list it was found in. The app shows the odd pair under another
+            # chip (Baron + Mid held four Baron + Support duos, Yasuo 上路 with
+            # Malphite 辅助, none of them in the Baron + Support list itself).
+            # They are real teammates with real results, so they are kept.
             lanes = {row.get("aLane"), row.get("bLane")}
             if None not in lanes and lanes != {lst.get("lane"), lst.get("partnerLane")}:
                 off_list += 1
-                continue
             a, b = slugs.get(row.get("a")), slugs.get(row.get("b"))
             if not a or not b:
                 unknown.update(name for name, slug in ((row.get("a"), a), (row.get("b"), b)) if not slug)
@@ -66,7 +67,7 @@ def main() -> int:
     print(f"wrote {OUT.relative_to(ROOT)}: {len(pairs)} pairs from {source.parent.name}"
           f"{' (' + stamp.group(1) + ')' if stamp else ''}")
     if off_list:
-        print(f"dropped {off_list} pairs listed under the wrong lane pairing")
+        print(f"{off_list} pairs were listed under another lane pairing; filed under their own lanes")
     if unknown:
         print("names not on our roster:", ", ".join(sorted(unknown)))
     return 0
