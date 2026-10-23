@@ -35,6 +35,7 @@ import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
 import { AgentPromptChips, AskAgent } from "@/components/site-agent";
 import { ChampionLoadouts } from "@/components/champion-loadouts";
 import { getChampionLoadouts } from "@/lib/cn-loadouts";
+import { partnersCapturedAt, partnersFor } from "@/lib/cn-partners";
 import { championSummary } from "@/lib/champion-summary";
 import { getChampionSkins } from "@/lib/skins";
 import { ChampionSkins } from "@/components/champion-skins";
@@ -140,6 +141,10 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   // components/server-builds.tsx for why China is empty and stays empty.
   const serverBuilds = buildsByServer(champion.name);
   const cnLoadouts = getChampionLoadouts(champion.slug);
+  // Best duo partners per loadout lane (China's 最佳搭档 lists). Empty until
+  // a partner capture is published, and the panel then shows no Duos tab.
+  const partners = Object.fromEntries(cnLoadouts.map((lane) => [lane.lane, partnersFor(champion.slug, lane.lane)]));
+  const partnersAt = partnersCapturedAt();
   // Headline figures come from the EU + NA + CN blend so the top of the page
   // agrees with the tier list. Falls back to EU when a champion is missing
   // from a board, and the "Win rate by region" card below still shows each
@@ -220,7 +225,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const pendingOverview = (
     <div className="space-y-6">
       {serverBuildCard}
-      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} />
+      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} partnersAt={partnersAt} />
       <Card className="p-5 sm:p-6">
         <h2 className="text-lg font-semibold">{champion.name} stats are pending</h2>
         <p className="mt-2 leading-relaxed text-muted">
@@ -242,7 +247,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const overview = (
     <div className="space-y-4">
       {serverBuildCard}
-      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} />
+      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} partnersAt={partnersAt} />
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-faint">Charts and player cards below show the selected server&rsquo;s board.</p>
         <RegionToggle available={regionAvailable} />

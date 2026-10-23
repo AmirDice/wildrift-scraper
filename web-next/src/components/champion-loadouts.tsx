@@ -333,9 +333,42 @@ function EmptyState({ champion }: { champion: string }) {
   );
 }
 
-export function ChampionLoadouts({ champion, loadouts }: { champion: string; loadouts: ChampionLoadoutLane[] }) {
+/** Best duo partners for this lane, from China's 最佳搭档 lists. */
+type PartnerGroup = { lane: string; partners: { slug: string; name: string; icon: string; lane: string; winRate: number; pickRate: number }[] };
+
+function PartnersPanel({ champion, lane, groups, capturedAt }: { champion: string; lane: string; groups: PartnerGroup[]; capturedAt: string | null }) {
+  return (
+    <div className="mt-4">
+      <p className="max-w-3xl text-xs leading-relaxed text-muted">
+        {`The champions ${champion} wins most with from ${LANE_LABEL[lane] ?? lane}, by the partner's lane. Each pair's win rate is pulled toward its list's average by how rarely the pair is seen, so a duo played a handful of times cannot top the list.`}
+      </p>
+      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+        {groups.map((group) => (
+          <section key={group.lane} className="rounded-2xl border border-white/[0.075] bg-black/[0.12] p-3.5">
+            <h4 className="text-sm font-semibold text-text">{`With ${LANE_LABEL[group.lane] ?? group.lane}`}</h4>
+            <div className="mt-3 space-y-2">
+              {group.partners.map((p) => (
+                <Link key={p.slug} href={`/champions/${p.slug}`} className="flex items-center gap-2.5 rounded-xl bg-white/[0.035] p-2.5 transition hover:bg-white/[0.06]">
+                  <img src={p.icon} alt="" loading="lazy" className="h-9 w-9 rounded-xl border border-white/10" />
+                  <span className="min-w-0 flex-1 truncate text-xs font-semibold text-text">{p.name}</span>
+                  <span className="shrink-0 text-right">
+                    <span className="block text-sm font-bold tabular-nums text-emerald-300">{`${p.winRate.toFixed(1)}%`}</span>
+                    <span className="block text-[0.6rem] text-faint">{`${p.pickRate.toFixed(2)}% of games`}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+      {capturedAt && <p className="mt-3 text-[0.65rem] text-faint">{`Duo lists captured ${formatCaptureDate(capturedAt) ?? capturedAt}.`}</p>}
+    </div>
+  );
+}
+
+export function ChampionLoadouts({ champion, loadouts, partners, partnersAt = null }: { champion: string; loadouts: ChampionLoadoutLane[]; partners?: Record<string, PartnerGroup[]>; partnersAt?: string | null }) {
   const [laneIndex, setLaneIndex] = useState(0);
-  const [activeTab, setActiveTab] = useState<TabKey>("items");
+  const [activeTab, setActiveTab] = useState<TabKey | "partners">("items");
   const [expanded, setExpanded] = useState(false);
   // "Best" weighs win rate against how often a row is played
   // (lib/loadout-score.ts); the raw orders stay one click away.
@@ -344,13 +377,22 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
   // pick changed for ~70% of lanes between captures, the week's barely does.
   const [period, setPeriod] = useState<"week" | "latest" | "patches">("week");
   const lane = loadouts[Math.min(laneIndex, Math.max(loadouts.length - 1, 0))];
-  const tabs = useMemo(() => BASE_TABS.map((tab) => tab.key === "versus"
-    ? { ...tab, label: lane?.versusKind === "partners" ? "Best partners" : "Matchups", short: lane?.versusKind === "partners" ? "Partners" : "Matchups" }
-    : tab), [lane?.versusKind]);
+  const partnerGroups = lane ? partners?.[lane.lane] ?? [] : [];
+  const tabs = useMemo(() => [
+    ...BASE_TABS.map((tab) => tab.key === "versus"
+      ? { ...tab, label: lane?.versusKind === "partners" ? "Best partners" : "Matchups", short: lane?.versusKind === "partners" ? "Partners" : "Matchups" }
+      : tab),
+    ...(partnerGroups.length ? [{ key: "partners" as const, label: "Duo partners", short: "Duos" }] : []),
+  ], [lane?.versusKind, partnerGroups.length]);
 
   if (!lane) return <EmptyState champion={champion} />;
+  // A lane without duo data, or a lane switch away from one, falls back to cores.
+  const showPartners = activeTab === "partners" && partnerGroups.length > 0;
+  if (activeTab === "partners" && !showPartners) setActiveTab("items");
 
-  const tab = lane.tabs[activeTab];
+  // The loadout tab the table views read; Duo partners renders its own view.
+  const tabKey: TabKey = activeTab === "partners" ? "items" : activeTab;
+  const tab = lane.tabs[tabKey];
   const since = formatCaptureDate(lane.previousCapturedAt);
   const week = activeTab !== "versus" && tab.week && tab.week.captures > 1 ? tab.week : null;
   const patchView = activeTab !== "versus" && tab.patches && tab.patches.order.length > 1 ? tab.patches : null;
@@ -428,7 +470,8 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
             ))}
           </div>
         </div>
-        {TAB_QUESTION[activeTab] && (
+        {showPartners ? <PartnersPanel champion={champion} lane={lane.lane} groups={partnerGroups} capturedAt={partnersAt} /> : <>
+        {activeTab !== "partners" && TAB_QUESTION[activeTab] && (
           <div className="mt-3">
             <AskAgent question={TAB_QUESTION[activeTab]!(champion)} />
           </div>
@@ -437,7 +480,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[0.07] pb-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h3 className="text-sm font-semibold text-text">{tabs.find((item) => item.key === activeTab)?.label}</h3>
-            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">{activeTab === "versus" ? versusCopy : TAB_COPY[activeTab]}</p>
+            <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">{activeTab === "versus" ? versusCopy : TAB_COPY[tabKey as Exclude<TabKey, "versus">]}</p>
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-[0.62rem] font-semibold">
             <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{tab.recognizedRows}/{tab.sourceRows} rows verified</span>
@@ -518,7 +561,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           ) : (
             <>
               <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
-                {visibleRows.map((row, index) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={activeTab} since={since} position={index + 1} recommended={row === recommended} week={usingWeek ? week!.captures : undefined} trend={trendOf.get(rowKey(row))} />)}
+                {visibleRows.map((row, index) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={tabKey} since={since} position={index + 1} recommended={row === recommended} week={usingWeek ? week!.captures : undefined} trend={trendOf.get(rowKey(row))} />)}
               </div>
               {rows.length > 6 && (
                 <div className="mt-4 flex justify-center">
@@ -547,7 +590,9 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
           </button>
         )}
 
-        <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
+        </>}
+
+        {!showPartners && <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>{usingWeek
             ? "This week pools the captures by each row's share of games, since China gives no game counts. A higher row win rate does not prove the loadout caused the wins."
             : "A higher row win rate does not prove the loadout caused the wins."}</p>
@@ -556,7 +601,7 @@ export function ChampionLoadouts({ champion, loadouts }: { champion: string; loa
               {`Arrows: change since the ${since} capture, shown only for clear moves. Hover one for the numbers.`}
             </p>
           )}
-        </div>
+        </div>}
       </div>
     </Card>
   );

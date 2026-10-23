@@ -16,6 +16,7 @@ const LANES: Lane5[] = ["baron", "jungle", "mid", "dragon", "support"];
 const LANE_NAME: Record<Lane5, string> = { baron: "Baron", jungle: "Jungle", mid: "Mid", dragon: "Dragon", support: "Support" };
 const TABS = [
   { key: "rising", label: "Rising" },
+  { key: "duos", label: "Duos" },
   { key: "items", label: "Top items" },
   { key: "keystones", label: "Keystones" },
   { key: "spells", label: "Spells" },
@@ -80,7 +81,7 @@ export function ChinaThisWeek({ data }: { data: Data }) {
             <h2 className="mt-1 text-xl font-semibold tracking-tight">What China&rsquo;s top players are building</h2>
             <p className="mt-1 max-w-2xl text-sm text-muted">{`Every champion's loadouts in China's Legendary queue, pooled over the ${span}. Shares are of each lane's games; China gives no game counts, so every lane counts once.`}</p>
           </div>
-          <Pills value={tab} options={TABS.map((t): [TabKey, string] => [t.key, t.label])} onChange={setTab} label="China this week" />
+          <Pills value={tab} options={TABS.filter((t) => t.key !== "duos" || data.duos.length).map((t): [TabKey, string] => [t.key, t.label])} onChange={setTab} label="China this week" />
         </div>
 
         {(tab === "items" || tab === "keystones") && (
@@ -115,6 +116,28 @@ export function ChinaThisWeek({ data }: { data: Data }) {
           )}
           {tab === "items" && <><p className="mb-3 text-xs text-faint">Share of games whose three-item core includes the item, averaged over lanes; the small number counts lanes where it is in 20%+ of cores.</p><RankedList rows={data.items[lane] ?? []} unit="as a core item" /></>}
           {tab === "keystones" && <><p className="mb-3 text-xs text-faint">Share of games on each keystone, averaged over lanes; the small number counts lanes where it is run 20%+ of the time.</p><RankedList rows={data.keystones[lane] ?? []} unit="as a main pick" /></>}
+          {tab === "duos" && (
+            <>
+              <p className="mb-3 text-xs text-faint">The best pairs for each lane pairing, from China&rsquo;s best-partner lists. Win rates are pulled toward each list&rsquo;s average by how rarely the pair is seen.</p>
+              <div className="grid gap-3 lg:grid-cols-2">
+                {data.duos.map((group) => (
+                  <div key={group.lanes.join("+")} className="rounded-xl border border-white/[0.07] bg-black/15 p-3">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-faint">{group.lanes.map((l) => LANE_NAME[l as Lane5] ?? l).join(" + ")}</p>
+                    <ul className="mt-2 space-y-1.5">
+                      {group.duos.map((duo) => (
+                        <li key={`${duo.a.slug}-${duo.b.slug}`} className="flex items-center gap-2 text-sm">
+                          <Link href={`/champions/${duo.a.slug}`} className="flex min-w-0 items-center gap-1.5 hover:text-accent"><img src={duo.a.icon} alt="" className="h-7 w-7 rounded-full" loading="lazy" /><span className="truncate">{duo.a.name}</span></Link>
+                          <span className="text-faint">+</span>
+                          <Link href={`/champions/${duo.b.slug}`} className="flex min-w-0 flex-1 items-center gap-1.5 hover:text-accent"><img src={duo.b.icon} alt="" className="h-7 w-7 rounded-full" loading="lazy" /><span className="truncate">{duo.b.name}</span></Link>
+                          <span className="shrink-0 text-right text-xs"><span className="font-semibold tabular-nums text-emerald-300">{`${duo.winRate.toFixed(1)}%`}</span><span className="block text-[0.6rem] text-faint">{`${duo.pickRate.toFixed(2)}% of games`}</span></span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
           {tab === "spells" && (
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
               {LANES.map((l) => (
