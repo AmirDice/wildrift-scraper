@@ -229,21 +229,37 @@ def rows_from_dumps(dumps: list[list[dict]], width: int, names: dict[str, str], 
     return in_order(list(seen.values()), field)
 
 
-def capture_list(client, width, height, names) -> tuple[list[dict], list[list[dict]]]:
-    """The whole list from one dump (see parse_rows). A second dump is taken
-    if the first came back short, which happens when it lands mid-render
-    straight after a tap; the fuller of the two wins."""
-    nodes = uiauto.dump(client)
-    dumps = [_nodes_json(nodes)]
-    rows = parse_rows(nodes, width, names)
-    if len(rows) < LIST_ROWS:
-        time.sleep(1.0)
-        again = uiauto.dump(client)
-        dumps.append(_nodes_json(again))
-        more = parse_rows(again, width, names)
-        if len(more) > len(rows):
-            rows = more
-    return rows, dumps
+def _matches(rows: list[dict], lanes: set[str]) -> bool:
+    """Is the list on screen the one asked for? Most rows carry its two
+    lanes (the app files the odd pair elsewhere, so not all of them)."""
+    if not rows:
+        return False
+    hits = sum(1 for r in rows if {r["aLane"], r["bLane"]} == lanes)
+    return hits >= len(rows) * 0.8
+
+
+def capture_list(client, width, height, names, lanes: set[str], chip=None) -> tuple[list[dict], list[list[dict]]]:
+    """The whole list from one dump (see parse_rows), checked to be the list
+    for `lanes`.
+
+    Straight after a chip tap the app can still be showing the previous
+    list, and a dump taken then would file Baron + Jungle under Baron + Mid.
+    So the rows' own lanes are checked against the chip: on a mismatch it
+    waits and reads again, then taps the chip again, and gives up on the
+    list rather than save the wrong one.
+    """
+    dumps = []
+    for attempt in range(4):
+        nodes = uiauto.dump(client)
+        dumps.append(_nodes_json(nodes))
+        rows = parse_rows(nodes, width, names)
+        if _matches(rows, lanes):
+            return rows, dumps
+        if attempt == 1 and chip is not None:
+            print("    the list did not change; tapping the chip again")
+            _tap(client, chip)
+        time.sleep(1.2)
+    return [], dumps
 
 
 def _tap(client, node):
@@ -342,10 +358,16 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
 
     done: set[frozenset] = set()
     for own_cn, own_en in [lane for lane in LANES if not lanes or lane[1] in lanes]:
+        if own_en == "support" or all(frozenset((own_en, x)) in done for x in LANE_EN.values() if x != own_en):
+            # Every pairing with this lane is already in: 辅助's are taken
+            # from the other four tabs (Dragon + Support from 下路, ...).
+            print(f"  partners: {own_en}: every pairing already captured from the other lanes")
+            continue
         side = next((n for n in sidebar(nodes, width) if LANE_EN.get(n.label.strip()) == own_en), None)
         if side is None:
             print(f"  partners: {own_en} not in the sidebar, skipped")
             continue
+        print(f"  partners: opening {side.label.strip()} ({own_en})")
         _tap(client, side)
         time.sleep(1.0)
         nodes = uiauto.dump(client)
@@ -359,29 +381,23 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
             done.add(pair)
             chip = next((n for n in chips(nodes, width) if n.label.strip() == partner_cn), None)
             if chip is None:
+                print(f"  partners: no {partner_cn} chip, skipped")
                 continue
+            print(f"  partners: {own_en} + {partner_en}: tapping {partner_cn}")
             _tap(client, chip)
             time.sleep(1.0)
-            rows, dumps = capture_list(client, width, height, names)
-            rows = in_order(rows, "winRate")
-            more, more_dumps = [], []
-            # Again sorted by appearance: if the app cuts a list short, the
-            # default win-rate order keeps only rare pairs that happened to
-            # win and drops the ones people actually play.
-            head = uiauto.find(uiauto.dump(client), *HEAD_PICK)
-            if head is not None:
-                _tap(client, head)
-                time.sleep(1.0)
-                more, more_dumps = capture_list(client, width, height, names)
-                more = in_order(more, "pickRate")
-                back = uiauto.find(uiauto.dump(client), *HEAD_WR)
-                if back is not None:
-                    _tap(client, back)
-                    time.sleep(0.8)
-            rows = merge_sorts(rows, more)
+            # One read: the hierarchy holds all 100 rows, so there is nothing
+            # to scroll, and the app's two sorts (胜率, 登场) list the same 100
+            # pairs, so the walk does not touch them.
+            rows, dumps = capture_list(client, width, height, names, {own_en, partner_en}, chip)
+            if not rows:
+                print(f"  partners: {own_en} + {partner_en}: the screen never showed this list, skipped")
+                continue
             (out / f"{own_en}__{partner_en}.nodes.json").write_text(
-                json.dumps({"winRate": dumps, "pickRate": more_dumps}, ensure_ascii=False), encoding="utf-8")
+                json.dumps({"winRate": dumps}, ensure_ascii=False), encoding="utf-8")
             result["lists"].append({"lane": own_en, "partnerLane": partner_en, "rows": rows})
+            # Saved after every list, so a run stopped part-way keeps them.
+            (out / "partners.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), encoding="utf-8")
             missing = sorted(set(range(1, LIST_ROWS + 1)) - {r["rank"] for r in rows if r.get("rank")})
             print(f"  partners: {own_en} + {partner_en}: {len(rows)} pairs"
                   + (f" (ranks not read by win rate: {len(missing)})" if missing and len(rows) < LIST_ROWS else ""))
