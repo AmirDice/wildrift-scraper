@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getChampions, pendingChampions, site } from "@/lib/data";
 import { getPosts } from "@/lib/blog";
+import { impactPatches } from "@/lib/patch-impact";
 import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 
 const BASE = "https://wrtruemeta.com";
@@ -73,5 +74,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.65,
   }));
   // Per-champion build pages are omitted while the optimizer is "coming soon".
-  return [...staticPages, ...championPages, ...blogPages];
+  const impactPages: MetadataRoute.Sitemap = impactPatches().map((patch) => ({
+    url: `${BASE}/patch-impact/${patch}`, lastModified: now, changeFrequency: "weekly", priority: 0.75,
+  }));
+  return [...staticPages, ...championPages, ...blogPages, ...impactPages];
 }

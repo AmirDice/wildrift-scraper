@@ -136,6 +136,11 @@ export function ChinaThisWeek({ data }: { data: Data }) {
           {tab === "patch" && (
             data.patch?.shifts.length ? (
               <>
+                <Link href={`/patch-impact/${data.patch.patch}`}
+                  className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-sky-300/25 bg-sky-300/[0.06] px-4 py-3 text-sm transition hover:border-sky-300/45">
+                  <span><span className="font-semibold text-sky-200">{`Patch ${data.patch.patch} impact:`}</span> <span className="text-muted">every changed item and rune before and after, by role, and who moved most.</span></span>
+                  <span className="shrink-0 font-semibold text-sky-200">Read it →</span>
+                </Link>
                 <p className="mb-3 text-xs text-faint">{`For the champions patch ${data.patch.patch} changed: the core that gained the most share of games since the ${day(data.patch.before)} capture, before the patch, and the one that lost the most. Moves under 2 points are left out.`}</p>
                 <div className="grid gap-2 lg:grid-cols-2">
                   {data.patch.shifts.map((shift) => (

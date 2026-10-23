@@ -153,6 +153,19 @@ function WinRateMove({ row, since }: { row: LoadoutRow; since: string | null }) 
   return <Move delta={delta} note={movementNote(row, since)} />;
 }
 
+/**
+ * Players are switching to it: 3%+ of games in the latest capture, and at
+ * least double (and 2 points over) its share in the first capture we hold.
+ * The same rule as the meta page's Rising list (lib/china-meta.ts).
+ */
+function emerging(trend?: [string, number, number][]): { from: number; to: number; since: string } | null {
+  const first = trend?.[0];
+  const last = trend?.[trend.length - 1];
+  if (!first || !last || first === last) return null;
+  if (last[2] < 3 || last[2] < first[2] * 2 || last[2] - first[2] < 2) return null;
+  return { from: first[2], to: last[2], since: first[0] };
+}
+
 const rowKey = (row: LoadoutRow) => row.entities.map((entity) => entity.name).join(" + ");
 
 /** The row's win rate across the archived captures, as a tiny line. */
@@ -204,6 +217,15 @@ function StandardRow({ row, kind, since, position, recommended = false, week, tr
               </span>
             )}
             {!week && <NewTag row={row} since={since} />}
+            {(() => {
+              const rise = kind === "items" || kind === "runes" ? emerging(trend) : null;
+              return rise && (
+                <span title={`${rise.from.toFixed(1)}% of games on ${rise.since}, ${rise.to.toFixed(1)}% now`}
+                  className="rounded-md bg-sky-300/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-sky-200">
+                  Emerging in China
+                </span>
+              );
+            })()}
           </p>
         </div>
         <span className="hidden sm:block"><Trend points={trend} /></span>

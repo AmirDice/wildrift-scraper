@@ -88,14 +88,16 @@ export const ANNOUNCEMENT = {
   // -v8: the EU and NA boards were re-collected on 7.3b. A new key so the
   // banner shows again to everyone who dismissed the patch one.
   // -v9: all 142 recaptured, plus the win-rate history chart and region switch.
-  key: "wtm-announce-eu-na-7-3b-2026-10-v9",
-  href: "/updates",
-  lead: `EU and NA win rates are on ${EU_WINRATE_PATCH}`,
-  short: `The EU and NA leaderboards were collected again from 19 to 22 October, the first boards played on patch ${EU_WINRATE_PATCH}. All 142 champions in both regions, so Volibear, Jhin, Tryndamere, Yasuo, Hwei, Nocturne, Yunara and Senna now show how the patch moved them, and every champion page has a win-rate history chart with a Global, EU, NA and China switch. China's board is still the ${CN_WINRATE_PATCH} one from 11 October.`,
-  cta: "What changed",
-  badges: [`EU + NA on ${EU_WINRATE_PATCH}`],
+  // -v10: the meta page spotlight (China this week, patch impact, builds
+  // across patches). Points at /meta rather than /updates.
+  key: "wtm-announce-meta-china-week-2026-10-v10",
+  href: "/meta#builds",
+  lead: "What China is building this week",
+  short: `New on the meta page: the builds rising fastest in China's Legendary queue, the items and keystones winning most by role, summoner spells by lane, and a full breakdown of what patch ${SKIPPED_PATCH} did to every item it changed. Every champion page now also tracks its builds across patches, so a strong older build is not lost when players move on.`,
+  cta: "See the meta",
+  badges: ["New"],
   /** Pages the banner points at, so it does not appear on top of itself. */
-  hideOn: ["/updates"],
+  hideOn: ["/meta"],
 } as const;
 
 /**
@@ -108,6 +110,20 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "24 October 2026",
+    title: "China this week, patch impact, and builds across patches",
+    body:
+      "The meta page is now five tabs instead of one long scroll. Its Builds tab "
+      + "adds China this week: the cores and rune pages rising fastest in China's "
+      + "Legendary queue, the items and keystones built most by role, and summoner "
+      + "spells by lane. A new patch impact page breaks down what 7.3b did to every "
+      + "item and rune it changed: Warmog's fell from a core item in 11 lanes to 7, "
+      + "while Thornmail's price rise barely moved it. On champion pages, loadouts "
+      + "now default to a 7-day view, mark builds emerging in China, and can be "
+      + "compared across patches, where each build is scored against its own patch "
+      + "so an older one that still wins is flagged rather than buried.",
+  },
   {
     date: "23 October 2026",
     title: "Full EU and NA boards, and win rate over time",

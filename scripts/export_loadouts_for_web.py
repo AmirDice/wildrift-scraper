@@ -525,6 +525,123 @@ def attach_patches(output: dict[str, Any]) -> int:
     return scored
 
 
+IMPACT_OUTPUT = WEB_DATA / "cn_patch_impact.json"
+#: An item counts as a lane's core item from this share of its games.
+CORE_SHARE = 20
+
+
+def export_patch_impact() -> dict[str, Any] | None:
+    """Before and after the newest patch, across the roster, for the patch
+    impact page (web-next/src/app/patch-impact).
+
+    For every champion-lane captured on both sides of the patch: each item's
+    share of the lane's games whose three-item core holds it, and each rune's
+    share of the lane's rune pages, pooled per patch. Rolled up across lanes
+    (each lane counts once; China gives no game counts) and per role, with the
+    lanes that moved most. Items and runes the patch notes mention are marked
+    changed; the rest show what moved without being touched.
+    """
+    calendar, changed = _patch_calendar()
+    order = [patch for patch, _date in calendar]
+
+    def patch_of(data_date: str | None) -> str | None:
+        m = re.fullmatch(r"(\d{4})(\d{2})(\d{2})", data_date or "")
+        if not m:
+            return None
+        live = [patch for patch, date in calendar if date <= f"{m[1]}-{m[2]}-{m[3]}"]
+        return live[-1] if live else None
+
+    snapshots = [doc for path in sorted(HISTORY.glob("????-??-??.json"))
+                 if isinstance((doc := load_json(path)).get("champions"), dict)]
+    # slug -> lane -> tab -> patch -> [rows per capture]
+    tree: dict[str, dict[str, dict[str, dict[str, list]]]] = {}
+    days: dict[str, set[str]] = {}
+    for doc in snapshots:
+        for slug, lanes in doc["champions"].items():
+            for record in lanes:
+                for name in ("items", "runes"):
+                    tab = record["tabs"].get(name) or {}
+                    patch = patch_of(tab.get("date"))
+                    if patch and tab.get("rows"):
+                        days.setdefault(patch, set()).add(str(record.get("capturedAt"))[:10])
+                        tree.setdefault(slug, {}).setdefault(record["lane"], {}).setdefault(name, {}).setdefault(patch, []).append(tab["rows"])
+    seen = sorted({patch for lanes in tree.values() for tabs in lanes.values() for groups in tabs.values() for patch in groups}, key=order.index)
+    if len(seen) < 2:
+        return None
+    before, after = seen[-2], seen[-1]
+
+    def presence(rows: list[dict[str, Any]], kind: str) -> dict[str, float]:
+        share: dict[str, float] = {}
+        for row in rows:
+            for entity in set(row["entities"]):
+                share[entity] = share.get(entity, 0.0) + row["pickRate"]
+        return {k: min(v, 100.0) for k, v in share.items()}
+
+    out: dict[str, Any] = {"patch": after, "previous": before, "lanes": 0}
+    for kind in ("items", "runes"):
+        per: dict[str, dict[str, Any]] = {}
+        lanes_both = 0
+        for slug, lanes in tree.items():
+            for lane, tabs in lanes.items():
+                groups = tabs.get(kind, {})
+                if before not in groups or after not in groups:
+                    continue
+                lanes_both += 1
+                a = presence(_pool(groups[before]), kind)
+                b = presence(_pool(groups[after]), kind)
+                for entity in set(a) | set(b):
+                    rec = per.setdefault(entity, {"before": 0.0, "after": 0.0, "coreBefore": 0, "coreAfter": 0,
+                                                   "roles": {}, "lanes": []})
+                    x, y = a.get(entity, 0.0), b.get(entity, 0.0)
+                    rec["before"] += x
+                    rec["after"] += y
+                    rec["coreBefore"] += x >= CORE_SHARE
+                    rec["coreAfter"] += y >= CORE_SHARE
+                    role = rec["roles"].setdefault(lane, {"before": 0.0, "after": 0.0, "n": 0})
+                    role["before"] += x
+                    role["after"] += y
+                    role["n"] += 1
+                    if max(x, y) >= 5:
+                        rec["lanes"].append({"slug": slug, "lane": lane, "before": round(x, 1), "after": round(y, 1)})
+        if not lanes_both:
+            continue
+        out["lanes"] = max(out["lanes"], lanes_both)
+        notes = set().union(*(changed.get(patch, set()) for patch in order[order.index(before) + 1:order.index(after) + 1]))
+        rows = []
+        for entity, rec in per.items():
+            # Roles average over the lanes of that role captured on both sides.
+            role_counts: dict[str, int] = {}
+            for slug, lanes in tree.items():
+                for lane, tabs in lanes.items():
+                    if before in tabs.get(kind, {}) and after in tabs.get(kind, {}):
+                        role_counts[lane] = role_counts.get(lane, 0) + 1
+            row = {
+                "name": entity,
+                "changed": entity in notes,
+                "before": round(rec["before"] / lanes_both, 2),
+                "after": round(rec["after"] / lanes_both, 2),
+                "coreBefore": rec["coreBefore"],
+                "coreAfter": rec["coreAfter"],
+                "roles": {lane: {"before": round(v["before"] / role_counts[lane], 1), "after": round(v["after"] / role_counts[lane], 1)}
+                          for lane, v in rec["roles"].items()},
+                "movers": sorted(rec["lanes"], key=lambda m: -abs(m["after"] - m["before"]))[:6],
+            }
+            if max(row["before"], row["after"]) >= 0.3 or row["changed"]:
+                rows.append(row)
+        rows.sort(key=lambda r: -max(r["before"], r["after"]))
+        out[kind] = rows
+    out["captures"] = {patch: len(days.get(patch, set())) for patch in (before, after)}
+    patch_url = next((entry.get("url") for entry in load_json(PATCH_HISTORY).get("patches", []) if entry.get("patch") == after), None)
+    out["notesUrl"] = patch_url
+    out["liveDate"] = dict(calendar).get(after)
+    # One entry per patch, kept: each patch's page must survive the next one.
+    existing = load_json(IMPACT_OUTPUT) if IMPACT_OUTPUT.exists() else {}
+    patches = existing.get("patches", {}) if isinstance(existing, dict) else {}
+    patches[after] = out
+    IMPACT_OUTPUT.write_text(json.dumps({"patches": patches}, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--archive-only", type=Path, default=None,
@@ -640,6 +757,11 @@ def main() -> None:
     lanes, rows = attach_week_and_trend(output)
     print(f"Week and trend: {lanes} lanes, {rows} rows trended")
     print(f"Across patches: {attach_patches(output)} tabs scored")
+    impact = export_patch_impact()
+    if impact:
+        print(f"Patch impact {impact['previous']} -> {impact['patch']}: {impact['lanes']} lanes, "
+              f"{len(impact.get('items', []))} items, {len(impact.get('runes', []))} runes "
+              f"-> {IMPACT_OUTPUT.relative_to(ROOT)}")
     OUTPUT.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(
         f"Wrote {OUTPUT.relative_to(ROOT)}: "
