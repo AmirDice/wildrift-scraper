@@ -1,0 +1,859 @@
+{
+  "date": "2026-10-23",
+  "region": "na",
+  "wrOffset": -8.5,
+  "champions": {
+    "senna": {
+      "wr": 66.6,
+      "tier": "GOD",
+      "tierRole": "GOD",
+      "role": "Support"
+    },
+    "kindred": {
+      "wr": 65.4,
+      "tier": "GOD",
+      "tierRole": "GOD",
+      "role": "Jungle"
+    },
+    "kassadin": {
+      "wr": 64.7,
+      "tier": "GOD",
+      "tierRole": "GOD",
+      "role": "Mid"
+    },
+    "nilah": {
+      "wr": 64.2,
+      "tier": "GOD",
+      "tierRole": "GOD",
+      "role": "Jungle"
+    },
+    "rammus": {
+      "wr": 64.1,
+      "tier": "GOD",
+      "tierRole": "GOD",
+      "role": "Jungle"
+    },
+    "gwen": {
+      "wr": 63.3,
+      "tier": "GOD",
+      "tierRole": "GOD",
+      "role": "Baron"
+    },
+    "rengar": {
+      "wr": 63.2,
+      "tier": "GOD",
+      "tierRole": "S",
+      "role": "Jungle"
+    },
+    "nocturne": {
+      "wr": 63.1,
+      "tier": "GOD",
+      "tierRole": "S",
+      "role": "Jungle"
+    },
+    "jayce": {
+      "wr": 63.0,
+      "tier": "S",
+      "tierRole": "GOD",
+      "role": "Baron"
+    },
+    "lee-sin": {
+      "wr": 62.9,
+      "tier": "S",
+      "tierRole": "S",
+      "role": "Jungle"
+    },
+    "syndra": {
+      "wr": 62.7,
+      "tier": "S",
+      "tierRole": "GOD",
+      "role": "Mid"
+    },
+    "aurelion-sol": {
+      "wr": 62.6,
+      "tier": "S",
+      "tierRole": "GOD",
+      "role": "Mid"
+    },
+    "talon": {
+      "wr": 62.6,
+      "tier": "S",
+      "tierRole": "S",
+      "role": "Jungle"
+    },
+    "amumu": {
+      "wr": 62.5,
+      "tier": "S",
+      "tierRole": "S",
+      "role": "Jungle"
+    },
+    "lillia": {
+      "wr": 62.3,
+      "tier": "S",
+      "tierRole": "A",
+      "role": "Jungle"
+    },
+    "nidalee": {
+      "wr": 62.3,
+      "tier": "S",
+      "tierRole": "A",
+      "role": "Jungle"
+    },
+    "shen": {
+      "wr": 61.6,
+      "tier": "S",
+      "tierRole": "GOD",
+      "role": "Baron"
+    },
+    "hecarim": {
+      "wr": 61.4,
+      "tier": "S",
+      "tierRole": "A",
+      "role": "Jungle"
+    },
+    "hwei": {
+      "wr": 61.4,
+      "tier": "S",
+      "tierRole": "S",
+      "role": "Mid"
+    },
+    "riven": {
+      "wr": 61.3,
+      "tier": "S",
+      "tierRole": "A",
+      "role": "Jungle"
+    },
+    "khazix": {
+      "wr": 61.3,
+      "tier": "S",
+      "tierRole": "A",
+      "role": "Jungle"
+    },
+    "skarner": {
+      "wr": 61.1,
+      "tier": "S",
+      "tierRole": "S",
+      "role": "Baron"
+    },
+    "kayn": {
+      "wr": 61.0,
+      "tier": "S",
+      "tierRole": "A",
+      "role": "Jungle"
+    },
+    "yunara": {
+      "wr": 60.9,
+      "tier": "A",
+      "tierRole": "GOD",
+      "role": "Dragon"
+    },
+    "zed": {
+      "wr": 60.8,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Mid"
+    },
+    "aatrox": {
+      "wr": 60.7,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Baron"
+    },
+    "pyke": {
+      "wr": 60.6,
+      "tier": "A",
+      "tierRole": "GOD",
+      "role": "Support"
+    },
+    "pantheon": {
+      "wr": 60.5,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Jungle"
+    },
+    "nunu-and-willump": {
+      "wr": 60.5,
+      "tier": "A",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "kaisa": {
+      "wr": 60.3,
+      "tier": "A",
+      "tierRole": "GOD",
+      "role": "Dragon"
+    },
+    "xayah": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Dragon"
+    },
+    "corki": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Dragon"
+    },
+    "volibear": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Baron"
+    },
+    "yuumi": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Support"
+    },
+    "aurora": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Mid"
+    },
+    "sona": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Support"
+    },
+    "ekko": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "bard": {
+      "wr": 60.1,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Support"
+    },
+    "vladimir": {
+      "wr": 60.0,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Mid"
+    },
+    "karma": {
+      "wr": 60.0,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Support"
+    },
+    "lulu": {
+      "wr": 60.0,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Support"
+    },
+    "milio": {
+      "wr": 59.9,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Support"
+    },
+    "jax": {
+      "wr": 59.8,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Baron"
+    },
+    "jinx": {
+      "wr": 59.7,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Dragon"
+    },
+    "chogath": {
+      "wr": 59.6,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Baron"
+    },
+    "dr-mundo": {
+      "wr": 59.5,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Baron"
+    },
+    "zoe": {
+      "wr": 59.5,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Mid"
+    },
+    "caitlyn": {
+      "wr": 59.5,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Dragon"
+    },
+    "katarina": {
+      "wr": 59.5,
+      "tier": "A",
+      "tierRole": "S",
+      "role": "Mid"
+    },
+    "heimerdinger": {
+      "wr": 59.4,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "camille": {
+      "wr": 59.4,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "ksante": {
+      "wr": 59.4,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "ahri": {
+      "wr": 59.4,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "poppy": {
+      "wr": 59.3,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "nami": {
+      "wr": 59.1,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Support"
+    },
+    "orianna": {
+      "wr": 59.1,
+      "tier": "A",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "smolder": {
+      "wr": 59.0,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Dragon"
+    },
+    "diana": {
+      "wr": 58.9,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "yone": {
+      "wr": 58.9,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "olaf": {
+      "wr": 58.9,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "malphite": {
+      "wr": 58.8,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "braum": {
+      "wr": 58.8,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Support"
+    },
+    "ashe": {
+      "wr": 58.8,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Dragon"
+    },
+    "gragas": {
+      "wr": 58.6,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "wukong": {
+      "wr": 58.5,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "thresh": {
+      "wr": 58.5,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Support"
+    },
+    "fiora": {
+      "wr": 58.4,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Baron"
+    },
+    "rakan": {
+      "wr": 58.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Support"
+    },
+    "norra": {
+      "wr": 58.4,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "janna": {
+      "wr": 58.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Support"
+    },
+    "evelynn": {
+      "wr": 58.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "darius": {
+      "wr": 58.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "leona": {
+      "wr": 58.3,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Support"
+    },
+    "rumble": {
+      "wr": 58.3,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "kogmaw": {
+      "wr": 58.3,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Dragon"
+    },
+    "samira": {
+      "wr": 58.2,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Dragon"
+    },
+    "morgana": {
+      "wr": 58.2,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "jarvan-iv": {
+      "wr": 58.0,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "singed": {
+      "wr": 58.0,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "varus": {
+      "wr": 58.0,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Dragon"
+    },
+    "akali": {
+      "wr": 57.9,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "master-yi": {
+      "wr": 57.8,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "annie": {
+      "wr": 57.8,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "vayne": {
+      "wr": 57.6,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Dragon"
+    },
+    "fiddlesticks": {
+      "wr": 57.6,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Jungle"
+    },
+    "vi": {
+      "wr": 57.5,
+      "tier": "B",
+      "tierRole": "C",
+      "role": "Jungle"
+    },
+    "soraka": {
+      "wr": 57.5,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Support"
+    },
+    "zeri": {
+      "wr": 57.5,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Dragon"
+    },
+    "tristana": {
+      "wr": 57.5,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Dragon"
+    },
+    "nautilus": {
+      "wr": 57.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Support"
+    },
+    "teemo": {
+      "wr": 57.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "ambessa": {
+      "wr": 57.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "zilean": {
+      "wr": 57.4,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Support"
+    },
+    "lucian": {
+      "wr": 57.3,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Dragon"
+    },
+    "gnar": {
+      "wr": 57.2,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "lissandra": {
+      "wr": 57.1,
+      "tier": "B",
+      "tierRole": "A",
+      "role": "Mid"
+    },
+    "seraphine": {
+      "wr": 57.1,
+      "tier": "B",
+      "tierRole": "C",
+      "role": "Support"
+    },
+    "mordekaiser": {
+      "wr": 57.1,
+      "tier": "B",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "velkoz": {
+      "wr": 56.8,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "sett": {
+      "wr": 56.7,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "nasus": {
+      "wr": 56.7,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Baron"
+    },
+    "kennen": {
+      "wr": 56.7,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "taliyah": {
+      "wr": 56.7,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "maokai": {
+      "wr": 56.6,
+      "tier": "C",
+      "tierRole": "C",
+      "role": "Support"
+    },
+    "kayle": {
+      "wr": 56.5,
+      "tier": "C",
+      "tierRole": "C",
+      "role": "Baron"
+    },
+    "ryze": {
+      "wr": 56.5,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "ezreal": {
+      "wr": 56.5,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Dragon"
+    },
+    "twisted-fate": {
+      "wr": 56.4,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "xin-zhao": {
+      "wr": 56.3,
+      "tier": "C",
+      "tierRole": "C",
+      "role": "Jungle"
+    },
+    "swain": {
+      "wr": 56.3,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "viego": {
+      "wr": 56.3,
+      "tier": "C",
+      "tierRole": "C",
+      "role": "Jungle"
+    },
+    "twitch": {
+      "wr": 56.2,
+      "tier": "C",
+      "tierRole": "B",
+      "role": "Dragon"
+    },
+    "ornn": {
+      "wr": 56.1,
+      "tier": "C",
+      "tierRole": "C",
+      "role": "Baron"
+    },
+    "warwick": {
+      "wr": 56.0,
+      "tier": "C",
+      "tierRole": "C",
+      "role": "Jungle"
+    },
+    "irelia": {
+      "wr": 55.9,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Baron"
+    },
+    "brand": {
+      "wr": 55.9,
+      "tier": "Ass",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "garen": {
+      "wr": 55.9,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Baron"
+    },
+    "vex": {
+      "wr": 55.9,
+      "tier": "Ass",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "galio": {
+      "wr": 55.8,
+      "tier": "Ass",
+      "tierRole": "B",
+      "role": "Mid"
+    },
+    "alistar": {
+      "wr": 55.8,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Support"
+    },
+    "viktor": {
+      "wr": 55.7,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Mid"
+    },
+    "akshan": {
+      "wr": 55.7,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Mid"
+    },
+    "jhin": {
+      "wr": 55.6,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Dragon"
+    },
+    "fizz": {
+      "wr": 55.3,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Jungle"
+    },
+    "renekton": {
+      "wr": 55.3,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Baron"
+    },
+    "lux": {
+      "wr": 55.3,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Mid"
+    },
+    "zyra": {
+      "wr": 55.1,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Mid"
+    },
+    "draven": {
+      "wr": 55.1,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Dragon"
+    },
+    "ziggs": {
+      "wr": 55.1,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Mid"
+    },
+    "kalista": {
+      "wr": 55.0,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Dragon"
+    },
+    "mel": {
+      "wr": 55.0,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Mid"
+    },
+    "urgot": {
+      "wr": 55.0,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Baron"
+    },
+    "shyvana": {
+      "wr": 54.9,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Jungle"
+    },
+    "yasuo": {
+      "wr": 54.9,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Mid"
+    },
+    "sivir": {
+      "wr": 54.8,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Dragon"
+    },
+    "veigar": {
+      "wr": 54.5,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Mid"
+    },
+    "tryndamere": {
+      "wr": 54.5,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Baron"
+    },
+    "graves": {
+      "wr": 54.3,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Jungle"
+    },
+    "sion": {
+      "wr": 53.9,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Baron"
+    },
+    "rell": {
+      "wr": 53.6,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Support"
+    },
+    "blitzcrank": {
+      "wr": 53.6,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Support"
+    },
+    "miss-fortune": {
+      "wr": 53.4,
+      "tier": "Ass",
+      "tierRole": "Ass",
+      "role": "Dragon"
+    }
+  }
+}
