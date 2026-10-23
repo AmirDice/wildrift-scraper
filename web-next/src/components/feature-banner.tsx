@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Marquee } from "@/components/marquee";
+import { useEffect, useState } from "react";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 import { ANNOUNCEMENT } from "@/lib/announcement";
 
@@ -98,77 +99,6 @@ function SparklesGlyph() {
       <path d="M18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z" />
       <path d="M16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
     </svg>
-  );
-}
-
-/** Pixels per second the sentence travels. Slow enough to read on a phone. */
-const MARQUEE_SPEED = 45;
-/** Blank space between the end of one copy of the sentence and the next. */
-const MARQUEE_GAP = 48;
-
-/**
- * Scrolls `text` horizontally, but only when it does not fit.
- *
- * The banner used to `truncate`, which cut the sentence off mid-word on a
- * phone. Scrolling unconditionally would be worse: on a desktop the sentence
- * fits with room to spare, and moving text that had no need to move is just
- * noise. So it is measured, and the animation is attached only when the text is
- * actually wider than the space for it.
- */
-function Marquee({ text, className = "" }: { text: string; className?: string }) {
-  const viewport = useRef<HTMLDivElement>(null);
-  const copy = useRef<HTMLSpanElement>(null);
-  const [shift, setShift] = useState(0);
-
-  useEffect(() => {
-    const outer = viewport.current;
-    const inner = copy.current;
-    if (!outer || !inner) return;
-
-    const measure = () => {
-      const available = outer.clientWidth;
-      // getBoundingClientRect, NOT scrollWidth: the sentence is an inline
-      // element, and scrollWidth reports 0 for those, so the overflow check
-      // silently never fired.
-      const needed = inner.getBoundingClientRect().width;
-      setShift(needed > available ? needed + MARQUEE_GAP : 0);
-    };
-    measure();
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(outer);
-    observer.observe(inner);
-    return () => observer.disconnect();
-  }, [text]);
-
-  const moving = shift > 0;
-
-  return (
-    <div ref={viewport} className={`min-w-0 overflow-hidden ${className}`}>
-      <div
-        className={
-          moving
-            ? "flex w-max motion-safe:animate-[marquee_linear_infinite] hover:[animation-play-state:paused]"
-            : "truncate"
-        }
-        style={moving
-          ? {
-              ["--marquee-shift" as string]: `${shift}px`,
-              animationDuration: `${shift / MARQUEE_SPEED}s`,
-            }
-          : undefined}
-      >
-        <span ref={copy} className="whitespace-nowrap text-muted">{text}</span>
-        {/* Second copy trails the first so the loop never shows a gap at the
-            end. Hidden from assistive tech, which should hear the sentence once. */}
-        {moving && (
-          <span aria-hidden className="whitespace-nowrap text-muted"
-            style={{ paddingLeft: MARQUEE_GAP }}>
-            {text}
-          </span>
-        )}
-      </div>
-    </div>
   );
 }
 

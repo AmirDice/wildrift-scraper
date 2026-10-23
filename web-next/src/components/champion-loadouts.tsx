@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { rankByBalance, recommendedRow, tabAverage } from "@/lib/loadout-score";
 import { Card } from "@/components/ui";
+import { Marquee } from "@/components/marquee";
 import { AskAgent } from "@/components/site-agent";
 import type { ChampionLoadoutLane, LoadoutEntity, LoadoutPatches, LoadoutPatchRow, LoadoutRow, LoadoutTab } from "@/lib/cn-loadouts";
 
@@ -206,7 +207,9 @@ function StandardRow({ row, kind, since, position, recommended = false, week, tr
           ))}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-semibold text-text" title={names}>{names}</p>
+          {/* Scrolls when the names do not fit, instead of cutting a core
+              off mid-item on a phone ("Lich Bane · Rabadon's Deathcap · Infi..."). */}
+          <Marquee text={names} className="text-xs font-semibold" textClassName="text-text" />
           <p className="mt-0.5 flex items-center gap-1.5 text-[0.64rem] text-faint">
             {kind === "items" ? "Three-item core" : kind === "runes" ? "Full rune page" : kind === "boots" ? "Tier 2 boots" : kind === "spells" ? "Spell pair" : "Opponent"}
             {recommended && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold">Recommended</span>}
@@ -258,7 +261,9 @@ function PatchRowCard({ row, patches, position }: { row: LoadoutPatchRow; patche
           ))}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-semibold text-text" title={names}>{names}</p>
+          {/* Scrolls when the names do not fit, instead of cutting a core
+              off mid-item on a phone ("Lich Bane · Rabadon's Deathcap · Infi..."). */}
+          <Marquee text={names} className="text-xs font-semibold" textClassName="text-text" />
           <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[0.64rem] text-faint">
             {patches.order.map((patch) => {
               const cell = row.byPatch[patch];
