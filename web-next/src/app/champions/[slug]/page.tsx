@@ -157,7 +157,11 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const naPlayers = loadAnalyticsPlayers(champion.slug, "na");
   const cnPlayers = loadAnalyticsPlayers(champion.slug, "cn");
   const views: RegionView[] = [
-    { key: "global", board: headline, players: [...euPlayers, ...naPlayers, ...cnPlayers],
+    // Global ranks the three boards' players together by Champion Score, so
+    // its leaderboard bands describe one top-90 rather than three top-30s.
+    { key: "global", board: headline, players: [...euPlayers, ...naPlayers, ...cnPlayers]
+        .sort((a, b) => (b.s ?? 0) - (a.s ?? 0) || b.w - a.w)
+        .map((player, index) => ({ ...player, r: index + 1 })),
       podium: champion.globalBestPlayerPodium ?? champion.bestPlayerPodium ?? null },
     { key: "eu", board: Number.isFinite(champion.wr) ? champion : undefined, players: euPlayers, podium: champion.bestPlayerPodium ?? null },
     { key: "na", board: na && Number.isFinite(na.wr) ? na : undefined, players: naPlayers, podium: na?.bestPlayerPodium ?? null },
@@ -252,6 +256,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
             winRate={view.board.wr}
             winRateDelta={view.board.wrDelta}
             winrateStd={view.board.winrateStd}
+            combined={view.key === "global"}
           />
         </ForRegion>
       ))}

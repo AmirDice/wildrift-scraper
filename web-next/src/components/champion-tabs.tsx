@@ -42,7 +42,10 @@ export function ChampionTabs({ panels, toolbar }: {
             </button>
           ))}
         </div>
-        {toolbar && <div className="ml-auto pl-1">{toolbar}</div>}
+        {/* Not on phones: five tabs and the four-button switch do not fit one
+            row at 375px, and the tabs were squeezed to ~29px each. The hero
+            and the top of the overview carry their own switch there. */}
+        {toolbar && <div className="ml-auto hidden pl-1 sm:block">{toolbar}</div>}
         </div>
       </div>
       {TABS.map((tab) => (

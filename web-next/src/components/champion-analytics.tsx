@@ -19,7 +19,10 @@ export function ChampionAnalytics({
   winRate,
   winRateDelta,
   winrateStd,
+  combined = false,
 }: {
+  /** Players from several boards ranked together (the Global view). */
+  combined?: boolean;
   champion: string;
   players: AnalyticsPlayer[];
   regions: RegionPoint[];
@@ -45,6 +48,13 @@ export function ChampionAnalytics({
       const rows = ranked.filter((player) => player.r >= from && player.r <= to);
       return rows.length ? rows.reduce((sum, player) => sum + player.w, 0) / rows.length : null;
     };
+    // Bands follow the board's real depth. Boards are 30 rows since the
+    // 2026-09 relayout, so the old 11-25 / 26-50 split left the last band
+    // a third empty; Global ranks the three boards' 90 players together.
+    const depth = Math.max(...ranked.map((player) => player.r));
+    const cuts: [number, number][] = combined
+      ? [[1, Math.round(depth / 9)], [Math.round(depth / 9) + 1, Math.round(depth / 3)], [Math.round(depth / 3) + 1, Math.round((depth * 2) / 3)], [Math.round((depth * 2) / 3) + 1, depth]]
+      : [[1, 5], [6, 10], [11, 20], [21, Math.max(21, depth)]];
     const topFive = band(1, 5);
     const consistency = Math.round(Math.max(0, Math.min(100, 100 - (winrateStd ?? 8) * 2)));
     return {
@@ -54,14 +64,10 @@ export function ChampionAnalytics({
       max: Math.max(...rates),
       topFive,
       consistency,
-      bands: [
-        { label: "1–5", value: band(1, 5) },
-        { label: "6–10", value: band(6, 10) },
-        { label: "11–25", value: band(11, 25) },
-        { label: "26–50", value: band(26, 50) },
-      ],
+      bands: cuts.map(([from, to]) => ({ label: `${from}–${to}`, value: band(from, to) })),
+      depth,
     };
-  }, [valid, winrateStd]);
+  }, [valid, winrateStd, combined]);
 
   if (!stats) return null;
 
@@ -105,7 +111,7 @@ export function ChampionAnalytics({
         </div>
       </GraphCard>
 
-      <GraphCard className="lg:col-span-7" title="Leaderboard bands" value={`${Math.max(...stats.bands.map((band) => band.value ?? 0)).toFixed(1)}% peak`} tip={peakBand ? `${champion}'s best band is positions ${peakBand.label}, at ${peakBand.value!.toFixed(1)}%.` : "Average win rate by leaderboard position."}>
+      <GraphCard className="lg:col-span-7" title="Leaderboard bands" value={`${Math.max(...stats.bands.map((band) => band.value ?? 0)).toFixed(1)}% peak`} tip={`${peakBand ? `${champion}'s best band is positions ${peakBand.label}, at ${peakBand.value!.toFixed(1)}%. ` : ""}${combined ? `Global: the ${stats.depth} players of all three boards, ranked together by Champion Score.` : `Average win rate by position on the ${stats.depth}-player board.`}`}>
         <BandBars bands={stats.bands} />
       </GraphCard>
 
