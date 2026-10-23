@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CAPTURES = ROOT / "data" / "captures_partners"
 OUT = ROOT / "web-next" / "src" / "data" / "cn_partners.json"
 SITE = ROOT / "web-next" / "src" / "data" / "site.json"
+LANE_ORDER = ["baron", "jungle", "mid", "dragon", "support"]
 
 
 def main() -> int:
@@ -53,6 +54,10 @@ def main() -> int:
             if key in seen:
                 continue
             seen.add(key)
+            # One orientation per lane pairing (Baron before Mid, Dragon before
+            # Support), whichever champion the app printed first.
+            if LANE_ORDER.index(a_lane) > LANE_ORDER.index(b_lane):
+                a, a_lane, b, b_lane = b, b_lane, a, a_lane
             pairs.append({"a": a, "aLane": a_lane, "b": b, "bLane": b_lane,
                           "winRate": row["winRate"], "pickRate": row["pickRate"]})
     stamp = re.search(r"(\d{8})_(\d{4})", source.parent.name)
