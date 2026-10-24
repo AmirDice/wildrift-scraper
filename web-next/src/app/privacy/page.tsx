@@ -143,6 +143,21 @@ export default function PrivacyPage() {
             </a>
             .
           </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            The site also uses Grow by Mediavine, which lets you save pages to come back to and
+            gives us anonymous statistics about how readers engage with the site. Grow may store
+            an identifier on your device to remember your saved pages and recognise repeat
+            visits. Mediavine describes what it collects in its{" "}
+            <a
+              href="https://www.mediavine.com/privacy-policy/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-accent transition hover:opacity-80"
+            >
+              privacy policy
+            </a>
+            .
+          </p>
         </Card>
 
         <Card className="p-5 sm:p-6">

@@ -9,6 +9,15 @@ export const GA_ID = process.env.VERCEL_ENV === "production"
   : "";
 
 /**
+ * Grow by Mediavine: the save/bookmark widget and its audience analytics,
+ * and the script Mediavine's Journey ads would later run through. Public in
+ * every page like the GA id, and production only for the same reason.
+ */
+export const GROW_SITE_ID = process.env.VERCEL_ENV === "production"
+  ? process.env.NEXT_PUBLIC_GROW_SITE_ID ?? "U2l0ZToxM2VhZmZkYy1lODBjLTQ1YWEtODMzZC04Y2M2ZWM4ZWEwZWY="
+  : "";
+
+/**
  * Where consent is required before analytics or ad cookies: the EU, the rest
  * of the EEA, the UK and Switzerland. Consent Mode v2 defaults these regions
  * to "denied"; Google's certified consent message (enabled in the AdSense
