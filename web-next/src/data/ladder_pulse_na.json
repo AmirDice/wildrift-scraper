@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-10-23 18:43",
+ "generatedAt": "2026-10-24 02:42",
  "nChampions": 142,
  "nPlayers": 4219,
  "nBuilds": 4260,
@@ -108,11 +108,15 @@
  "keystoneMeta": [
   {
    "name": "Conqueror",
-   "count": 729
+   "count": 728
   },
   {
    "name": "Electrocute",
-   "count": 551
+   "count": 549
+  },
+  {
+   "name": "Lethal Tempo",
+   "count": 405
   },
   {
    "name": "Ice Overlord",
@@ -120,19 +124,19 @@
   },
   {
    "name": "Fleet Footwork",
-   "count": 347
+   "count": 337
   },
   {
    "name": "Grasp of the Undying",
-   "count": 324
+   "count": 323
   },
   {
    "name": "Phase Rush",
-   "count": 319
+   "count": 318
   },
   {
    "name": "Dark Harvest",
-   "count": 278
+   "count": 277
   },
   {
    "name": "Aery",
@@ -140,11 +144,7 @@
   },
   {
    "name": "Arcane Comet",
-   "count": 142
-  },
-  {
-   "name": "First Strike",
-   "count": 139
+   "count": 141
   }
  ],
  "spellMeta": [
@@ -176,47 +176,54 @@
  "treeMeta": [
   {
    "name": "Precision",
-   "count": 5373,
-   "wr": 57.83,
-   "games": 477081,
-   "wrGames": 27589790.500000015
+   "count": 4953,
+   "wr": 57.84,
+   "games": 444127,
+   "wrGames": 25690359.199999988
   },
   {
    "name": "Resolve",
-   "count": 3831,
-   "wr": 58.06,
-   "games": 342146,
-   "wrGames": 19864538.499999933
+   "count": 4741,
+   "wr": 58.07,
+   "games": 422346,
+   "wrGames": 24527180.19999992
   },
   {
    "name": "Sorcery",
-   "count": 3539,
-   "wr": 58.42,
-   "games": 293566,
-   "wrGames": 17151449.40000003
+   "count": 3784,
+   "wr": 58.6,
+   "games": 318612,
+   "wrGames": 18671184.00000002
   },
   {
    "name": "Domination",
-   "count": 2240,
+   "count": 2608,
    "wr": 58.62,
-   "games": 197326,
-   "wrGames": 11568011.700000007
+   "games": 231247,
+   "wrGames": 13555553.80000002
   }
  ],
  "keystoneAll": [
   {
    "name": "Conqueror",
-   "count": 729,
+   "count": 728,
    "wr": 58.39,
-   "games": 62610,
-   "wrGames": 3656084.399999998
+   "games": 62541,
+   "wrGames": 3651985.799999998
   },
   {
    "name": "Electrocute",
-   "count": 551,
-   "wr": 58.34,
-   "games": 49058,
-   "wrGames": 2861973.699999999
+   "count": 549,
+   "wr": 58.31,
+   "games": 48911,
+   "wrGames": 2852175.299999999
+  },
+  {
+   "name": "Lethal Tempo",
+   "count": 405,
+   "wr": 57.58,
+   "games": 37743,
+   "wrGames": 2173410.300000001
   },
   {
    "name": "Ice Overlord",
@@ -227,31 +234,31 @@
   },
   {
    "name": "Fleet Footwork",
-   "count": 347,
-   "wr": 58.21,
-   "games": 30781,
-   "wrGames": 1791861.7999999998
+   "count": 337,
+   "wr": 58.26,
+   "games": 30030,
+   "wrGames": 1749656.2999999998
   },
   {
    "name": "Grasp of the Undying",
-   "count": 324,
+   "count": 323,
    "wr": 58.23,
-   "games": 27741,
-   "wrGames": 1615276.1999999988
+   "games": 27679,
+   "wrGames": 1611773.1999999988
   },
   {
    "name": "Phase Rush",
-   "count": 319,
+   "count": 318,
    "wr": 58.78,
-   "games": 26332,
-   "wrGames": 1547745.6999999983
+   "games": 26296,
+   "wrGames": 1545646.8999999983
   },
   {
    "name": "Dark Harvest",
-   "count": 278,
-   "wr": 57.99,
-   "games": 24028,
-   "wrGames": 1393308.5000000005
+   "count": 277,
+   "wr": 58.01,
+   "games": 23943,
+   "wrGames": 1388905.5000000002
   },
   {
    "name": "Aery",
@@ -262,17 +269,17 @@
   },
   {
    "name": "Arcane Comet",
-   "count": 142,
-   "wr": 58.11,
-   "games": 10997,
-   "wrGames": 639002.6000000001
+   "count": 141,
+   "wr": 58.17,
+   "games": 10785,
+   "wrGames": 627406.2000000002
   },
   {
    "name": "First Strike",
-   "count": 139,
-   "wr": 59.82,
-   "games": 12019,
-   "wrGames": 718953.0000000003
+   "count": 138,
+   "wr": 59.87,
+   "games": 11950,
+   "wrGames": 715454.7000000003
   },
   {
    "name": "Empowerment",
@@ -282,45 +289,61 @@
    "wrGames": 563972.5
   },
   {
-   "name": "Lethal Tempo",
-   "count": 107,
-   "wr": 57.1,
-   "games": 11254,
-   "wrGames": 642628.0000000003
+   "name": "Guardian",
+   "count": 41,
+   "wr": 58.17,
+   "games": 3579,
+   "wrGames": 208203.2
   }
  ],
  "minorMeta": [
   {
+   "name": "Bone Plating",
+   "count": 1303,
+   "tree": "Resolve",
+   "wr": 58.11,
+   "games": 113000,
+   "wrGames": 6566098.600000003
+  },
+  {
    "name": "Cut Down",
-   "count": 1115,
+   "count": 1116,
    "tree": "Precision",
-   "wr": 58.08,
-   "games": 94858,
-   "wrGames": 5509488.099999999
+   "wr": 58.09,
+   "games": 94902,
+   "wrGames": 5512488.8999999985
+  },
+  {
+   "name": "Transcendence",
+   "count": 984,
+   "tree": "Sorcery",
+   "wr": 58.69,
+   "games": 82776,
+   "wrGames": 4858167.1000000015
   },
   {
    "name": "Brutal",
-   "count": 922,
+   "count": 917,
    "tree": "Precision",
-   "wr": 57.37,
-   "games": 83106,
-   "wrGames": 4768142.8999999985
+   "wr": 57.39,
+   "games": 82687,
+   "wrGames": 4745045.499999999
   },
   {
    "name": "Sudden Impact",
-   "count": 862,
+   "count": 841,
    "tree": "Domination",
-   "wr": 58.83,
-   "games": 78272,
-   "wrGames": 4604744.3
+   "wr": 58.81,
+   "games": 76966,
+   "wrGames": 4526639.5
   },
   {
    "name": "Second Wind",
-   "count": 806,
+   "count": 809,
    "tree": "Resolve",
-   "wr": 57.81,
-   "games": 73460,
-   "wrGames": 4246724.999999999
+   "wr": 57.82,
+   "games": 73823,
+   "wrGames": 4268228.6
   },
   {
    "name": "Legend: Alacrity",
@@ -339,22 +362,6 @@
    "wrGames": 2855728.099999999
   },
   {
-   "name": "Triumph",
-   "count": 573,
-   "tree": "Precision",
-   "wr": 57.82,
-   "games": 48013,
-   "wrGames": 2776336.2000000016
-  },
-  {
-   "name": "Scorch",
-   "count": 569,
-   "tree": "Sorcery",
-   "wr": 58.32,
-   "games": 44921,
-   "wrGames": 2619752.8000000017
-  },
-  {
    "name": "Perseverance",
    "count": 554,
    "tree": "Resolve",
@@ -364,27 +371,27 @@
   },
   {
    "name": "Overgrowth",
-   "count": 553,
+   "count": 544,
    "tree": "Resolve",
-   "wr": 57.95,
-   "games": 48126,
-   "wrGames": 2788773.0999999973
+   "wr": 57.91,
+   "games": 47718,
+   "wrGames": 2763372.1999999974
   },
   {
-   "name": "Bone Plating",
-   "count": 525,
-   "tree": "Resolve",
-   "wr": 58.27,
-   "games": 45652,
-   "wrGames": 2660357.1
+   "name": "Absolute Focus",
+   "count": 510,
+   "tree": "Sorcery",
+   "wr": 59.23,
+   "games": 42048,
+   "wrGames": 2490471.699999999
   },
   {
    "name": "Legend: Bloodline",
-   "count": 507,
+   "count": 504,
    "tree": "Precision",
-   "wr": 57.94,
-   "games": 45540,
-   "wrGames": 2638482.8
+   "wr": 57.92,
+   "games": 45391,
+   "wrGames": 2628982.5999999996
   },
   {
    "name": "Eyeball Collector",
@@ -393,14 +400,6 @@
    "wr": 58.79,
    "games": 44314,
    "wrGames": 2605057.7999999984
-  },
-  {
-   "name": "Celerity",
-   "count": 489,
-   "tree": "Sorcery",
-   "wr": 58.24,
-   "games": 41302,
-   "wrGames": 2405334.1
   },
   {
    "name": "Axiom Arcanist",
@@ -435,12 +434,12 @@
    "wrGames": 2275582.4999999995
   },
   {
-   "name": "Nimbus Cloak",
-   "count": 380,
-   "tree": "Sorcery",
-   "wr": 58.38,
-   "games": 32368,
-   "wrGames": 1889668.400000001
+   "name": "Chain Assault",
+   "count": 409,
+   "tree": "Domination",
+   "wr": 59.06,
+   "games": 36401,
+   "wrGames": 2149825.200000001
   },
   {
    "name": "Battle Zeal",
@@ -451,60 +450,44 @@
    "wrGames": 1897124.3999999997
   },
   {
-   "name": "Demolish",
-   "count": 351,
-   "tree": "Resolve",
-   "wr": 57.32,
-   "games": 30483,
-   "wrGames": 1747413.9999999995
+   "name": "Nimbus Cloak",
+   "count": 347,
+   "tree": "Sorcery",
+   "wr": 58.47,
+   "games": 29777,
+   "wrGames": 1740942.100000001
   },
   {
-   "name": "Absolute Focus",
-   "count": 325,
-   "tree": "Sorcery",
-   "wr": 58.48,
-   "games": 27539,
-   "wrGames": 1610426.3
+   "name": "Demolish",
+   "count": 342,
+   "tree": "Resolve",
+   "wr": 57.35,
+   "games": 29884,
+   "wrGames": 1713913.4999999998
   },
   {
    "name": "Revitalize",
-   "count": 303,
+   "count": 276,
    "tree": "Resolve",
-   "wr": 59.09,
-   "games": 25269,
-   "wrGames": 1493105.3999999997
+   "wr": 59.07,
+   "games": 23829,
+   "wrGames": 1407587.9
   },
   {
    "name": "Last Stand",
-   "count": 271,
+   "count": 269,
    "tree": "Precision",
-   "wr": 56.83,
-   "games": 27773,
-   "wrGames": 1578295.6000000015
+   "wr": 56.85,
+   "games": 27622,
+   "wrGames": 1570291.3000000014
   },
   {
-   "name": "Tyrant",
-   "count": 253,
-   "tree": "Domination",
-   "wr": 57.87,
-   "games": 22032,
-   "wrGames": 1274892.8000000003
-  },
-  {
-   "name": "Transcendence",
-   "count": 247,
+   "name": "Scorch",
+   "count": 244,
    "tree": "Sorcery",
-   "wr": 58.91,
-   "games": 20368,
-   "wrGames": 1199890.7999999998
-  },
-  {
-   "name": "Courage of the Colossus",
-   "count": 235,
-   "tree": "Resolve",
-   "wr": 56.82,
-   "games": 22112,
-   "wrGames": 1256509.2999999993
+   "wr": 58.37,
+   "games": 20743,
+   "wrGames": 1210748.2999999996
   },
   {
    "name": "Coup de Grace",
@@ -515,20 +498,60 @@
    "wrGames": 1357769.7999999998
   },
   {
-   "name": "Chain Assault",
-   "count": 183,
+   "name": "Courage of the Colossus",
+   "count": 222,
+   "tree": "Resolve",
+   "wr": 56.83,
+   "games": 21070,
+   "wrGames": 1197306.1999999997
+  },
+  {
+   "name": "Tyrant",
+   "count": 219,
    "tree": "Domination",
-   "wr": 58.45,
-   "games": 15576,
-   "wrGames": 910430.2999999997
+   "wr": 57.49,
+   "games": 19914,
+   "wrGames": 1144796.6000000003
+  },
+  {
+   "name": "Font of Life",
+   "count": 211,
+   "tree": "Resolve",
+   "wr": 58.65,
+   "games": 17747,
+   "wrGames": 1040810.3000000002
   },
   {
    "name": "Cheap Shot",
-   "count": 182,
+   "count": 186,
    "tree": "Domination",
-   "wr": 56.68,
-   "games": 15979,
-   "wrGames": 905712.7999999998
+   "wr": 56.8,
+   "games": 16514,
+   "wrGames": 937997.3999999997
+  },
+  {
+   "name": "Zombie Ward",
+   "count": 181,
+   "tree": "Domination",
+   "wr": 59.15,
+   "games": 14618,
+   "wrGames": 864678.7999999997
+  },
+  {
+   "name": "Celerity",
+   "count": 172,
+   "tree": "Sorcery",
+   "wr": 58.27,
+   "games": 16417,
+   "wrGames": 956570.5000000002
+  },
+  {
+   "name": "Triumph",
+   "count": 169,
+   "tree": "Precision",
+   "wr": 57.92,
+   "games": 16255,
+   "wrGames": 941515.7000000002
   },
   {
    "name": "Hextech Flashtraption",
@@ -540,11 +563,27 @@
   },
   {
    "name": "Hubris",
-   "count": 97,
+   "count": 96,
    "tree": "Domination",
-   "wr": 59.92,
-   "games": 7538,
-   "wrGames": 451670.8000000001
+   "wr": 60.0,
+   "games": 7469,
+   "wrGames": 448172.5000000001
+  },
+  {
+   "name": "Empowered Attack",
+   "count": 96,
+   "tree": "Domination",
+   "wr": 58.49,
+   "games": 8059,
+   "wrGames": 471342.9000000002
+  },
+  {
+   "name": "Relentless Hunter",
+   "count": 80,
+   "tree": "Domination",
+   "wr": 58.36,
+   "games": 6860,
+   "wrGames": 400337.49999999994
   },
   {
    "name": "Ixtali Seedjar",
@@ -555,68 +594,28 @@
    "wrGames": 374692.7000000002
   },
   {
-   "name": "Ingenious Hunter",
-   "count": 68,
-   "tree": "Domination",
-   "wr": 60.72,
-   "games": 5651,
-   "wrGames": 343123.5
-  },
-  {
    "name": "Botanist",
-   "count": 65,
+   "count": 63,
    "tree": "Sorcery",
-   "wr": 57.04,
-   "games": 6076,
-   "wrGames": 346605.1
+   "wr": 57.09,
+   "games": 5859,
+   "wrGames": 334512.4
   },
   {
    "name": "Nullifying Orb",
-   "count": 64,
+   "count": 58,
    "tree": "Resolve",
-   "wr": 58.57,
-   "games": 5866,
-   "wrGames": 343595.7000000001
+   "wr": 58.84,
+   "games": 5578,
+   "wrGames": 328192.7000000001
   },
   {
-   "name": "Zombie Ward",
-   "count": 48,
-   "tree": "Domination",
-   "wr": 60.01,
-   "games": 3763,
-   "wrGames": 225813.0
-  },
-  {
-   "name": "Relentless Hunter",
-   "count": 44,
-   "tree": "Domination",
-   "wr": 58.64,
-   "games": 4053,
-   "wrGames": 237663.09999999992
-  },
-  {
-   "name": "Font of Life",
-   "count": 18,
-   "tree": "Resolve",
-   "wr": 58.33,
-   "games": 1481,
-   "wrGames": 86388.70000000001
-  },
-  {
-   "name": "Legend: Tenacity",
-   "count": 7,
-   "tree": "Precision",
-   "wr": 51.84,
-   "games": 521,
-   "wrGames": 27009.699999999997
-  },
-  {
-   "name": "Empowered Attack",
-   "count": 4,
+   "name": "Ingenious Hunter",
+   "count": 1,
    "tree": "Domination",
    "wr": null,
-   "games": 148,
-   "wrGames": 8903.3
+   "games": 132,
+   "wrGames": 6705.599999999999
   }
  ],
  "itemAll": [
@@ -1863,8 +1862,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Empowerment",
-    "count": 1,
+    "name": "Lethal Tempo",
+    "count": 27,
     "of": 30
    },
    "spells": {
@@ -2055,8 +2054,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Lethal Tempo",
-    "count": 25,
+    "name": "Guardian",
+    "count": 26,
     "of": 30
    },
    "spells": {
@@ -2088,7 +2087,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 1,
+    "count": 26,
     "of": 30
    },
    "spells": {
@@ -3016,7 +3015,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 12,
+    "count": 27,
     "of": 30
    },
    "spells": {
@@ -3080,7 +3079,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 1,
+    "count": 30,
     "of": 30
    },
    "spells": {
@@ -3112,7 +3111,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 9,
+    "count": 30,
     "of": 30
    },
    "spells": {
@@ -3208,7 +3207,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Electrocute",
-    "count": 20,
+    "count": 19,
     "of": 30
    },
    "spells": {
@@ -3399,8 +3398,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Dark Harvest",
-    "count": 3,
+    "name": "Lethal Tempo",
+    "count": 27,
     "of": 30
    },
    "spells": {
@@ -3720,7 +3719,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 13,
+    "count": 19,
     "of": 30
    },
    "spells": {
@@ -4871,8 +4870,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 4,
+    "name": "Lethal Tempo",
+    "count": 20,
     "of": 30
    },
    "spells": {
@@ -5222,7 +5221,11 @@
    "gamesMedian": null,
    "legendaryTax": null,
    "legendaryTaxN": null,
-   "keystone": null,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 29,
+    "of": 30
+   },
    "spells": {
     "pair": "Barrier + Flash",
     "count": 17,
@@ -5252,7 +5255,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 6,
+    "count": 22,
     "of": 30
    },
    "spells": {
@@ -5315,8 +5318,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 1,
+    "name": "Lethal Tempo",
+    "count": 26,
     "of": 30
    },
    "spells": {
@@ -5380,7 +5383,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 3,
+    "count": 25,
     "of": 30
    },
    "spells": {
@@ -5412,7 +5415,7 @@
    "legendaryTaxN": null,
    "keystone": {
     "name": "Lethal Tempo",
-    "count": 3,
+    "count": 20,
     "of": 30
    },
    "spells": {
@@ -5859,8 +5862,8 @@
    "legendaryTax": null,
    "legendaryTaxN": null,
    "keystone": {
-    "name": "Conqueror",
-    "count": 8,
+    "name": "Lethal Tempo",
+    "count": 11,
     "of": 30
    },
    "spells": {
@@ -5890,7 +5893,11 @@
    "gamesMedian": null,
    "legendaryTax": null,
    "legendaryTaxN": null,
-   "keystone": null,
+   "keystone": {
+    "name": "Lethal Tempo",
+    "count": 28,
+    "of": 30
+   },
    "spells": {
     "pair": "Barrier + Flash",
     "count": 20,

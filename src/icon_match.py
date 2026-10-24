@@ -67,6 +67,7 @@ N = 64            # comparison resolution
 MARGIN = 0.12     # fraction of the tile edge ignored (game-drawn border)
 MIN_SCORE = 0.22  # below this, no candidate is credible
 MIN_GAP = 0.06    # winner must beat the runner-up by this much
+BLANK_STD = 20.0  # a slot with less pixel spread than this holds no icon
 #: How many tied candidates get the shape second opinion. Three: the pairs
 #: that tie here are pairs, and widening it would start asking the question
 #: of icons that were never credible.
@@ -297,6 +298,13 @@ def keystones() -> frozenset[str]:
                      and r.get("name"))
 
 
+@functools.lru_cache(maxsize=1)
+def _minor_runes() -> frozenset[str]:
+    """Every rune the bank knows that is not a keystone."""
+    names = {name.split("#")[0] for name in templates().get("runes", {})}
+    return frozenset(names - keystones())
+
+
 def match_slot(tile: np.ndarray, kind: str,
                only: frozenset[str] | None = None) -> tuple[str, float, float, str]:
     """(name_or_?, score, gap, runner_up) for one cropped slot.
@@ -320,6 +328,13 @@ def match_slot(tile: np.ndarray, kind: str,
         if narrowed:
             cands = narrowed
     if not cands or tile.size == 0:
+        return "?", 0.0, 0.0, ""
+    # An empty slot (a popup that never opened, a frame caught mid-fade).
+    # _norm_tile would frame its noise and stretch it to a full tile, and
+    # that read as Empowered Attack or Triumph on 196 of 7,500 slots in a
+    # 1,500-build scan. Every real icon there had a pixel spread above 28,
+    # every blank one below 12.
+    if float(tile.std()) < BLANK_STD:
         return "?", 0.0, 0.0, ""
     t = _norm_tile(tile)
     w = _weights(True, kind in ("runes", "loadout_runes"))
@@ -366,7 +381,12 @@ def _align(image: np.ndarray, kind: str, fy: float, fx: float) -> tuple[int, int
     the answer applies to every slot in the row because the offset is a
     property of the popup rather than the slot.
     """
-    bank = templates().get(kind) or {}
+    # Only the ORIGINAL templates anchor the alignment. The "#u" looks are
+    # averaged from crops harvested later (scripts note in data/icon_bank),
+    # and letting them pick the anchor moved the whole row by a pixel on
+    # popups that already read perfectly: 24% of a 500-build sample changed,
+    # Legend: Bloodline among them. They name slots; they never move the crop.
+    bank = {n: t for n, t in (templates().get(kind) or {}).items() if "#u" not in n}
     if not bank:
         return 0, 0
     y0, size, x0, pitch, count = GEOMETRY[kind]
@@ -420,8 +440,14 @@ def read_build_icons(image: np.ndarray) -> dict:
         for i in range(count):
             ty, tx = int(y0 * fy) + dy, int((x0 + i * pitch) * fx) + dx
             tile = image[ty:ty + int(size * fy), tx:tx + int(size * fx)]
-            # Slot 0 of the rune row is the keystone and holds nothing else.
-            only = keystones() if (kind == "runes" and i == 0) else None
+            # Slot 0 of the rune row is the keystone and holds nothing else,
+            # and no other slot ever holds a keystone. Without the second rule
+            # a minor slot could match one: the ladder data had Fleet Footwork
+            # in slot 4, and a Guardian template took Legend: Bloodline's.
+            if kind == "runes" and keystones():
+                only = keystones() if i == 0 else _minor_runes()
+            else:
+                only = None
             name, score, gap, _ = match_slot(tile, kind, only)
             names.append(name)
             conf.append((name, round(score, 3), round(gap, 3)))
