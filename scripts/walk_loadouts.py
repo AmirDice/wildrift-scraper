@@ -94,6 +94,13 @@ SKIP_CHAMPIONS = {
 #: one the walk failed on.
 NO_DATA_FILE = "_no_data.json"
 
+#: Extra visits to a champion whose capture failed, and the pause before
+#: each. A failed page load is usually the network, so a short wait and a
+#: second tap recovers it; more than one retry just stalls a walk on a
+#: champion that is genuinely broken.
+RETRIES = 1
+RETRY_WAIT = 5.0
+
 #: What you may type for --bracket, mapped to the label the app shows.
 #: 峡谷之巅 ("top of canyon") is the highest and the default. Note the sample
 #: cost: the higher the bracket the fewer games behind each build row, and
@@ -522,6 +529,7 @@ def walk(client, args) -> int:
     wanted = [(cn, en) for cn, en in LANE_ORDER
               if not args.lanes or en in args.lanes]
     captured = failed = 0
+    failures: list[str] = []
 
     for lane_cn, lane_en in wanted:
         nodes = _wait_for(client, *SIG_HERO_LIST)
@@ -583,14 +591,32 @@ def walk(client, args) -> int:
                     visited.add(champion)
                     continue
                 print(f"  > [{len(seen)}/{len(roster)}] {champion} ({label})")
-                results = capture_one(client, label, champion, args, done,
-                                      (width, height))
-                for lane_done, result in results:
-                    if result == "ok":
-                        captured += 1
-                        done.add((champion, lane_done))
-                    else:
-                        failed += 1      # capture_one already said why
+                # One retry. A page that never loads is usually the network,
+                # and on the 2026-10-24 walk Bard, Fiora and Nilah all
+                # failed once and then sat out the rest of the night. Every
+                # path out of capture_one ends on the hero list, and lanes
+                # already on disk are in `done`, so the second visit only
+                # attempts what is still missing.
+                results: list[tuple[str, str]] = []
+                for attempt in range(1 + RETRIES):
+                    if attempt:
+                        print(f"    retrying {champion} once")
+                        time.sleep(RETRY_WAIT)
+                    attempt_results = capture_one(client, label, champion, args,
+                                                  done, (width, height))
+                    for lane_done, result in attempt_results:
+                        if result == "ok":
+                            captured += 1
+                            done.add((champion, lane_done))
+                    results = [r for r in results if r[1] == "ok"] + attempt_results
+                    if all(result == "ok" for _lane, result in attempt_results):
+                        break
+                # Only what the retry could not fix counts as failed, so the
+                # final tally is the list worth recapturing by hand.
+                for lane_failed, result in attempt_results:
+                    if result != "ok":
+                        failed += 1
+                        failures.append(f"{champion} {lane_failed}: {result}")
                 # Visited means FINISHED, not attempted. A champion whose
                 # lanes all failed here is left for the next hero-list tab
                 # it appears under, which is a different route to the same
@@ -611,6 +637,11 @@ def walk(client, args) -> int:
     _write_no_data(args.out, skipped)
     tail = f", {len(skipped)} with no data in the app" if skipped else ""
     print(f"\ndone: {captured} captured, {failed} failed{tail}")
+    # Named, not just counted: this is the list to recapture by hand. A
+    # champion that failed under one hero-list tab and was then captured
+    # under another shows here and on disk both; the disk wins.
+    for line in failures:
+        print(f"  failed: {line}")
     return 0 if failed == 0 else 1
 
 
