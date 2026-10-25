@@ -36,7 +36,7 @@ from pathlib import Path
 # regardless of where the function is invoked from.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from web.build_advisor import ITEMS, advise_runes, advise_best_of, why_not  # noqa: E402
+from web.build_advisor import ITEMS, advise_runes, advise_best_of, start_usage, why_not  # noqa: E402
 from web.site_agent import answer_site_question  # noqa: E402
 
 # Shared secret so only our own Next.js route can spend DeepSeek credit. Without
@@ -338,7 +338,13 @@ class handler(BaseHTTPRequestHandler):
             self._send(400, {"error": "body must be a JSON object"})
             return
 
+        # Token tally for this request, returned beside the answer so the site
+        # can record what each feature costs (see start_usage). Attached to
+        # failures too: a generation that failed validation was still billed.
+        usage = start_usage()
         status, payload = build_from_request(body)
+        if isinstance(payload, dict) and usage["calls"]:
+            payload["usage"] = usage
         self._send(status, payload)
 
     def do_GET(self) -> None:  # noqa: N802

@@ -7,6 +7,7 @@ import { ALPHA_DAILY_BUILDS, deviceAllowed, isAlphaDevice } from "@/lib/alpha";
 import { kvGet, kvSet, kvDelete } from "@/lib/kv";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
 import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
+import { recordModelUsage, takeUsage } from "@/lib/model-usage";
 
 /**
  * The ported generator: one versioned endpoint for clients that are not this
@@ -263,6 +264,8 @@ export async function POST(request: Request) {
       }),
     });
     const data = (await res.json()) as Advice;
+    const usage = takeUsage(data);
+    after(() => recordModelUsage("overlay", usage));
     if (!res.ok || data.error) {
       await refundQuota(null, identity, unlimited);
       return json({ error: String(data.error || `generator error (${res.status})`) }, 502);

@@ -32,10 +32,12 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import contextvars
 import json
 import os
 import re
 import sys
+import threading
 import time
 from collections import Counter
 from pathlib import Path
@@ -531,6 +533,59 @@ def _stream_call(key: str, body: dict, on_progress) -> dict:
     return json.loads("".join(chunks))
 
 
+# --------------------------------------------------------------------------
+# token accounting: what one request actually costs
+# --------------------------------------------------------------------------
+#
+# Every model call goes through _gemini_call (the site agent's too), and one
+# generation is several of them: the build, the judge, repairs and, now and
+# then, a full regeneration. Nothing recorded the tokens, so the only cost
+# figure was the monthly bill with no way to split it by feature or by stage.
+# The HTTP entry point opens a tally per request (start_usage) and returns it
+# alongside the answer; the site stores it next to its other counters.
+#
+# A ContextVar holding a MUTABLE dict, so the best-of runner's worker threads
+# (given a copy of the context) add to the same tally. The lock is for them.
+# Failed attempts are counted too: Google bills a call whose JSON we then
+# could not parse.
+
+_USAGE: contextvars.ContextVar[dict | None] = contextvars.ContextVar("advisor_usage", default=None)
+_USAGE_LOCK = threading.Lock()
+
+
+def start_usage() -> dict:
+    """Open a fresh tally for the current request and return it."""
+    tally = {"calls": 0, "input": 0, "output": 0, "thoughts": 0, "cached": 0,
+             "models": {}, "levels": {}}
+    _USAGE.set(tally)
+    return tally
+
+
+def _record_usage(model: str, response, level: str = "") -> None:
+    tally = _USAGE.get()
+    meta = getattr(response, "usage_metadata", None)
+    if tally is None or meta is None:
+        return
+    def n(name: str) -> int:
+        return int(getattr(meta, name, 0) or 0)
+    with _USAGE_LOCK:
+        tally["calls"] += 1
+        tally["input"] += n("prompt_token_count")
+        tally["output"] += n("candidates_token_count")
+        tally["thoughts"] += n("thoughts_token_count")
+        tally["cached"] += n("cached_content_token_count")
+        tally["models"][model] = tally["models"].get(model, 0) + 1
+        # By thinking level, which is the stage in practice: the judge runs
+        # at high, authoring and repairs at medium, the site agent at low.
+        # It answers "is the judge the expensive part" without threading a
+        # stage name through every caller.
+        by = tally["levels"].setdefault(level or "medium", {"calls": 0, "input": 0, "output": 0, "thoughts": 0})
+        by["calls"] += 1
+        by["input"] += n("prompt_token_count")
+        by["output"] += n("candidates_token_count")
+        by["thoughts"] += n("thoughts_token_count")
+
+
 def _gemini_call(prompt: str, model: str = "", system: str = "",
                  thinking_level: str = "medium") -> dict:
     """The same contract as the DeepSeek path: prompt in, parsed build out.
@@ -572,6 +627,7 @@ def _gemini_call(prompt: str, model: str = "", system: str = "",
     for attempt in range(4):
         try:
             r = client.models.generate_content(model=model or MODEL, contents=prompt, config=config)
+            _record_usage(model or MODEL, r, level)
             return json.loads(r.text)
         except Exception as exc:                       # noqa: BLE001
             last = exc
@@ -5057,7 +5113,9 @@ def advise_best_of(champion: str, role: str, enemies: list[str],
         # Progress is reported by the first sample only. All of them move
         # through the same stages at roughly the same pace, and interleaving
         # three streams would make the bar jump backwards.
-        futures = [pool.submit(advise, champion, role, enemies,
+        # Each worker runs in a copy of this context, so the request's token
+        # tally (start_usage) keeps counting inside the threads.
+        futures = [pool.submit(contextvars.copy_context().run, advise, champion, role, enemies,
                                on_progress=on_progress if i == 0 else None, **kwargs)
                    for i in range(runs)]
         for future in futures:

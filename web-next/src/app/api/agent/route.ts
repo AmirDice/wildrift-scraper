@@ -20,6 +20,7 @@ import { kvGetJson, kvSetJson } from "@/lib/kv";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { isAdmin, readSession, SESSION_COOKIE } from "@/lib/session";
 import { trackEvent } from "@/lib/stats";
+import { recordModelUsage, takeUsage } from "@/lib/model-usage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -269,6 +270,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: PUBLIC_ERROR, quota }, { status: 502 });
   }
 
+  const usage = takeUsage(result.data);
+  after(() => recordModelUsage("agent", usage));
   const answer = cleanText(result.data.answer, 2_400);
   if (!answer) return NextResponse.json({ error: PUBLIC_ERROR, quota: allowance.quota }, { status: 502 });
   after(() => trackEvent("agent_model_answered"));

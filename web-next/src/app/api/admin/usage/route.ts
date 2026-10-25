@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { KV_CONFIGURED, kvGetNumber, kvList, kvSetCount } from "@/lib/kv";
 import { FEEDBACK_REASON_KEYS } from "@/lib/feedback-options";
+import { usageSummary } from "@/lib/model-usage";
 import { ACTOR_ACTIONS, TRACKED_EVENTS, actorSummary, cohortSummary, engagementSummary, engagementTotals, eventSummary } from "@/lib/stats";
 
 /**
@@ -40,6 +41,7 @@ export async function GET(request: Request) {
     engagementTotals(100),
   ]);
   const cohorts = await cohortSummary(6);
+  const modelUsage = await usageSummary(30);
   const actors = await Promise.all(ACTOR_ACTIONS.map((action) => actorSummary(action)));
   const parse = (entry: string) => {
     try { return JSON.parse(entry) as unknown; } catch { return entry; }
@@ -47,6 +49,10 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     storage: KV_CONFIGURED ? "kv" : "memory (not persistent)",
+    // Model tokens per feature over the last 30 days, recorded from
+    // 2026-10-25 (lib/model-usage.ts). perRequest is what a price per
+    // generation is set from.
+    modelUsage,
     events: Object.fromEntries(
       events.map((summary) => [
         summary.event,

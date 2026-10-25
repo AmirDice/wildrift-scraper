@@ -8,6 +8,7 @@ import { clientIp, consumeQuota } from "@/lib/quota";
 import { trackEvent } from "@/lib/stats";
 import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
 import { getSubscription, isProSubscription, PRO_DAILY_BUILDS } from "@/lib/subscription";
+import { recordModelUsage, takeUsage } from "@/lib/model-usage";
 
 /**
  * "Why not this item?" -- challenge the generator about one absent item.
@@ -241,6 +242,8 @@ export async function POST(request: Request) {
     ? await remoteWhyNot(champion, payload)
     : await localWhyNot(champion, payload);
 
+  const usage = takeUsage(result);
+  after(() => recordModelUsage("why_not", usage));
   if (result.error) {
     return NextResponse.json({ error: result.error, quota }, { status: 400 });
   }
