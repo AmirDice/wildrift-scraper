@@ -43,6 +43,7 @@ import { ForRegion, RegionProvider, RegionToggle } from "@/components/region-sco
 import { REGION_LABEL, REGION_LONG, type Region } from "@/lib/region-labels";
 import { WinRateHistory } from "@/components/win-rate-history";
 import { getWinRateHistory } from "@/lib/wr-history";
+import { CollectionSchedule } from "@/components/collection-schedule";
 
 /** One server choice on the champion page: its board record, its players
  *  and its best-player ranking. */
@@ -266,6 +267,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         </ForRegion>
       ))}
       {wrHistory && <WinRateHistory champion={champion.name} history={wrHistory} />}
+      <CollectionSchedule />
       {skew && (
         <Card className="p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold">Regular-ranked performance <span className="text-sm font-normal text-faint">· China, every ranked game</span></h2><Link href="/regions#brackets" className={`rounded-full px-2.5 py-1 text-xs font-semibold ${skew.climbing ? "bg-emerald-400/15 text-emerald-300" : skew.stomper ? "bg-rose-400/15 text-rose-300" : "bg-white/10 text-muted"}`}>{skew.climbing ? "Improves at higher skill" : skew.stomper ? "Falls off up top" : "Stable across brackets"}</Link></div>

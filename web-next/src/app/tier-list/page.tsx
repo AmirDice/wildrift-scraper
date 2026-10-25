@@ -7,6 +7,7 @@ import { AdSlot } from "@/components/ad-slot";
 import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { NextStep } from "@/components/next-step";
+import { CollectionSchedule } from "@/components/collection-schedule";
 
 // The patch belongs in the title: people search "wild rift tier list patch
 // 7.2a", and a tier list with no patch on it reads as undated to both a
@@ -48,17 +49,15 @@ export default function TierListPage() {
               <TierMetric label="Player pool" value="Top 30" bordered />
             </div>
           </div>
-          <div className="relative mt-5 grid gap-2 border-t border-white/[0.07] pt-4 sm:grid-cols-2">
-            <div className="flex items-center gap-3 rounded-xl bg-white/[0.025] px-3 py-2.5">
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold">↻</span>
-              <div className="min-w-0"><p className="text-xs font-semibold text-text">New-season schedule</p><p className="truncate text-[0.68rem] text-faint">Collected after one week, once samples stabilize.</p></div>
-            </div>
+          <div className="relative mt-5 grid gap-2 border-t border-white/[0.07] pt-4">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white/[0.025] px-3 py-2.5">
               <div className="min-w-0"><p className="text-xs font-semibold text-text">Mastery curves</p><p className="truncate text-[0.68rem] text-faint">Diamond+ to Challenger performance.</p></div>
               <div className="flex items-center gap-3 text-xs font-semibold"><Link href="/regions#brackets" className="text-gold hover:text-text">Ranks →</Link><Link href="/meta#consistency" className="text-accent hover:text-text">Consistency →</Link></div>
             </div>
           </div>
         </section>
+
+        <CollectionSchedule className="mt-5" />
 
         <div className="mt-5">
         <TierListView
