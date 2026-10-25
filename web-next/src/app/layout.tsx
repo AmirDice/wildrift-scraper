@@ -62,6 +62,21 @@ export default function RootLayout({
     .map(({ name, slug, icon }) => ({ name, slug, icon }));
   return (
     <html lang="en" className="h-full" suppressHydrationWarning>
+      <head>
+        {/* Grow by Mediavine, verbatim in the server-rendered <head>. It was
+            a next/script afterInteractive tag first, which ran fine but is
+            injected at the end of <body> after hydration, and Grow's
+            dashboard checker only looks for the initializer in the page
+            source's <head>. */}
+        {GROW_SITE_ID && (
+          <script
+            data-grow-initializer=""
+            dangerouslySetInnerHTML={{
+              __html: `!(function(){window.growMe||((window.growMe=function(e){window.growMe._.push(e);}),(window.growMe._=[]));var e=document.createElement("script");(e.type="text/javascript"),(e.src="https://faves.grow.me/main.js"),(e.defer=!0),e.setAttribute("data-grow-faves-site-id",${JSON.stringify(GROW_SITE_ID)});var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t);})();`,
+            }}
+          />
+        )}
+      </head>
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         {/* Ambient fixed background, in three layers.
             The glass material is only as convincing as what sits behind it:
@@ -180,14 +195,6 @@ gtag('config', '${GA_ID}');`}
             </Script>
             <Script id="ga-tag" strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
           </>
-        )}
-        {/* Grow by Mediavine, as Grow's own initializer: a growMe() queue
-            for calls made before main.js arrives, then the deferred script
-            carrying the site id. */}
-        {GROW_SITE_ID && (
-          <Script id="grow-init" strategy="afterInteractive" data-grow-initializer="">
-            {`!(function(){window.growMe||((window.growMe=function(e){window.growMe._.push(e);}),(window.growMe._=[]));var e=document.createElement("script");(e.type="text/javascript"),(e.src="https://faves.grow.me/main.js"),(e.defer=!0),e.setAttribute("data-grow-faves-site-id",${JSON.stringify(GROW_SITE_ID)});var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t);})();`}
-          </Script>
         )}
         <Analytics />
       </body>
