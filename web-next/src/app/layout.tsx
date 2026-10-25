@@ -68,14 +68,18 @@ export default function RootLayout({
             injected at the end of <body> after hydration, and Grow's
             dashboard checker only looks for the initializer in the page
             source's <head>. */}
-        {GROW_SITE_ID && (
+        {/* A ternary, not `&&`: off production GROW_SITE_ID is "", and
+            `"" && <script/>` renders that empty string as a text node in
+            <head>, which React refuses to hydrate (the whole tree is then
+            rebuilt on the client and the page flashes unstyled). */}
+        {GROW_SITE_ID ? (
           <script
             data-grow-initializer=""
             dangerouslySetInnerHTML={{
               __html: `!(function(){window.growMe||((window.growMe=function(e){window.growMe._.push(e);}),(window.growMe._=[]));var e=document.createElement("script");(e.type="text/javascript"),(e.src="https://faves.grow.me/main.js"),(e.defer=!0),e.setAttribute("data-grow-faves-site-id",${JSON.stringify(GROW_SITE_ID)});var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t);})();`,
             }}
           />
-        )}
+        ) : null}
       </head>
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         {/* Ambient fixed background, in three layers.
