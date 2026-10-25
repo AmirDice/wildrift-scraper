@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/terms" },
 };
 
-const UPDATED = "October 16, 2026";
+const UPDATED = "October 25, 2026";
 
 /**
  * Plain-language terms of use. Written for what the site does today; paid
@@ -39,6 +39,20 @@ export default function TermsPage() {
           simulation engine to measure them. A generated build is a suggestion for you to judge, not
           advice you have to follow, and it can be wrong. Builds marked experimental are deliberately
           off the standard path.
+        </Section>
+        <Section id="credits" title="Build credits">
+          Credits are optional one-time purchases that add Build Studio generations on top of the free
+          daily allowance. One credit is one generation, spent only after the day&rsquo;s free
+          generations are used; a generation that fails before it reaches the model gives its credit
+          back. Credits do not expire, are tied to your Google sign-in and cannot be exchanged for money
+          or moved to another account. The price is shown before you pay, and payments are processed
+          by Stripe. <strong className="font-semibold text-text">Right of withdrawal:</strong> as a consumer in the EU you
+          normally have 14 days to withdraw from a purchase. Credits are digital content delivered
+          immediately, so before checkout you are asked to agree that they are added at once and that
+          your right of withdrawal ends when they are; checkout is not possible without that agreement.
+          If a payment is taken and no credits arrive, contact us and we will add them or refund you.
+          The seller is named in the{" "}
+          <Link href="/impressum" className="font-medium text-accent hover:opacity-80">Impressum</Link>.
         </Section>
         <Section title="WRTrueMeta Plus">
           Plus is an optional paid subscription that raises the daily Build Studio allowance. The
@@ -74,11 +88,13 @@ export default function TermsPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
   return (
-    <Card className="p-5 sm:p-6">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <p className="mt-2 text-sm leading-relaxed text-muted">{children}</p>
-    </Card>
+    <div id={id} className="scroll-mt-24">
+      <Card className="p-5 sm:p-6">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted">{children}</p>
+      </Card>
+    </div>
   );
 }

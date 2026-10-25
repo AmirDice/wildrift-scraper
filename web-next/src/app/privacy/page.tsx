@@ -163,12 +163,13 @@ export default function PrivacyPage() {
         <Card className="p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Payments</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted">
-            WRTrueMeta Plus is an optional paid subscription that raises the daily Build Studio
-            allowance. Checkout, payment details and invoices are handled entirely by Stripe:
-            card details never reach this site. What is stored here is the Stripe customer and
-            subscription reference, the plan and its status, linked to your Google sign-in, so
-            the site knows which allowance applies. Stripe&rsquo;s own privacy policy covers what
-            it processes.
+            Build credits are optional one-time purchases that add Build Studio generations.
+            Checkout, payment details, receipts and invoices are handled entirely by Stripe: card
+            details never reach this site. What is stored here is your credit balance, a record of
+            each purchase (the Stripe checkout reference, the pack, the time you agreed to immediate
+            delivery) and your Stripe customer reference, linked to your Google sign-in. Purchase
+            records are kept as long as tax and accounting law requires. Stripe&rsquo;s own privacy
+            policy covers what it processes.
           </p>
         </Card>
 

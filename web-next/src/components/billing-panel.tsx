@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { GoogleSignInButton } from "@/components/google-sign-in";
 import { useAccount } from "@/components/account-provider";
+import { CreditPacks } from "@/components/credit-packs";
+import { SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 
 type PlusPrice = { interval: "monthly" | "yearly"; amount: number; currency: string };
 
@@ -22,8 +24,32 @@ type BillingState = {
   };
 };
 
+/**
+ * Credits first, Plus only where it exists.
+ *
+ * Credit packs replaced Plus as the paid option on 2026-10-25. The Plus block
+ * stays for a deployment that has Plus prices configured, and for anyone who
+ * already subscribes, but by default the page is about the balance and the
+ * packs.
+ */
 export function BillingPanel() {
-  const { user, authConfigured, refresh } = useAccount();
+  const { user, quota, authConfigured, refresh } = useAccount();
+  const [notice, setNotice] = useState<"success" | "cancelled" | null>(null);
+
+  // Back from Stripe Checkout. The webhook usually lands within a second or
+  // two of the redirect, so the balance is re-read a few times rather than
+  // once, and the query string is cleaned so a reload does not repeat it.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const result = params.get("credits");
+    if (result !== "success" && result !== "cancelled") return;
+    const timer = window.setTimeout(() => setNotice(result), 0);
+    params.delete("credits");
+    window.history.replaceState(null, "", `${window.location.pathname}${params.size ? `?${params}` : ""}`);
+    if (result !== "success") return () => window.clearTimeout(timer);
+    const timers = [1500, 4000, 9000].map((ms) => window.setTimeout(() => { void refresh(); }, ms));
+    return () => { window.clearTimeout(timer); timers.forEach((id) => window.clearTimeout(id)); };
+  }, [refresh]);
   const [billing, setBilling] = useState<BillingState | null>(null);
   const [busy, setBusy] = useState<"checkout" | "portal" | null>(null);
   const [interval, setInterval] = useState<"monthly" | "yearly">("monthly");
@@ -57,26 +83,66 @@ export function BillingPanel() {
   };
 
   if (!authConfigured) {
-    return <Notice title="Accounts are being prepared" body="Sign-in and subscriptions will appear here once account credentials are enabled." />;
+    return <Notice title="Accounts are being prepared" body="Sign-in and build credits will appear here once account credentials are enabled." />;
   }
 
   if (!user) {
     return (
       <div className="glass-card rounded-2xl p-6 sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">WRTrueMeta Plus</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Your account</p>
         <h1 className="mt-3 text-2xl font-bold text-text sm:text-3xl">More room to test your builds.</h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted">
-          Plus raises the daily Build Studio allowance from 3 generations to {billing?.plan.dailyBuilds ?? 20}.
-          Sign in first so the subscription stays attached to your account.
+          Signing in gives you {SIGNED_IN_DAILY_BUILDS} free Build Studio generations every day. When you want more,
+          credit packs add extra generations on top, with no subscription.
         </p>
         <div className="mt-6 max-w-xs"><GoogleSignInButton onDone={() => { void refresh(); }} /></div>
-        <p className="mt-4 text-xs text-faint">You can keep using the free tier without subscribing.</p>
       </div>
     );
   }
 
   const active = billing?.subscription.active ?? false;
+  const showPlus = active || billing?.billingConfigured === true;
+  const credits = quota?.credits ?? 0;
   return (
+    <div className="space-y-5">
+      <div className="glass-card rounded-2xl p-6 sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Build credits</p>
+        <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-text sm:text-3xl">
+              {credits > 0 ? `${credits} credit${credits === 1 ? "" : "s"}` : "No credits yet"}
+            </h1>
+            <p className="mt-2 text-sm text-muted">Signed in as {user.email}</p>
+          </div>
+          {quota && !quota.unlimited && (
+            <span className="rounded-full bg-white/[0.08] px-3 py-1 text-xs font-semibold text-muted">
+              {quota.remaining} of {quota.limit} free today
+            </span>
+          )}
+        </div>
+        {notice === "success" && (
+          <p className="mt-5 rounded-xl border border-emerald-400/25 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">
+            Payment received. Your credits are added within a few seconds; Stripe has emailed your receipt.
+          </p>
+        )}
+        {notice === "cancelled" && (
+          <p className="mt-5 rounded-xl border border-line bg-white/[0.04] px-4 py-3 text-sm text-muted">Checkout cancelled. Nothing was charged.</p>
+        )}
+        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-muted">
+          Your {SIGNED_IN_DAILY_BUILDS} free generations come back every day. Credits are used only after those are gone,
+          one per generation, and never expire.
+        </p>
+        {quota?.creditsAvailable ? (
+          <div className="mt-5 max-w-2xl"><CreditPacks /></div>
+        ) : (
+          <p className="mt-5 text-xs text-faint">Credit packs are not on sale yet.</p>
+        )}
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/build" className="rounded-xl border border-line px-4 py-2.5 text-sm font-medium text-muted transition hover:text-text">Back to Build Studio</Link>
+        </div>
+        <p className="mt-4 text-xs text-faint">Payments are handled by Stripe. Card details never reach this site.</p>
+      </div>
+      {showPlus && (
     <div className="glass-card rounded-2xl p-6 sm:p-8">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">Account & billing</p>
       <div className="mt-3 flex flex-wrap items-start justify-between gap-4">
@@ -124,6 +190,8 @@ export function BillingPanel() {
       </div>
       {billing?.billingConfigured === false && <p className="mt-4 text-xs text-faint">Subscriptions are being connected. Checkout will appear here when Stripe is enabled.</p>}
       <p className="mt-4 text-xs text-faint">Payments and cancellation are handled by Stripe. Cancel anytime from Manage subscription.</p>
+    </div>
+      )}
     </div>
   );
 }

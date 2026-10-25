@@ -18,6 +18,10 @@ export interface QuotaState {
   signedIn: boolean;
   plan?: "free" | "plus" | "pro";
   plusAvailable?: boolean;
+  /** Paid generation credits, spent after the free daily ones. */
+  credits?: number;
+  /** Credit packs are on sale on this deployment. */
+  creditsAvailable?: boolean;
   canUnlockBySigningIn: boolean;
   resetAt: number;
   unlimited?: boolean;

@@ -71,6 +71,7 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
                     <>
                       <span className="font-semibold text-accent">{quota.remaining}</span> of {quota.limit} build
                       generations left today.
+                      {(quota.credits ?? 0) > 0 && <> Plus <span className="font-semibold text-accent">{quota.credits}</span> credits.</>}
                     </>
                   )}
                 </p>
@@ -80,7 +81,7 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
                 onClick={() => setOpen(false)}
                 className="mt-3 block rounded-lg border border-line px-3 py-2 text-sm font-medium text-muted transition hover:text-text"
               >
-                Account & WRTrueMeta Plus
+                Account & credits
               </Link>
               <Link
                 href="/albums"

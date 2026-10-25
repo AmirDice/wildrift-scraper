@@ -17,9 +17,22 @@ export const STRIPE_PLUS_YEARLY_PRICE_ID = process.env.STRIPE_PLUS_YEARLY_PRICE_
 export const STRIPE_PRO_PRICE_ID = STRIPE_PLUS_MONTHLY_PRICE_ID;
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://wrtruemeta.com").replace(/\/$/, "");
 
+/** Plus (the subscription) can be sold: the key and at least one Plus price.
+ *  Kept under its original name because every Plus route reads it. */
 export function stripeConfigured(): boolean {
   return Boolean(STRIPE_SECRET_KEY && (STRIPE_PLUS_MONTHLY_PRICE_ID || STRIPE_PLUS_YEARLY_PRICE_ID));
 }
+
+/** Any Stripe product can be sold. Credit packs need only this plus their
+ *  own price ids (lib/credits.ts), so they work with Plus left unconfigured. */
+export function stripeKeyConfigured(): boolean {
+  return Boolean(STRIPE_SECRET_KEY);
+}
+
+/** EU VAT is owner's decision. Off by default (a Kleinunternehmer under
+ *  section 19 UStG charges none); STRIPE_AUTOMATIC_TAX=1 turns on Stripe Tax
+ *  for every checkout, which needs a tax registration set in the Dashboard. */
+export const STRIPE_AUTOMATIC_TAX = process.env.STRIPE_AUTOMATIC_TAX === "1";
 
 export function webhookConfigured(): boolean {
   return Boolean(STRIPE_WEBHOOK_SECRET);

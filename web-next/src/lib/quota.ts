@@ -18,6 +18,7 @@ import type { SessionUser } from "@/lib/session";
 export { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 import { ANON_DAILY_BUILDS, SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 import { stripeConfigured } from "@/lib/stripe";
+import { creditsConfigured, getCredits, refundCredit, spendCredit } from "@/lib/credits";
 
 const DAY_SECONDS = 60 * 60 * 24;
 
@@ -32,6 +33,12 @@ export interface QuotaState {
    *  wall offers it. False until Stripe is configured, so nothing advertises
    *  a subscription that cannot be bought. */
   plusAvailable?: boolean;
+  /** Paid generation credits held by this signed-in player (lib/credits.ts).
+   *  Spent only after the free daily allowance runs out. */
+  credits?: number;
+  /** Credit packs can be bought on this deployment, so the limit wall offers
+   *  them to a signed-in player. False until Stripe and a pack price exist. */
+  creditsAvailable?: boolean;
   /** True when the anonymous allowance is spent and signing in would add more. */
   canUnlockBySigningIn: boolean;
   /** Epoch ms when the window rolls over (next UTC midnight). */
@@ -81,10 +88,14 @@ function nextUtcMidnight(): number {
   return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
 }
 
-function state(used: number, user: SessionUser | null, limitOverride?: number): QuotaState {
+function state(used: number, user: SessionUser | null, limitOverride?: number, credits = 0): QuotaState {
   const limit = limitOverride ?? (user ? SIGNED_IN_DAILY_BUILDS : ANON_DAILY_BUILDS);
   const remaining = Math.max(0, limit - used);
   return {
+    credits: user ? credits : 0,
+    // Offered to anyone who could use them, signed in or not: an anonymous
+    // visitor sees "sign in, then buy", which is still the right wall.
+    creditsAvailable: creditsConfigured(),
     used,
     limit,
     remaining,
@@ -103,9 +114,15 @@ export async function peekQuota(
   unlimited = false,
   limitOverride?: number,
 ): Promise<QuotaState> {
-  const used = await kvGetNumber(keyFor(user, ip));
-  return unlimited ? unlimitedState(used, Boolean(user)) : state(used, user, limitOverride);
+  const [used, credits] = await Promise.all([
+    kvGetNumber(keyFor(user, ip)),
+    user ? getCredits(user.sub) : Promise.resolve(0),
+  ]);
+  return unlimited ? unlimitedState(used, Boolean(user)) : state(used, user, limitOverride, credits);
 }
+
+/** What paid for a generation, so a refund returns the right thing. */
+export type QuotaSource = "daily" | "credit" | "unlimited";
 
 /**
  * Spends one generation. Returns `ok: false` (and does not increment) when the
@@ -123,18 +140,30 @@ export async function consumeQuota(
   // that is an alpha tester, whose device is on the invite register and who
   // would otherwise share the anonymous allowance with the public.
   limitOverride?: number,
-): Promise<{ ok: boolean; quota: QuotaState }> {
+): Promise<{ ok: boolean; quota: QuotaState; source?: QuotaSource }> {
   const key = keyFor(user, ip);
   const used = await kvGetNumber(key);
   if (unlimited) {
     const next = await kvIncr(key, 1, DAY_SECONDS);
-    return { ok: true, quota: unlimitedState(next, Boolean(user)) };
+    return { ok: true, quota: unlimitedState(next, Boolean(user)), source: "unlimited" };
   }
   const limit = limitOverride
     ?? (user ? SIGNED_IN_DAILY_BUILDS : ANON_DAILY_BUILDS);
-  if (used >= limit) return { ok: false, quota: state(used, user, limitOverride) };
-  const next = await kvIncr(key, 1, DAY_SECONDS);
-  return { ok: true, quota: state(next, user, limitOverride) };
+  if (used >= limit) {
+    // The free allowance is spent: a signed-in player with credits pays one.
+    // The daily counter is left alone, so tomorrow's free generations are
+    // still theirs and "used today" keeps meaning the free ones.
+    if (user) {
+      const spent = await spendCredit(user.sub);
+      if (spent.ok) return { ok: true, quota: state(used, user, limitOverride, spent.balance), source: "credit" };
+    }
+    return { ok: false, quota: state(used, user, limitOverride, 0) };
+  }
+  const [next, credits] = await Promise.all([
+    kvIncr(key, 1, DAY_SECONDS),
+    user ? getCredits(user.sub) : Promise.resolve(0),
+  ]);
+  return { ok: true, quota: state(next, user, limitOverride, credits), source: "daily" };
 }
 
 /**
@@ -150,8 +179,15 @@ export async function refundQuota(
   ip: string,
   unlimited = false,
   limitOverride?: number,
+  // What paid for the generation being refunded. A credit goes back to the
+  // balance; the daily counter is only touched for a daily generation.
+  source: QuotaSource = "daily",
 ): Promise<QuotaState> {
   const key = keyFor(user, ip);
+  if (source === "credit" && user) {
+    const balance = await refundCredit(user.sub);
+    return state(await kvGetNumber(key), user, limitOverride, balance);
+  }
   let next = await kvIncr(key, -1, DAY_SECONDS);
 
   // A day rollover or duplicate recovery must never leave a negative counter.
@@ -161,7 +197,8 @@ export async function refundQuota(
     next = 0;
   }
 
-  return unlimited ? unlimitedState(next, Boolean(user)) : state(next, user, limitOverride);
+  const credits = user ? await getCredits(user.sub) : 0;
+  return unlimited ? unlimitedState(next, Boolean(user)) : state(next, user, limitOverride, credits);
 }
 
 /**

@@ -24,6 +24,7 @@ import { Tip } from "@/components/build-view";
 import { Disclosure } from "@/components/ui";
 import { SIGNED_IN_DAILY_BUILDS } from "@/lib/quota-limits";
 import { AdvisorDebugPanel } from "@/components/advisor-debug-panel";
+import { CreditPacks } from "@/components/credit-packs";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -953,7 +954,13 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
           <GoogleSignInButton />
         </div>
       )}
-      {!canUpgrade && quota.plusAvailable && (
+      {!canUpgrade && signedIn && quota.creditsAvailable && (
+        <>
+          <p className="mt-3 text-xs font-semibold text-text">Need more today? Pay once, no subscription.</p>
+          <CreditPacks compact />
+        </>
+      )}
+      {!canUpgrade && !quota.creditsAvailable && quota.plusAvailable && (
         <Link href="/account" className="mt-3 inline-flex rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-black transition hover:opacity-90">
           Get Plus: 20 builds a day
         </Link>
@@ -1093,8 +1100,11 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   // JSON), and in JS `null <= 0` is true -- so without the guards the more
   // privileged the account, the more locked-out the UI: the server exempted
   // admins while this line disabled their Generate button.
+  // Credits keep Generate open after the free ones are spent: the server
+  // takes one per generation once the daily allowance is gone.
   const outOfBudget = Boolean(
-    quota && !quota.unlimited && typeof quota.remaining === "number" && quota.remaining <= 0,
+    quota && !quota.unlimited && typeof quota.remaining === "number" && quota.remaining <= 0
+      && !((quota.credits ?? 0) > 0),
   );
 
   // Shared links and older localStorage entries can carry a playstyle that
@@ -1708,6 +1718,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
               ) : (
                 <>
                   <span className="font-semibold text-muted">{quota.remaining}</span> of {quota.limit} generations left today
+                  {(quota.credits ?? 0) > 0 && <> · <span className="font-semibold text-accent">{quota.credits}</span> credits</>}
                 </>
               )}
             </span>

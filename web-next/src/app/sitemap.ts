@@ -57,6 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/contact`, lastModified: now, changeFrequency: "yearly", priority: 0.4 },
     { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE}/impressum`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
   ];
   // Champion pages change when the scrape does, roughly twice a month, and
   // they are the pages Google has not got round to crawling yet: an honest

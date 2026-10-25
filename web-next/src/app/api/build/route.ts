@@ -12,6 +12,7 @@ import { checkAbuseGuards } from "@/lib/build-guards";
 import { recordBiasUse, recordGenerationEngagement, trackEvent } from "@/lib/stats";
 import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
 import { getSubscription, isProSubscription, PRO_DAILY_BUILDS } from "@/lib/subscription";
+import { recordModelUsage, takeUsage } from "@/lib/model-usage";
 
 /**
  * Live build advisor. POST { champion, role, enemies[], allies[], playstyle, mode }
@@ -201,9 +202,11 @@ function outOfAllowance(quota: QuotaState): NextResponse {
     {
       error: quota.canUnlockBySigningIn
         ? `That is your ${ANON_DAILY_BUILDS} free build for today. Sign in with Google for ${SIGNED_IN_DAILY_BUILDS} more, or come back in ~${hours}h.`
-        : quota.plusAvailable
-          ? `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h, or Plus raises it to ${PRO_DAILY_BUILDS} a day: wrtruemeta.com/account`
-          : `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h.`,
+        : quota.creditsAvailable
+          ? `You've used today's ${quota.limit} free builds. They come back in ~${hours}h, or get more with a credit pack.`
+          : quota.plusAvailable
+            ? `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h, or Plus raises it to ${PRO_DAILY_BUILDS} a day: wrtruemeta.com/account`
+            : `Daily build limit reached (${quota.limit}/day). Resets in ~${hours}h.`,
       quota,
     },
     { status: 429, headers: { "X-RateLimit-Remaining": "0" } },
@@ -526,7 +529,7 @@ async function handlePost(request: Request) {
 
   const ip = clientIp(request);
   try {
-    const { ok, quota } = await consumeQuota(user, ip, unlimited, paidLimit);
+    const { ok, quota, source } = await consumeQuota(user, ip, unlimited, paidLimit);
     if (!ok) return outOfAllowance(quota);
 
     const res = await runAdvisor({
@@ -539,7 +542,7 @@ async function handlePost(request: Request) {
       // receives only a stable, actionable message.
       console.error("Advisor generation failed", res.error);
       const responseQuota = res.quotaRefundable
-        ? await refundQuota(user, ip, unlimited, paidLimit)
+        ? await refundQuota(user, ip, unlimited, paidLimit, source)
         : quota;
       return NextResponse.json(
         {
@@ -555,6 +558,11 @@ async function handlePost(request: Request) {
         },
       );
     }
+
+    // The advisor's token tally, taken off the payload before it is cached
+    // or returned (lib/model-usage.ts).
+    const usage = takeUsage(res.data);
+    after(() => recordModelUsage(mode === "counter" ? "counter" : "build", usage));
 
     if (!res.data || typeof res.data !== "object" || Array.isArray(res.data)) {
       return NextResponse.json(
