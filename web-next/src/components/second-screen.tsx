@@ -51,12 +51,18 @@ const PHASE_LABEL: Record<Phase, string> = {
   waiting: "Waiting for others", preparation: "Preparation", unknown: "Not champion select",
 };
 
-export function SecondScreen({ onScan }: {
+export function SecondScreen({ onScan, onPreview }: {
   /** Called with every read: the second-screen page fills the draft board.
    *  `live` reads carry the whole tracked draft and are mirrored onto it; a
    *  screenshot only adds to what is already there. */
   onScan?: (scan: ScanResult & { live?: boolean }) => void;
+  /** What the reader is looking at, for the board to show: the live stream
+   *  while sharing, the screenshot after one is read, null once stopped. */
+  onPreview?: (preview: { stream?: MediaStream; image?: string } | null) => void;
 } = {}) {
+  const previewRef = useRef(onPreview);
+  useEffect(() => { previewRef.current = onPreview; }, [onPreview]);
+  const shotUrlRef = useRef<string | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const frameRef = useRef<HTMLCanvasElement | null>(null);
   const patchRef = useRef<HTMLCanvasElement | null>(null);
@@ -224,6 +230,9 @@ export function SecondScreen({ onScan }: {
       ctx.drawImage(bitmap, 0, 0);
       bitmap.close();
       const result = readCanvas(ctx, true);
+      if (shotUrlRef.current) URL.revokeObjectURL(shotUrlRef.current);
+      shotUrlRef.current = URL.createObjectURL(file);
+      previewRef.current?.({ image: shotUrlRef.current });
       const found = result ? [...result.bans, ...result.allies, ...result.enemies] : [];
       setStatus(found.length
         ? `Read ${found.length} champions off the screenshot.`
@@ -260,6 +269,7 @@ export function SecondScreen({ onScan }: {
     const stream = v?.srcObject as MediaStream | null;
     stream?.getTracks().forEach((t) => t.stop());
     if (v) v.srcObject = null;
+    if (stream) previewRef.current?.(null);
     setSharing(false);
     setStatus("Stopped.");
   }, []);
@@ -274,6 +284,7 @@ export function SecondScreen({ onScan }: {
       v.srcObject = stream;
       await v.play();
       stream.getVideoTracks()[0].addEventListener("ended", stop);
+      previewRef.current?.({ stream });
       trackerRef.current.reset();
       setSharing(true);
       setStatus("Reading. Open champion select on your phone.");

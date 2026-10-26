@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { getChampions, pendingChampions, type Champion } from "@/lib/data";
 import { roster } from "@/lib/threat";
 import { VideoAdGate } from "@/components/video-ad-gate";
@@ -224,11 +224,31 @@ function SuggestionCard({ s, onPick, dim = false }: {
   );
 }
 
+/** The reader's view of the phone, for the middle of the board. */
+export type DraftPreview = { stream?: MediaStream; image?: string };
+
+/** A live mirror's stream in a video element (a stream can feed several). */
+function PreviewVideo({ stream }: { stream: MediaStream }) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.srcObject = stream;
+      void ref.current.play().catch(() => {});
+    }
+  }, [stream]);
+  return <video ref={ref} className="w-full rounded-xl border border-white/10" playsInline muted />;
+}
+
 export function DraftAssistant({ reader }: {
   /** A screen reader for this board, rendered above it and handed the
    *  function that fills seats. The second-screen page passes one; /draft
    *  passes nothing and is unchanged. */
-  reader?: (applyScan: (scan: { bans: string[]; allies: string[]; enemies: string[]; live?: boolean }) => void) => ReactNode;
+  reader?: (
+    applyScan: (scan: { bans: string[]; allies: string[]; enemies: string[]; live?: boolean }) => void,
+    /** What the reader is looking at, shown in the board's middle: the live
+     *  mirror's stream, or the screenshot it read. */
+    setPreview: (preview: DraftPreview | null) => void,
+  ) => ReactNode;
 } = {}) {
   // Live champions without a collected ladder sample still belong in champ
   // select. Their roster-backed kit can be analysed even though they stay out
@@ -243,15 +263,22 @@ export function DraftAssistant({ reader }: {
   // The phase the live reader last saw, so the board's title says what the
   // game's does. Forgotten once the mirror goes quiet.
   const [livePhase, setLivePhase] = useState<{ phase: string; at: number } | null>(null);
-  // Seat sizes follow the screen: a phone holds both teams side by side.
+  // Seat sizes follow the screen: a phone holds both teams side by side. A
+  // wide screen has a middle column between the teams, and the suggestions,
+  // the reader's view and the counter build move into it, where the game
+  // shows the splash.
   const [narrow, setNarrow] = useState(false);
+  const [wide, setWide] = useState(false);
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 639px)");
-    const sync = () => setNarrow(mq.matches);
+    const small = window.matchMedia("(max-width: 639px)");
+    const large = window.matchMedia("(min-width: 1024px)");
+    const sync = () => { setNarrow(small.matches); setWide(large.matches); };
     sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
+    small.addEventListener("change", sync);
+    large.addEventListener("change", sync);
+    return () => { small.removeEventListener("change", sync); large.removeEventListener("change", sync); };
   }, []);
+  const [preview, setPreview] = useState<DraftPreview | null>(null);
   const banSize = narrow ? 25 : 40;
   const seatSize = narrow ? 40 : 54;
   const [poolOpen, setPoolOpen] = useState(false);
@@ -767,95 +794,10 @@ export function DraftAssistant({ reader }: {
     </div>
   );
 
-  return (
-    <div className="space-y-4">
-      {reader?.(applyScan)}
+  /* Suggestions: above the board on a phone, in its middle on a wide screen.
+     This is the answer the page exists to give, so it is never below the fold. */
+  const suggestionsPanel = suggestions.length > 0 ? (
 
-      {/* role + pool + reset */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-faint">
-          {filled ? "Filled to" : "My role"}
-        </span>
-        {DRAFT_ROLES.map((r) => (
-          <button
-            key={r}
-            onClick={() => {
-              // The first role you ever choose becomes your main; after that
-              // these chips set THIS GAME's role, so being autofilled is one
-              // tap and does not overwrite who you actually are.
-              setState((s) => ({ ...s, myRole: s.myRole === r ? null : r }));
-              if (!mainRole) setMainRole(r);
-            }}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-              state.myRole === r ? "bg-accent text-white" : "glass text-muted hover:text-text"
-            }`}
-            title={r === mainRole ? "your main role" : undefined}
-          >
-            {r === "Dragon" ? "ADC" : r}
-            {r === mainRole && <span className="ml-1 text-[9px] opacity-70">main</span>}
-          </button>
-        ))}
-        <span className="grow" />
-        <button
-          onClick={() => setPoolOpen((v) => !v)}
-          className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-            poolOpen ? "bg-gold/20 text-gold" : "glass text-muted hover:text-text"
-          }`}
-        >
-          My pool ({pool.length})
-        </button>
-        <button onClick={reset} className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text">
-          Reset draft
-        </button>
-      </div>
-
-      {poolOpen && (
-        <div className="glass rounded-2xl p-4 ring-1 ring-gold/30">
-          <p className="mb-2 text-xs text-muted">
-            Tap the champions you actually play. Your pick suggestions come from this
-            pool, and your own seat opens straight onto it (it is saved on this device);
-            leave it empty to rank the whole roster.
-          </p>
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <input
-              value={poolSearch}
-              onChange={(e) => setPoolSearch(e.target.value)}
-              placeholder="Search champions…"
-              className="glass w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
-            />
-            {pool.length > 0 && (
-              <button
-                onClick={() => setPool([])}
-                className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text"
-              >
-                Clear pool
-              </button>
-            )}
-          </div>
-          {/* Your pool first, so a set pool stays a short list to check; the
-              rest of the roster follows only once you search for it. */}
-          {championGrid(
-            poolList,
-            (c) => setPool((p) =>
-              p.includes(c.slug) ? p.filter((s) => s !== c.slug) : [...p, c.slug]),
-            { marked: (c) => pool.includes(c.slug) },
-          )}
-          {!poolSearch.trim() && !poolShowAll && champions.length > poolList.length && (
-            <button
-              onClick={() => setPoolShowAll(true)}
-              className="glass mt-2 w-full rounded-xl px-3 py-2 text-xs font-semibold text-muted transition hover:text-text"
-            >
-              Show all {champions.length} champions
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Suggestions, ABOVE the board: this is the answer the page exists to
-          give, and under a ten-box ban row plus two teams it was below the fold
-          on a phone exactly when the timer was running. It wears the emphasized
-          liquid-glass material for the same reason. */}
-      {suggestions.length > 0 && (
         <div className="liquid-glass rounded-2xl p-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-gold">
             {suggestKind === "ban" ? "Worth banning"
@@ -883,7 +825,7 @@ export function DraftAssistant({ reader }: {
               </button>
             </p>
           )}
-          <div className="-mx-1 mt-1.5 flex gap-2 overflow-x-auto pb-1">
+          <div className={wide ? "mt-1.5 flex flex-col gap-1.5" : "-mx-1 mt-1.5 flex gap-2 overflow-x-auto pb-1"}>
             {suggestions.map((s) => (
               <SuggestionCard key={s.champion.slug} s={s}
                 onPick={() => suggestTarget && place(s.champion.slug, suggestTarget)} />
@@ -900,7 +842,7 @@ export function DraftAssistant({ reader }: {
                   ? "Stronger overall, outside your pool"
                   : `Best ${state.myRole === "Dragon" ? "ADC" : state.myRole} picks available`}
               </span>
-              <div className="-mx-1 mt-1 flex gap-2 overflow-x-auto pb-1">
+              <div className={wide ? "mt-1 flex flex-col gap-1.5" : "-mx-1 mt-1 flex gap-2 overflow-x-auto pb-1"}>
                 {overallPicks.map((s) => (
                   <SuggestionCard key={s.champion.slug} s={s} dim
                     onPick={() => suggestTarget && place(s.champion.slug, suggestTarget)} />
@@ -909,119 +851,11 @@ export function DraftAssistant({ reader }: {
             </div>
           )}
         </div>
-      )}
+      ) : null;
 
-      {/* The draft board, which is also the whole control surface. It is laid
-          out like the game's own champion select (October 2026 UI): bans in a
-          strip along the top, your team's on the left and theirs on the right,
-          the phase title between them, and the two teams as columns of round
-          portraits down each side. A player mid-draft reads it at a glance
-          because it is the screen they are already looking at. */}
-      <div className="draft-lobby relative overflow-hidden rounded-2xl border border-white/10 p-3 sm:p-5">
-        <div className="relative grid grid-cols-[1fr_auto_1fr] items-start gap-2 sm:gap-4">
-          <div className="flex gap-1 sm:gap-2">
-            {state.bans.slice(0, 5).map((slug, i) => banSeat(i, slug))}
-          </div>
-          <div className="row-start-2 col-span-3 text-center sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:min-w-[11rem]">
-            <p className="font-display text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-[#d9dce6] sm:text-sm">{lobbyTitle}</p>
-            <p className="mt-0.5 text-[11px] tabular-nums text-[#8f97ad]">{`Bans ${bans.length}/${MAX_BANS} · tap a seat to fill it`}</p>
-          </div>
-          <div className="col-start-3 row-start-1 flex justify-end gap-1 sm:gap-2">
-            {state.bans.slice(5).map((slug, i) => banSeat(i + 5, slug))}
-          </div>
-        </div>
+  /* The build sheet: under the picker on a phone, in the board's middle on a wide screen. */
+  const buildSheet = me ? (
 
-        <div className="relative mt-4 grid grid-cols-2 gap-x-3 sm:mt-6 sm:gap-x-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)]">
-          <div className="divide-y divide-white/[0.07]">
-            {teamRow("me", 0, state.me)}
-            {state.allies.map((slug, i) => teamRow("ally", i, slug))}
-          </div>
-          {/* The middle of the screen holds your champion, as the splash does in game. */}
-          <div className="hidden flex-col items-center justify-center gap-3 text-center lg:flex">
-            {me ? (
-              <>
-                <span className="rounded-full p-1 ring-2 ring-[#e9c46a]/80 shadow-[0_0_40px_rgba(233,196,106,0.25)]">
-                  <ChampionAvatar champion={me} size={120} showBadges={false} />
-                </span>
-                <p className="font-display text-xl font-semibold uppercase tracking-[0.12em] text-[#f1e6c8]">{me.name}</p>
-                <TierChip tier={me.tier} />
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => openSeat({ kind: "me", index: 0 })}
-                  className="grid h-[120px] w-[120px] place-items-center rounded-full border border-dashed border-[#e9c46a]/50 text-4xl text-[#e9c46a]/70 transition hover:border-[#e9c46a] hover:text-[#e9c46a]"
-                  title="Your pick: tap to choose"
-                >
-                  +
-                </button>
-                <p className="text-xs text-[#8f97ad]">Your champion goes here</p>
-              </>
-            )}
-          </div>
-          <div className="divide-y divide-white/[0.07]">
-            {state.enemies.map((slug, i) => teamRow("enemy", i, slug))}
-          </div>
-        </div>
-      </div>
-
-      {/* the picker, open on one seat: mounted only while a seat is waiting */}
-      {picking && (
-        <div className={`glass rounded-2xl p-4 ring-1 ${SEAT_COLOURS[picking.kind].panel}`}>
-          <div className="mb-2 flex items-center gap-2">
-            <span className={`text-sm font-bold ${SEAT_COLOURS[picking.kind].text}`}>{seatLabel(picking)}</span>
-            <span className="text-[11px] text-faint">
-              {picker.source === "pool" ? "your pool"
-                : picker.source === "meta" ? "strongest right now"
-                : `${picker.list.length} champion${picker.list.length === 1 ? "" : "s"}`}
-            </span>
-            <span className="grow" />
-            <button
-              onClick={() => { setPicking(null); setSearch(""); setShowAll(false); }}
-              className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text"
-            >
-              Done
-            </button>
-          </div>
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search champions…"
-              className="glass w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
-            />
-            {(["All", ...DRAFT_ROLES] as const).map((r) => (
-              <button
-                key={r}
-                onClick={() => setRoleFilter(r as DraftRole | "All")}
-                className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
-                  roleFilter === r ? "bg-accent text-white" : "glass text-muted hover:text-text"
-                }`}
-              >
-                {r === "Dragon" ? "ADC" : r}
-              </button>
-            ))}
-          </div>
-          {championGrid(
-            picker.list,
-            (c) => place(c.slug, picking),
-            // A banned or already-locked champion cannot be picked again, but
-            // both teams really can ban the same one.
-            { disabled: (c) => picking.kind !== "ban" && gone.has(c.slug) },
-          )}
-          {picker.source !== "all" && picker.total > picker.list.length && (
-            <button
-              onClick={() => setShowAll(true)}
-              className="glass mt-2 w-full rounded-xl px-3 py-2 text-xs font-semibold text-muted transition hover:text-text"
-            >
-              Show all {picker.total} champions
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* the build sheet */}
-      {me && (
         <div className="glass space-y-3 rounded-2xl p-4">
           <div className="flex flex-wrap items-center gap-3">
             <ChampionAvatar champion={me} size={44} showBadges={false} />
@@ -1177,7 +1011,197 @@ export function DraftAssistant({ reader }: {
             )}
           </div>
         </div>
+      ) : null;
+
+  return (
+    <div className="space-y-4">
+      {reader?.(applyScan, setPreview)}
+
+      {/* role + pool + reset */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wide text-faint">
+          {filled ? "Filled to" : "My role"}
+        </span>
+        {DRAFT_ROLES.map((r) => (
+          <button
+            key={r}
+            onClick={() => {
+              // The first role you ever choose becomes your main; after that
+              // these chips set THIS GAME's role, so being autofilled is one
+              // tap and does not overwrite who you actually are.
+              setState((s) => ({ ...s, myRole: s.myRole === r ? null : r }));
+              if (!mainRole) setMainRole(r);
+            }}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+              state.myRole === r ? "bg-accent text-white" : "glass text-muted hover:text-text"
+            }`}
+            title={r === mainRole ? "your main role" : undefined}
+          >
+            {r === "Dragon" ? "ADC" : r}
+            {r === mainRole && <span className="ml-1 text-[9px] opacity-70">main</span>}
+          </button>
+        ))}
+        <span className="grow" />
+        <button
+          onClick={() => setPoolOpen((v) => !v)}
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+            poolOpen ? "bg-gold/20 text-gold" : "glass text-muted hover:text-text"
+          }`}
+        >
+          My pool ({pool.length})
+        </button>
+        <button onClick={reset} className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text">
+          Reset draft
+        </button>
+      </div>
+
+      {poolOpen && (
+        <div className="glass rounded-2xl p-4 ring-1 ring-gold/30">
+          <p className="mb-2 text-xs text-muted">
+            Tap the champions you actually play. Your pick suggestions come from this
+            pool, and your own seat opens straight onto it (it is saved on this device);
+            leave it empty to rank the whole roster.
+          </p>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <input
+              value={poolSearch}
+              onChange={(e) => setPoolSearch(e.target.value)}
+              placeholder="Search champions…"
+              className="glass w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
+            />
+            {pool.length > 0 && (
+              <button
+                onClick={() => setPool([])}
+                className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text"
+              >
+                Clear pool
+              </button>
+            )}
+          </div>
+          {/* Your pool first, so a set pool stays a short list to check; the
+              rest of the roster follows only once you search for it. */}
+          {championGrid(
+            poolList,
+            (c) => setPool((p) =>
+              p.includes(c.slug) ? p.filter((s) => s !== c.slug) : [...p, c.slug]),
+            { marked: (c) => pool.includes(c.slug) },
+          )}
+          {!poolSearch.trim() && !poolShowAll && champions.length > poolList.length && (
+            <button
+              onClick={() => setPoolShowAll(true)}
+              className="glass mt-2 w-full rounded-xl px-3 py-2 text-xs font-semibold text-muted transition hover:text-text"
+            >
+              Show all {champions.length} champions
+            </button>
+          )}
+        </div>
       )}
+
+      {!wide && suggestionsPanel}
+
+      {/* The draft board, which is also the whole control surface. It is laid
+          out like the game's own champion select (October 2026 UI): bans in a
+          strip along the top, your team's on the left and theirs on the right,
+          the phase title between them, and the two teams as columns of round
+          portraits down each side. A player mid-draft reads it at a glance
+          because it is the screen they are already looking at. */}
+      <div className="draft-lobby relative overflow-hidden rounded-2xl border border-white/10 p-3 sm:p-5">
+        <div className="relative grid grid-cols-[1fr_auto_1fr] items-start gap-2 sm:gap-4">
+          <div className="flex gap-1 sm:gap-2">
+            {state.bans.slice(0, 5).map((slug, i) => banSeat(i, slug))}
+          </div>
+          <div className="row-start-2 col-span-3 text-center sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:min-w-[11rem]">
+            <p className="font-display text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-[#d9dce6] sm:text-sm">{lobbyTitle}</p>
+            <p className="mt-0.5 text-[11px] tabular-nums text-[#8f97ad]">{`Bans ${bans.length}/${MAX_BANS} · tap a seat to fill it`}</p>
+          </div>
+          <div className="col-start-3 row-start-1 flex justify-end gap-1 sm:gap-2">
+            {state.bans.slice(5).map((slug, i) => banSeat(i + 5, slug))}
+          </div>
+        </div>
+
+        <div className="relative mt-4 grid grid-cols-2 gap-x-3 sm:mt-6 sm:gap-x-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)_minmax(0,0.8fr)]">
+          <div className="divide-y divide-white/[0.07]">
+            {teamRow("me", 0, state.me)}
+            {state.allies.map((slug, i) => teamRow("ally", i, slug))}
+          </div>
+          {/* The middle, where the game shows the splash: what the reader sees,
+              then the answer (suggestions, or the counter build once you
+              have locked in). Wide screens only; a phone stacks these. */}
+          {wide && (
+            <div className="min-w-0 space-y-3">
+              {preview?.stream && <PreviewVideo stream={preview.stream} />}
+              {!preview?.stream && preview?.image && (
+                <img src={preview.image} alt="The champion select screen the reader read" className="w-full rounded-xl border border-white/10" />
+              )}
+              {suggestionsPanel}
+              {buildSheet}
+              {!suggestionsPanel && !buildSheet && !preview && (
+                <p className="pt-10 text-center text-xs text-[#8f97ad]">Tap a seat to start the draft.</p>
+              )}
+            </div>
+          )}
+          <div className="divide-y divide-white/[0.07]">
+            {state.enemies.map((slug, i) => teamRow("enemy", i, slug))}
+          </div>
+        </div>
+      </div>
+
+      {/* the picker, open on one seat: mounted only while a seat is waiting */}
+      {picking && (
+        <div className={`glass rounded-2xl p-4 ring-1 ${SEAT_COLOURS[picking.kind].panel}`}>
+          <div className="mb-2 flex items-center gap-2">
+            <span className={`text-sm font-bold ${SEAT_COLOURS[picking.kind].text}`}>{seatLabel(picking)}</span>
+            <span className="text-[11px] text-faint">
+              {picker.source === "pool" ? "your pool"
+                : picker.source === "meta" ? "strongest right now"
+                : `${picker.list.length} champion${picker.list.length === 1 ? "" : "s"}`}
+            </span>
+            <span className="grow" />
+            <button
+              onClick={() => { setPicking(null); setSearch(""); setShowAll(false); }}
+              className="glass rounded-full px-3 py-1 text-xs font-semibold text-muted transition hover:text-text"
+            >
+              Done
+            </button>
+          </div>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search champions…"
+              className="glass w-full max-w-xs rounded-lg px-3 py-2 text-sm text-text outline-none focus:border-accent/50"
+            />
+            {(["All", ...DRAFT_ROLES] as const).map((r) => (
+              <button
+                key={r}
+                onClick={() => setRoleFilter(r as DraftRole | "All")}
+                className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
+                  roleFilter === r ? "bg-accent text-white" : "glass text-muted hover:text-text"
+                }`}
+              >
+                {r === "Dragon" ? "ADC" : r}
+              </button>
+            ))}
+          </div>
+          {championGrid(
+            picker.list,
+            (c) => place(c.slug, picking),
+            // A banned or already-locked champion cannot be picked again, but
+            // both teams really can ban the same one.
+            { disabled: (c) => picking.kind !== "ban" && gone.has(c.slug) },
+          )}
+          {picker.source !== "all" && picker.total > picker.list.length && (
+            <button
+              onClick={() => setShowAll(true)}
+              className="glass mt-2 w-full rounded-xl px-3 py-2 text-xs font-semibold text-muted transition hover:text-text"
+            >
+              Show all {picker.total} champions
+            </button>
+          )}
+        </div>
+      )}
+
+      {!wide && buildSheet}
       {/* The read on their comp, derived locally: it is worth most DURING the
           draft, so it must not wait on a generation. It sits UNDER the build
           now -- the build is the answer, this is the reasoning behind it. */}

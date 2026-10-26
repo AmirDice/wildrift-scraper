@@ -14,5 +14,5 @@ import { SecondScreen } from "@/components/second-screen";
  * the counter build -- works exactly as it does on /draft.
  */
 export function SecondScreenReader() {
-  return <DraftAssistant reader={(applyScan) => <SecondScreen onScan={applyScan} />} />;
+  return <DraftAssistant reader={(applyScan, setPreview) => <SecondScreen onScan={applyScan} onPreview={setPreview} />} />;
 }
