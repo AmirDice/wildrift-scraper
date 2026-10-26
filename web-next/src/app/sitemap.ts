@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getChampions, pendingChampions, site } from "@/lib/data";
 import { getPosts } from "@/lib/blog";
 import { impactPatches } from "@/lib/patch-impact";
+import { hasCounterPage } from "@/lib/counters";
 import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 
 const BASE = "https://wrtruemeta.com";
@@ -68,6 +69,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly",
     priority: 0.8,
   }));
+  // "How to counter <champion>" pages, for champions with enough measured
+  // matchups to have one (lib/counters.ts).
+  const counterPages: MetadataRoute.Sitemap = getChampions().filter((c) => !c.statsPending && hasCounterPage(c.slug)).map((c) => ({
+    url: `${BASE}/champions/${c.slug}/counters`,
+    lastModified: collected,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
   const blogPages: MetadataRoute.Sitemap = getPosts().map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
     lastModified: new Date(post.date),
@@ -78,5 +87,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const impactPages: MetadataRoute.Sitemap = impactPatches().map((patch) => ({
     url: `${BASE}/patch-impact/${patch}`, lastModified: now, changeFrequency: "weekly", priority: 0.75,
   }));
-  return [...staticPages, ...championPages, ...blogPages, ...impactPages];
+  return [...staticPages, ...championPages, ...counterPages, ...blogPages, ...impactPages];
 }

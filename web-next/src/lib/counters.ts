@@ -88,6 +88,15 @@ export function getMatchups(slug: string): { strong: ResolvedMatchup[]; weak: Re
   };
 }
 
+/** A champion gets its own /counters page only with enough measured
+ *  matchups to stand on its own: fewer would be a thin near-copy of the
+ *  champion page's matchup cards. Shared by the page, the sitemap and the
+ *  champion page's link to it, so they never disagree. */
+export function hasCounterPage(slug: string): boolean {
+  const { strong, weak } = getMatchups(slug);
+  return strong.length + weak.length >= 4 && weak.length > 0;
+}
+
 /** When the matchups were captured, for the page caption. */
 export function matchupsCapturedOn(slug: string): string | null {
   const dates = (DATA[slug] ?? []).map((lane) => lane.tabs.versus?.date).filter((date): date is string => Boolean(date));
