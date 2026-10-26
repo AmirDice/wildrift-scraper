@@ -97,6 +97,13 @@ PREMIUM_MODEL = os.environ.get("ADVISOR_MODEL_PREMIUM", "").strip()
 # are adaptive, so the playstyle half rarely applies. Set
 # ADVISOR_MODEL_COUNTER to an empty string to put counter back on ADVISOR_MODEL.
 COUNTER_MODEL = os.environ.get("ADVISOR_MODEL_COUNTER", "gemini-3.5-flash-lite").strip()
+# How hard the model thinks, per half of a counter build (owner's call,
+# 2026-10-26). The rune page has the deadline -- it is entered in champion
+# select -- and LOW thinking brought the pass from 6.5-10 s to 2.4-4 s on
+# flash-lite with no repair needed. The items are bought over the next twenty
+# minutes, so they get HIGH. Studio builds keep the default (medium).
+RUNES_THINKING = os.environ.get("ADVISOR_RUNES_THINKING", "low").strip() or "low"
+COUNTER_ITEMS_THINKING = os.environ.get("ADVISOR_COUNTER_THINKING", "high").strip() or "high"
 
 
 def _complex_champions() -> frozenset[str]:
@@ -3897,7 +3904,11 @@ def advise(champion: str, role: str, enemies: list[str],
             print(f"[advisor] escalated to {request_model}: {why} "
                   f"the base model measurably gets wrong", file=sys.stderr)
 
-    def call(text: str, thinking_level: str = "medium") -> dict:
+    def call(text: str, thinking_level: str = "") -> dict:
+        # Counter builds think harder by default (COUNTER_ITEMS_THINKING); an
+        # explicit level (the tournament judge's) still wins.
+        if not thinking_level:
+            thinking_level = COUNTER_ITEMS_THINKING if mode == "counter" else "medium"
         # Pass each keyword only when it deviates from the default, so the
         # signature every existing caller and test stub sees is unchanged --
         # stubs monkeypatch _call as (key, text). The chosen model covers the
@@ -5041,12 +5052,14 @@ def advise_runes(champion: str, role: str, enemies: list[str],
     emit({"stage": "model", "chars": 0})
     request_model = model_for_request(playstyle, champion, mode)
 
-    def call(text: str) -> dict:
+    def call(text: str, thinking_level: str = RUNES_THINKING) -> dict:
         kwargs = {}
         if on_progress:
             kwargs["on_progress"] = on_progress
         if request_model != MODEL:
             kwargs["model"] = request_model
+        if thinking_level != "medium":
+            kwargs["thinking_level"] = thinking_level
         return _call(key, text, **kwargs)
 
     res = call(prompt)
@@ -5060,8 +5073,15 @@ def advise_runes(champion: str, role: str, enemies: list[str],
         for message in errors:
             print(f"[advisor] runes-only invalid: {message}", file=sys.stderr)
         emit({"stage": "repairing", "section": "runes"})
-        fixed = call(prompt + "\n\nYour previous rune page had ERRORS. Return the "
-                     "corrected JSON only:\n- " + "\n- ".join(errors))
+        # The repair thinks at MEDIUM and is shown the page it is fixing. At
+        # low thinking, flash-lite put two same-row Resolve minors on Malphite
+        # (Bone Plating + Second Wind, both slot 2) and, re-asked from scratch
+        # at low, repeated it: 2 of 3 runs ended with no page at all. Repairs
+        # are rare, so the slower thinking costs little on average.
+        fixed = call(prompt + "\n\nYour previous rune page was:\n"
+                     + json.dumps(page if isinstance(page, dict) else res)[:1500]
+                     + "\n\nIt had ERRORS. Return the corrected JSON only:\n- "
+                     + "\n- ".join(errors), thinking_level="medium")
         if isinstance(fixed, dict) and isinstance(fixed.get("runes"), dict):
             if not runemeta.page_errors(fixed["runes"]):
                 res = fixed
