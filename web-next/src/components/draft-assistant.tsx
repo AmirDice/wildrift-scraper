@@ -98,6 +98,13 @@ const SEAT_COLOURS: Record<SlotKind, {
   },
 };
 
+/** The draft screen's own titles, for the phase the live reader sees. */
+const LIVE_TITLE: Record<string, string> = {
+  lane: "Lane assignment", prepick: "Pre-pick", banning: "Banning phase", my_ban: "Your ban",
+  bans: "Bans locked", ally_pick: "Your team is picking", enemy_pick: "Opponents picking",
+  my_pick: "Your pick", waiting: "Waiting for others", preparation: "Preparation phase",
+};
+
 /** How many champions the picker shows before you search or ask for the rest.
  *  Enough that a lobby's likely picks are all there, few enough that opening a
  *  seat is instant on a phone. */
@@ -233,6 +240,20 @@ export function DraftAssistant({ reader }: {
   const [pool, setPool] = useState<string[]>([]);
   /** The seat the picker is filling, or null when the board is at rest. */
   const [picking, setPicking] = useState<Target | null>(null);
+  // The phase the live reader last saw, so the board's title says what the
+  // game's does. Forgotten once the mirror goes quiet.
+  const [livePhase, setLivePhase] = useState<{ phase: string; at: number } | null>(null);
+  // Seat sizes follow the screen: a phone holds both teams side by side.
+  const [narrow, setNarrow] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const sync = () => setNarrow(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+  const banSize = narrow ? 25 : 40;
+  const seatSize = narrow ? 40 : 54;
   const [poolOpen, setPoolOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<DraftRole | "All">("All");
@@ -351,6 +372,15 @@ export function DraftAssistant({ reader }: {
    */
   const banPhase = !state.me && allies.length === 0 && enemies.length === 0
     && bans.length < MAX_BANS;
+  const complete = Boolean(state.me) && allies.length === state.allies.length && enemies.length === state.enemies.length;
+  const recentLive = livePhase && livePhase.phase !== "unknown" && Date.now() - livePhase.at < 10_000 ? livePhase.phase : null;
+  /** The title between the ban strips, worded as the game words it. */
+  const lobbyTitle = recentLive ? (LIVE_TITLE[recentLive] ?? "Champion select")
+    : picking ? seatLabel(picking)
+    : banPhase ? "Banning phase"
+    : complete ? "Preparation phase"
+    : !state.me ? "Your team is picking"
+    : "Opponents picking";
   const suggestKind: "ban" | "pick" | null = picking
     ? (picking.kind === "ban" ? "ban" : picking.kind === "me" ? "pick" : null)
     : state.me ? null : banPhase ? "ban" : "pick";
@@ -445,10 +475,11 @@ export function DraftAssistant({ reader }: {
    * which is you. Anything already on the board is skipped, so scanning twice
    * changes nothing.
    */
-  const applyScan = useCallback((scan: { bans: string[]; allies: string[]; enemies: string[]; live?: boolean }) => {
+  const applyScan = useCallback((scan: { phase?: string; bans: string[]; banSeats?: (string | null)[]; allies: string[]; enemies: string[]; live?: boolean }) => {
     const slugOf = (name: string) =>
       champions.find((c) => c.name === name)?.slug ?? null;
     if (scan.live) {
+      if (scan.phase) setLivePhase({ phase: scan.phase, at: Date.now() });
       // A live mirror sends the WHOLE draft as the reader tracks it, so the
       // board mirrors it: an enemy hovering Ezreal, then Corki, then locking
       // Ashe ends as Ashe, and a pre-pick that gets banned leaves its seat.
@@ -460,7 +491,11 @@ export function DraftAssistant({ reader }: {
         };
         return {
           ...s,
-          bans: seats(scan.bans, s.bans.length, null),
+          // By seat when the reader knows it: the left five are your team's
+          // bans and the right five theirs, as on the draft screen.
+          bans: scan.banSeats?.length === s.bans.length
+            ? scan.banSeats.map((name) => (name ? slugOf(name) : null))
+            : seats(scan.bans, s.bans.length, null),
           allies: seats(scan.allies, s.allies.length, s.me),
           enemies: seats(scan.enemies, s.enemies.length, null),
         };
@@ -629,6 +664,73 @@ export function DraftAssistant({ reader }: {
         style={{ width: size, height: size, fontSize: Math.round(size * 0.45) }}
       >
         +
+      </button>
+    );
+  };
+
+  /** A ban circle in the top strip. */
+  const banSeat = (index: number, slug: string | null) => {
+    const c = slug ? bySlug.get(slug) : undefined;
+    const open = picking?.kind === "ban" && picking.index === index;
+    const side = index < 5 ? "Your team" : "Their team";
+    return c ? (
+      <button key={`ban-${index}`} onClick={() => clearSeat({ kind: "ban", index })}
+        title={`${side} ban: ${c.name}. Tap to remove`}
+        className="ban-seat relative shrink-0 rounded-full transition hover:opacity-70">
+        <ChampionAvatar champion={c} size={banSize} showBadges={false} />
+      </button>
+    ) : (
+      <button key={`ban-${index}`} onClick={() => openSeat({ kind: "ban", index })}
+        title={`${side} ban ${(index % 5) + 1}: tap to pick`}
+        className={`ban-seat grid shrink-0 place-items-center rounded-full bg-black/30 font-semibold leading-none transition ${
+          open ? "text-[#f1e6c8] ring-2 ring-[#e9c46a]" : "text-[#b35a63] hover:text-[#f0a0a8]"}`}
+        style={{ width: banSize, height: banSize, fontSize: Math.round(banSize * 0.45) }}>
+        +
+      </button>
+    );
+  };
+
+  /**
+   * One player row, as the draft screen draws it: a round portrait ringed in
+   * the team's colour, the champion's name in capitals beside it, a second
+   * line under that. Your own row is lit the way the game lights it, with a
+   * bar down its outer edge. Enemy rows mirror, portrait on the outside.
+   */
+  const teamRow = (kind: "me" | "ally" | "enemy", index: number, slug: string | null) => {
+    const c = slug ? bySlug.get(slug) : undefined;
+    const target: Target = { kind, index };
+    const open = picking?.kind === kind && picking.index === index;
+    const enemy = kind === "enemy";
+    const mine = kind === "me";
+    const role = state.myRole ? `${state.myRole === "Dragon" ? "Dragon" : state.myRole} lane` : "Your pick";
+    const title = c ? c.name : mine ? role : enemy ? `Player ${index + 1}` : `Ally ${index + 2}`;
+    const sub = mine ? "You" : enemy ? (c ? `Player ${index + 1}` : "Not picked yet") : c ? "Teammate" : "Not picked yet";
+    const ring = open ? "ring-[#e9c46a]" : enemy ? "ring-[#c8343f]" : mine ? "ring-[#8fd0ff]" : "ring-[#5aa9e6]";
+    const portrait = c ? (
+      <span className={`shrink-0 rounded-full ring-2 ${ring}`}>
+        <ChampionAvatar champion={c} size={mine ? seatSize + 6 : seatSize} showBadges={false} />
+      </span>
+    ) : (
+      <span className={`grid shrink-0 place-items-center rounded-full bg-black/35 font-semibold leading-none ring-2 ${ring} ${
+        enemy ? "text-[#e0737c]" : "text-[#8cc4ef]"}`}
+        style={{ width: mine ? seatSize + 6 : seatSize, height: mine ? seatSize + 6 : seatSize, fontSize: Math.round(seatSize * 0.42) }}>
+        +
+      </span>
+    );
+    return (
+      <button
+        key={`${kind}-${index}`}
+        onClick={() => (c ? clearSeat(target) : openSeat(target))}
+        title={c ? `${c.name}: tap to remove` : `${seatLabel(target)}: tap to pick`}
+        className={`group relative flex w-full items-center gap-2 py-2 transition sm:gap-3 ${enemy ? "flex-row-reverse text-right" : "text-left"} ${
+          mine ? "team-row-mine" : ""} ${open ? "bg-[#e9c46a]/[0.08]" : "hover:bg-white/[0.04]"}`}
+      >
+        {portrait}
+        <span className="min-w-0">
+          <span className={`block truncate font-display text-[0.78rem] font-semibold uppercase tracking-[0.08em] sm:text-sm ${
+            mine ? "text-[#d6ecff]" : c ? "text-[#e6e8ef]" : "text-[#9aa1b5]"}`}>{title}</span>
+          <span className={`block truncate text-[11px] ${mine ? "text-[#8fd0ff]" : "text-[#7d8499]"}`}>{sub}</span>
+        </span>
       </button>
     );
   };
@@ -809,45 +911,56 @@ export function DraftAssistant({ reader }: {
         </div>
       )}
 
-      {/* the draft board, which is also the whole control surface */}
-      <div className="glass space-y-3 rounded-2xl p-4">
-        <div>
-          <div className="mb-1.5 flex items-baseline gap-2">
-            <span className={`text-xs font-semibold uppercase tracking-wide ${SEAT_COLOURS.ban.text}`}>
-              Bans {bans.length}/{MAX_BANS}
-            </span>
-            <span className="text-[11px] text-faint">
-              tap a box to fill it, tap a champion to remove
-            </span>
+      {/* The draft board, which is also the whole control surface. It is laid
+          out like the game's own champion select (October 2026 UI): bans in a
+          strip along the top, your team's on the left and theirs on the right,
+          the phase title between them, and the two teams as columns of round
+          portraits down each side. A player mid-draft reads it at a glance
+          because it is the screen they are already looking at. */}
+      <div className="draft-lobby relative overflow-hidden rounded-2xl border border-white/10 p-3 sm:p-5">
+        <div className="relative grid grid-cols-[1fr_auto_1fr] items-start gap-2 sm:gap-4">
+          <div className="flex gap-1 sm:gap-2">
+            {state.bans.slice(0, 5).map((slug, i) => banSeat(i, slug))}
           </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {state.bans.map((slug, i) =>
-              seat("ban", i, slug, 34))}
+          <div className="row-start-2 col-span-3 text-center sm:col-span-1 sm:col-start-2 sm:row-start-1 sm:min-w-[11rem]">
+            <p className="font-display text-[0.8rem] font-semibold uppercase tracking-[0.14em] text-[#d9dce6] sm:text-sm">{lobbyTitle}</p>
+            <p className="mt-0.5 text-[11px] tabular-nums text-[#8f97ad]">{`Bans ${bans.length}/${MAX_BANS} · tap a seat to fill it`}</p>
+          </div>
+          <div className="col-start-3 row-start-1 flex justify-end gap-1 sm:gap-2">
+            {state.bans.slice(5).map((slug, i) => banSeat(i + 5, slug))}
           </div>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <span className={`text-xs font-semibold uppercase tracking-wide ${SEAT_COLOURS.me.text}`}>My team</span>
-            <div className="mt-1.5 flex items-start gap-1.5">
-              {/* Your own seat says so. It is bigger and wears the solid accent
-                  ring, but with the seat numbers gone in favour of a plus,
-                  nothing else would name it. */}
-              <span className="flex flex-col items-center gap-0.5">
-                {seat("me", 0, state.me, 44)}
-                <span className="text-[9px] font-bold uppercase tracking-wide text-accent">
-                  you
-                </span>
-              </span>
-              {state.allies.map((slug, i) =>
-                seat("ally", i, slug, 38))}
-            </div>
+
+        <div className="relative mt-4 grid grid-cols-2 gap-x-3 sm:mt-6 sm:gap-x-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)]">
+          <div className="divide-y divide-white/[0.07]">
+            {teamRow("me", 0, state.me)}
+            {state.allies.map((slug, i) => teamRow("ally", i, slug))}
           </div>
-          <div>
-            <span className={`text-xs font-semibold uppercase tracking-wide ${SEAT_COLOURS.enemy.text}`}>Enemy team</span>
-            <div className="mt-1.5 flex items-center gap-1.5">
-              {state.enemies.map((slug, i) =>
-                seat("enemy", i, slug, 38))}
-            </div>
+          {/* The middle of the screen holds your champion, as the splash does in game. */}
+          <div className="hidden flex-col items-center justify-center gap-3 text-center lg:flex">
+            {me ? (
+              <>
+                <span className="rounded-full p-1 ring-2 ring-[#e9c46a]/80 shadow-[0_0_40px_rgba(233,196,106,0.25)]">
+                  <ChampionAvatar champion={me} size={120} showBadges={false} />
+                </span>
+                <p className="font-display text-xl font-semibold uppercase tracking-[0.12em] text-[#f1e6c8]">{me.name}</p>
+                <TierChip tier={me.tier} />
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => openSeat({ kind: "me", index: 0 })}
+                  className="grid h-[120px] w-[120px] place-items-center rounded-full border border-dashed border-[#e9c46a]/50 text-4xl text-[#e9c46a]/70 transition hover:border-[#e9c46a] hover:text-[#e9c46a]"
+                  title="Your pick: tap to choose"
+                >
+                  +
+                </button>
+                <p className="text-xs text-[#8f97ad]">Your champion goes here</p>
+              </>
+            )}
+          </div>
+          <div className="divide-y divide-white/[0.07]">
+            {state.enemies.map((slug, i) => teamRow("enemy", i, slug))}
           </div>
         </div>
       </div>

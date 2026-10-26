@@ -556,6 +556,9 @@ export function readPhase(
 export interface ScanResult {
   phase: Phase;
   bans: string[];
+  /** The ten ban circles by seat: your team's five, then theirs. Both teams
+   *  can ban the same champion, so this keeps duplicates that `bans` drops. */
+  banSeats: (string | null)[];
   allies: string[];
   enemies: string[];
 }
@@ -610,7 +613,10 @@ export class DraftTracker {
         else if (!name && n >= CLEAR && !key.includes(" ban ") && !key.includes(" prep ")) this.state.delete(key);
       }
     }
-    const out: ScanResult = { phase, bans: [], allies: [], enemies: [] };
+    const out: ScanResult = { phase, bans: [], banSeats: [], allies: [], enemies: [] };
+    for (const side of ["ally", "enemy"]) {
+      for (let i = 1; i <= 5; i++) out.banSeats.push(this.state.get(`${side} ban ${i}`) ?? null);
+    }
     const seen = new Set<string>();
     for (const [key, name] of this.state) {
       const bucket = key.includes(" ban ") ? out.bans : key.startsWith("ally") ? out.allies : out.enemies;

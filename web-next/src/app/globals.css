@@ -1037,3 +1037,23 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .region-toggle[data-fresh] { animation: none; }
 }
+
+/* Draft board, drawn like the game's champion select (October 2026): a deep
+   night-blue lobby with the warm glow the splash art throws up from below,
+   red-ringed ban circles, and your own row lit by a bar down its edge. */
+.draft-lobby {
+  background:
+    radial-gradient(120% 60% at 50% 115%, rgba(170, 52, 78, 0.32), transparent 60%),
+    radial-gradient(70% 50% at 50% -10%, rgba(88, 110, 190, 0.22), transparent 70%),
+    linear-gradient(180deg, #121a33 0%, #161731 55%, #1d1630 100%);
+}
+
+.ban-seat {
+  box-shadow: 0 0 0 2px rgba(150, 38, 52, 0.85), 0 0 10px rgba(200, 52, 63, 0.35);
+}
+
+.team-row-mine {
+  background: linear-gradient(90deg, rgba(74, 163, 255, 0.2), rgba(74, 163, 255, 0) 85%);
+  box-shadow: inset 3px 0 0 #4aa3ff;
+  padding-left: 0.5rem;
+}
