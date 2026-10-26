@@ -25,6 +25,7 @@ export default function ImpressumPage() {
               <h2 className="text-lg font-semibold">Operator</h2>
               <address className="mt-2 text-sm not-italic leading-relaxed text-muted">
                 {i.name}<br />
+                WrTrueMeta<br />
                 {i.street}<br />
                 {i.city}<br />
                 {i.country}
