@@ -24,7 +24,7 @@ Standalone, from the 英雄榜 page:
 
     python -m scripts.walk_partners --probe          # what the device reports
     python -m scripts.walk_partners --bracket legendary
-    python -m scripts.walk_partners --reparse data/captures_partners/<stamp>
+    python -m scripts.walk_partners --reparse data/captures/partners/<date>/<stamp>
 """
 from __future__ import annotations
 
@@ -50,7 +50,9 @@ from src import uiauto
 from src.ocr import cn_champion_names, match_cn_name
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "data" / "captures_partners"
+#: Kept for importers. Captures go into the day's partners run,
+#: data/captures/partners/<date>/ (src/capture_runs.py), earlier days archived.
+OUT = ROOT / "data" / "captures" / "partners"
 
 #: This page writes 上路 and 中路; the champion pages say 上单 and 中单.
 #: Both are accepted wherever a lane label is read.
@@ -334,7 +336,7 @@ def set_rank(client, nodes, target_cn: str, width: int, height: int):
     return nodes
 
 
-def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT,
+def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path | None = None,
                      lanes: set[str] | None = None) -> Path | None:
     """Capture every lane pairing, starting and ending on 英雄榜.
 
@@ -351,6 +353,9 @@ def capture_partners(client, bracket: str, bracket_cn: str, out_root: Path = OUT
     if nodes is None:
         return None
     stamp = datetime.now().strftime("%Y%m%d_%H%M")
+    if out_root is None:
+        from src.capture_runs import run_for_partners
+        out_root = run_for_partners()
     out = out_root / f"partners_{bracket}_{stamp}"
     out.mkdir(parents=True, exist_ok=True)
     result = {"capturedAt": datetime.now().replace(microsecond=0).isoformat(),
@@ -467,7 +472,8 @@ def main() -> int:
     ap.add_argument("--bracket", default="legendary", help="the rank filter you set on the page (provenance only)")
     ap.add_argument("--lanes", default="", help="comma-separated subset of YOUR lanes, e.g. 'support,dragon'")
     ap.add_argument("--device", default=ADBClient.device)
-    ap.add_argument("--out", type=Path, default=OUT)
+    ap.add_argument("--out", type=Path, default=None,
+                    help="default: today's partners run, data/captures/partners/<date>/")
     ap.add_argument("--probe", action="store_true", help="print what the device reports on this screen and exit")
     ap.add_argument("--reparse", type=Path, default=None, help="re-run row parsing on a saved capture folder")
     ap.add_argument("--width", type=int, default=1080, help="screen width for --reparse (default 1080)")

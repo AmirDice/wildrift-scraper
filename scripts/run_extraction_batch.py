@@ -22,6 +22,8 @@ from pathlib import Path
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+# Rebound to the region's current run in main(); the log lives with the run.
 CAPTURES = ROOT / "data" / "captures"
 LOG = CAPTURES / "_batch_log.txt"
 
@@ -48,16 +50,11 @@ def _last_write(session: Path) -> float:
     return (time.time() - newest) / 60.0 if newest else 1e9
 
 
-#: Where each region's capture sessions live. The batch used to hard-code the
-#: EU directory, so an NA collection sat un-extracted with the runner cheerfully
-#: reporting "0 pending".
-REGION_CAPTURES = {
-    # captures_eu, as in export_captures. data/captures holds the cleared
-    # September run, so pointing here made an EU batch find 0 sessions.
-    "eu": ROOT / "data" / "captures_eu",
-    "na": ROOT / "data" / "captures_na",
-    "cn": ROOT / "data" / "captures_cn",
-}
+#: The regions a batch can extract. Each one's sessions are its CURRENT run,
+#: data/captures/<region>/<date>/ (src/capture_runs.py): the batch used to
+#: hard-code one directory, so an NA collection sat un-extracted with the
+#: runner cheerfully reporting "0 pending".
+REGION_CAPTURES = ("eu", "na", "cn")
 
 
 def _extract_in_process(session: Path, engine: str, extra: list[str]) -> tuple[int, str, str]:
@@ -119,7 +116,12 @@ def main() -> int:
     extra = ["--no-ranks"] if args.no_ranks else []
 
     global CAPTURES, LOG
-    CAPTURES = REGION_CAPTURES[args.region]
+    from src.capture_runs import current_run
+    run = current_run(args.region)
+    if run is None:
+        print(f"no {args.region.upper()} capture run yet under data/captures/{args.region}/")
+        return 1
+    CAPTURES = run
     LOG = CAPTURES / "_batch_log.txt"
     if not CAPTURES.exists():
         print(f"no capture directory for {args.region}: {CAPTURES}")

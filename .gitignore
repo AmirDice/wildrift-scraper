@@ -58,10 +58,14 @@ scratch/
 # staging directory built by scripts/deploy_advisor.py
 .advisor-deploy/
 
-# scraper capture sessions (hundreds of MB of frames; manifest-driven, local only).
-# One pattern per region: data/captures_na/ is not matched by data/captures/.
+# scraper capture sessions (GBs of frames; manifest-driven, local only).
+# data/captures/<kind>/<date>/ is the current run, data/archive/<kind>/<date>/
+# every earlier one (src/capture_runs.py). data/captures_*/ is the layout
+# before 2026-10-26, kept ignored in case an old copy reappears.
 data/captures/
+data/archive/
 data/captures_*/
+data/_frames_to_delete/
 # source screenshots for hand-transcribed champion data (Cho'Gath's release
 # tooltips); the transcription is committed, the photos are not
 data/chogath/

@@ -434,8 +434,15 @@ def main() -> int:
                         help="Fastest mode: save screenshots + a manifest instead of reading anything "
                              "on the critical path (no strip OCR, no swipes, no live name read). "
                              "Extract afterwards with: python -m src.extract_frames <capture dir>")
-    parser.add_argument("--capture-dir", type=Path, default=Path("data/captures"),
-                        help="Where --capture-only sessions are stored")
+    parser.add_argument("--capture-dir", type=Path, default=None,
+                        help="Where --capture-only sessions are stored. Leave it out: with "
+                             "--region the run folder is chosen for you, "
+                             "data/captures/<region>/<date>/, resuming an unfinished run "
+                             "and starting a new dated one only once every champion is done "
+                             "(src/capture_runs.py)")
+    parser.add_argument("--new-run", action="store_true",
+                        help="Start a new dated run even though the current one is unfinished "
+                             "(the unfinished run is archived as it is)")
     parser.add_argument("--builds", action="store_true",
                         help="capture-only: also capture each player's BUILD popup (book icon "
                              "on the right rail; ~2s/profile)")
@@ -556,6 +563,28 @@ def main() -> int:
                   file=sys.stderr)
             return 1
         print(f"excluding {len(skip)} champion(s): {', '.join(sorted(skip))}")
+
+    # The run folder, resolved once, before anything is written. Resuming an
+    # unfinished run is the default so a crashed night or a recapture of the
+    # stragglers lands in the same collection; a new date starts only when
+    # every champion on the roster reached rank --n.
+    if args.capture_only and args.capture_dir is None:
+        if not args.region:
+            print("error: --capture-only needs --region (or an explicit --capture-dir) "
+                  "so the session lands in the right region's run", file=sys.stderr)
+            return 1
+        from .capture_runs import run_for_ladder
+        from .capture_runs import ladder_completed
+        args.capture_dir = run_for_ladder(args.region, args.n, new_run=args.new_run)
+        print(f"capture run        : {args.capture_dir}")
+        # Resuming means skipping what is done; without it a resumed run
+        # would recapture every finished champion. --only still redoes the
+        # champions it names, which is what it is for.
+        if ladder_completed(args.capture_dir, args.n) and not args.only and not args.skip_existing:
+            args.skip_existing = True
+            print("resuming           : champions already captured in this run are skipped")
+    elif args.capture_dir is None:
+        args.capture_dir = Path("data/captures")
 
     capture_dir: Path | None = None
     if args.capture_only:

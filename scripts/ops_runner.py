@@ -52,8 +52,10 @@ import requests
 SINGLETON_PORT = 47831
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 ENV_LOCAL = ROOT / "web-next" / ".env.local"
-CAPTURES = ROOT / "data" / "captures"
+#: Capture sessions live in each region's current run (src/capture_runs.py).
+REGIONS = ("eu", "na", "cn")
 
 HEARTBEAT_EVERY = 4.0     # seconds; TTL is 15, so 3 missed beats = offline
 PUSH_STATE_EVERY = 2.0    # log-tail update cadence while a job runs
@@ -129,8 +131,13 @@ _ONLY_OK = re.compile(r"^[A-Za-z'&.\- ,]{0,400}$")
 
 
 def _plan_scrape(args: dict) -> list[list[str]]:
+    # --region picks the run folder (data/captures/<region>/<date>/), which
+    # the scraper now requires for a capture-only run.
+    region = str(args.get("region") or "EU").upper()
+    if region not in ("EU", "NA", "CN"):
+        raise ValueError("region must be EU, NA or CN")
     cmd = [PY, "-m", "src.scrape_timed", "--capture-only", "--auto-scroll",
-           "--unattended", "--auto-extract", "--champions", "141"]
+           "--unattended", "--auto-extract", "--champions", "141", "--region", region]
     only = str(args.get("only") or "").strip()
     if only:
         if not _ONLY_OK.match(only):
@@ -142,9 +149,13 @@ def _plan_scrape(args: dict) -> list[list[str]]:
 
 
 def _plan_extract_pending(args: dict) -> list[list[str]]:
+    from src.capture_runs import current_run
     pending = []
-    if CAPTURES.exists():
-        for session in sorted(CAPTURES.iterdir()):
+    for region in REGIONS:
+        run = current_run(region)
+        if run is None:
+            continue
+        for session in sorted(run.iterdir()):
             if not session.is_dir():
                 continue
             has_manifest = any(session.glob("manifest*.json"))

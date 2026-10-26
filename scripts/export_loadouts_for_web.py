@@ -18,7 +18,7 @@ Run from the repository root:
 Archive an older run from its own capture folder (once, before its
 screenshots are deleted):
 
-    python scripts/export_loadouts_for_web.py --archive-only data/captures_loadouts/old
+    python scripts/export_loadouts_for_web.py --archive-only data/archive/loadouts/<date>
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ import argparse
 import json
 import math
 import re
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -36,7 +37,10 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CAPTURES = ROOT / "data" / "captures_loadouts"
+# Sessions come from every loadouts run, current and archived
+# (src/capture_runs.py): newest capture per champion and lane wins, so a lane
+# this week's walk missed keeps last week's data.
+sys.path.insert(0, str(ROOT))
 WEB_DATA = ROOT / "web-next" / "src" / "data"
 PUBLIC = ROOT / "web-next" / "public"
 OUTPUT = WEB_DATA / "cn_loadouts.json"
@@ -493,7 +497,10 @@ def attach_patches(output: dict[str, Any]) -> int:
                 changed_since = set().union(*(changed.get(patch, set()) for patch in since))
                 keys = set(per_patch[newest]) | set(per_patch[previous])
                 rows_out = []
-                for key in keys:
+                # Sorted, so rows that tie on score come out in the same order
+                # every run: iterating the set let Python's per-process string
+                # hashing reorder them, and the file changed with no new data.
+                for key in sorted(keys):
                     entries = [(i, per_patch[patch][key]) for i, patch in enumerate(reversed(patches)) if key in per_patch[patch]]
                     weight = sum(PATCH_DECAY ** i for i, _e in entries)
                     score = sum(PATCH_DECAY ** i * e["edge"] for i, e in entries) / weight
@@ -624,11 +631,13 @@ def export_patch_impact() -> dict[str, Any] | None:
                 "coreAfter": rec["coreAfter"],
                 "roles": {lane: {"before": round(v["before"] / role_counts[lane], 1), "after": round(v["after"] / role_counts[lane], 1)}
                           for lane, v in rec["roles"].items()},
-                "movers": sorted(rec["lanes"], key=lambda m: -abs(m["after"] - m["before"]))[:6],
+                "movers": sorted(rec["lanes"], key=lambda m: (-abs(m["after"] - m["before"]), m["slug"], m["lane"]))[:6],
             }
             if max(row["before"], row["after"]) >= 0.3 or row["changed"]:
                 rows.append(row)
-        rows.sort(key=lambda r: -max(r["before"], r["after"]))
+        # Name breaks ties: entities come out of a set, so equal shares would
+        # otherwise swap places between runs with no new data.
+        rows.sort(key=lambda r: (-max(r["before"], r["after"]), r["name"]))
         out[kind] = rows
     out["captures"] = {patch: len(days.get(patch, set())) for patch in (before, after)}
     patch_url = next((entry.get("url") for entry in load_json(PATCH_HISTORY).get("patches", []) if entry.get("patch") == after), None)
@@ -648,7 +657,8 @@ def main() -> None:
                     help="build a snapshot from this capture folder alone and archive it, "
                          "without touching the website data")
     args = ap.parse_args()
-    captures = args.archive_only.resolve() if args.archive_only else CAPTURES
+    from src.capture_runs import all_runs
+    roots = [args.archive_only.resolve()] if args.archive_only else all_runs("loadouts")
     site = load_json(WEB_DATA / "site.json")
     items = load_json(WEB_DATA / "items.json")
     runes = load_json(WEB_DATA / "rune_icons.json")
@@ -661,7 +671,7 @@ def main() -> None:
     match_spell = spell_matcher(spells)
 
     newest: dict[tuple[str, str], tuple[datetime, Path, dict[str, Any]]] = {}
-    for path in captures.rglob("loadouts.json"):
+    for path in (p for root in roots for p in root.rglob("loadouts.json")):
         payload = load_json(path)
         champion = str(payload.get("champion", "")).strip()
         lane = str(payload.get("lane", "")).strip().lower()
@@ -758,8 +768,7 @@ def main() -> None:
     print(f"Week and trend: {lanes} lanes, {rows} rows trended")
     print(f"Across patches: {attach_patches(output)} tabs scored")
     # Duo partners publish with the loadouts, from the newest partner capture.
-    partners = ROOT / "data" / "captures_partners"
-    if any(partners.glob("partners_*/partners.json")):
+    if any(p for run in all_runs("partners") for p in run.glob("partners_*/partners.json")):
         import sys
         sys.path.insert(0, str(ROOT))   # run as a file, scripts/ is not a package root
         from scripts.export_partners_for_web import main as export_partners

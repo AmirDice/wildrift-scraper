@@ -19,7 +19,8 @@ bank. Every icon is still written to disk beside its row either way, so a
 later pass never needs the frames re-captured.
 
 Run:
-    python -m scripts.extract_loadouts data/captures_loadouts/milio_20261008_1252
+    python -m scripts.extract_loadouts                 # the current run
+    python -m scripts.extract_loadouts data/captures/loadouts/<date>/<session>
 """
 from __future__ import annotations
 
@@ -405,9 +406,10 @@ def _run_pool(todo: list[Path], engine: str, workers: int) -> int:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("capture_dir", type=Path,
+    ap.add_argument("capture_dir", type=Path, nargs="?", default=None,
                     help="one capture directory, or a parent holding many "
-                         "(every child with a manifest.json is extracted)")
+                         "(every child with a manifest.json is extracted). "
+                         "Default: the current loadouts run (src/capture_runs.py)")
     ap.add_argument("--no-skip", action="store_true",
                     help="extract the captures _recapture.json holds back "
                          "too. Those lost a whole tab to a frame grabbed "
@@ -432,6 +434,13 @@ def main() -> int:
                          "one worker per core, leaving one free.")
     args = ap.parse_args()
 
+    if args.capture_dir is None:
+        from src.capture_runs import current_run
+        args.capture_dir = current_run("loadouts")
+        if args.capture_dir is None:
+            print("no loadouts run under data/captures/loadouts yet", file=sys.stderr)
+            return 1
+        print(f"extracting run {args.capture_dir}")
     if (args.capture_dir / "manifest.json").exists():
         return extract_dir(args.capture_dir, args.out, args.engine)
 

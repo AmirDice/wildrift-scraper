@@ -41,7 +41,9 @@ from src.adb_client import ADBClient, ADBError
 from src import loadouts as L
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_OUT = ROOT / "data" / "captures_loadouts"
+#: Kept for importers; a capture without --out goes into the current loadouts
+#: run, data/captures/loadouts/<date>/ (src/capture_runs.py).
+DEFAULT_OUT = ROOT / "data" / "captures" / "loadouts"
 
 #: EVERY tab is scrolled while its list is still running off the bottom edge.
 #: This used to be a fixed set containing only the first tab, which was wrong:
@@ -228,7 +230,8 @@ def main() -> int:
                          "in the app first and pass what you set.")
     ap.add_argument("--device", default=ADBClient.device,
                     help="adb device (USB serial, or IP:port for an emulator)")
-    ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
+    ap.add_argument("--out", type=Path, default=None,
+                    help="default: the current loadouts run (src/capture_runs.py)")
     args = ap.parse_args()
 
     client = ADBClient(device=args.device)
@@ -240,6 +243,9 @@ def main() -> int:
 
     stamp = datetime.now().strftime("%Y%m%d_%H%M")
     slug = f"{args.mode.lower()}_{args.bracket.lower()}".replace(" ", "-")
+    if args.out is None:
+        from src.capture_runs import run_for_loadouts
+        args.out = run_for_loadouts()
     out_dir = args.out / f"{args.champion.lower()}_{slug}_{stamp}"
     print(f"capturing {args.champion}  mode={args.mode}  "
           f"bracket={args.bracket}  lane={args.lane}")

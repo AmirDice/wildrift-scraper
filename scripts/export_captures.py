@@ -45,27 +45,34 @@ from src.tiers import canonical_profile_rank, canonical_tier  # noqa: E402
 from web.integrity import (  # noqa: E402
     HIDDEN_LABEL, ban_reason, is_advertising_account, is_banned_account)
 
+def _run_dir(region: str) -> Path:
+    """The region's current collection run (src/capture_runs.py), or where it
+    would be: an export with no run finds no sessions and says so, instead of
+    reading a stale folder."""
+    from src.capture_runs import current_run, kind_dir
+    return current_run(region) or kind_dir(region) / "(no run yet)"
+
+
 # Per-region source and destinations. EU keeps the unsuffixed paths every
 # other script already reads; a new region gets its own everything.
 REGIONS = {
     "eu": {
-        # EU moved to a region-suffixed directory on 2026-10-07, matching na
-        # and cn. data/captures still holds the 2026-09-03 collection, which
-        # is the 50-row pre-relayout board; pointing here at that would have
-        # silently re-exported September as though it were the new run.
-        "captures": ROOT / "data" / "captures_eu",
+        # Each region reads its CURRENT run (data/captures/<region>/<date>/).
+        # Past runs live in data/archive; champions a run has not reached yet
+        # keep their rows from winrates.csv (the "carried" merge below).
+        "captures": _run_dir("eu"),
         "winrates": ROOT / "data" / "winrates.csv",
         "players": ROOT / "web-next" / "public" / "players",
         "index": ROOT / "web-next" / "public" / "player-index.json",
     },
     "na": {
-        "captures": ROOT / "data" / "captures_na",
+        "captures": _run_dir("na"),
         "winrates": ROOT / "data" / "winrates_na.csv",
         "players": ROOT / "web-next" / "public" / "players" / "na",
         "index": ROOT / "web-next" / "public" / "player-index-na.json",
     },
     "cn": {
-        "captures": ROOT / "data" / "captures_cn",
+        "captures": _run_dir("cn"),
         "winrates": ROOT / "data" / "winrates_cn.csv",
         "players": ROOT / "web-next" / "public" / "players" / "cn",
         "index": ROOT / "web-next" / "public" / "player-index-cn.json",

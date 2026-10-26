@@ -634,7 +634,17 @@ def walk(client, args) -> int:
               f"{' '.join(sorted(unknown))}")
         print("  add them to data/cn_winrates.json or to CN_NAME_OVERRIDES "
               "in src/ocr.py, then rerun.")
-    _write_no_data(args.out, skipped)
+    # The no-data list describes the app, not one run, so a managed run keeps
+    # it beside the runs (data/captures/loadouts/_no_data.json).
+    _write_no_data(args.out.parent if getattr(args, "run_managed", False) else args.out, skipped)
+    if getattr(args, "run_managed", False):
+        # A walk that reached the end with nothing failed finishes the run;
+        # anything else leaves it open, so the recapture of what failed lands
+        # in this same run instead of starting a new date.
+        from src.capture_runs import mark_run
+        mark_run(args.out, complete=failed == 0, failures=failures)
+        print(f"run {args.out.name}: " + ("complete" if failed == 0 else
+              f"left open, {failed} to recapture (rerun the same command)"))
     tail = f", {len(skipped)} with no data in the app" if skipped else ""
     print(f"\ndone: {captured} captured, {failed} failed{tail}")
     # Named, not just counted: this is the list to recapture by hand. A
@@ -723,7 +733,13 @@ def main() -> int:
                          "walking one tab can still produce two captures for "
                          "a champion played in two lanes.")
     ap.add_argument("--device", default=ADBClient.device)
-    ap.add_argument("--out", type=Path, default=DEFAULT_OUT)
+    ap.add_argument("--out", type=Path, default=None,
+                    help="default: the current loadouts run, data/captures/loadouts/<date>/. "
+                         "An unfinished run is resumed; a new dated one starts once a walk "
+                         "finished with no failures, or the run is over 4 days old "
+                         "(src/capture_runs.py)")
+    ap.add_argument("--new-run", action="store_true",
+                    help="start a new dated run even though the current one is unfinished")
     ap.add_argument("--data-wait", type=float, default=25.0,
                     help="seconds to wait for 国服数据 after tapping 查看更多 "
                          "(default 25). Each poll is a hierarchy dump, which "
@@ -785,6 +801,11 @@ def main() -> int:
         if args.partners_only:
             return 0 if folder else 1
 
+    if args.out is None:
+        from src.capture_runs import run_for_loadouts
+        args.out = run_for_loadouts(new_run=args.new_run)
+        args.run_managed = True
+    print(f"capture run: {args.out}")
     args.out.mkdir(parents=True, exist_ok=True)
     lanes_label = "all" if not args.lanes else ",".join(sorted(args.lanes))
     print(f"walking: bracket={args.bracket} ({args.bracket_cn}) "

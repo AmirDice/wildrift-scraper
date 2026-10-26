@@ -1,6 +1,7 @@
 """Publish the newest best-partner capture for the website.
 
-Reads the newest data/captures_partners/*/partners.json (scripts/walk_partners)
+Reads the newest partners.json of any partners run, current or archived
+(data/captures/partners/<date>/, data/archive/partners/<date>/; scripts/walk_partners)
 and writes web-next/src/data/cn_partners.json: every pair once, with both
 champions' slugs and lanes, its win rate and appearance rate. The site
 builds the per-champion view from that (web-next/src/lib/cn-partners.ts).
@@ -13,19 +14,23 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CAPTURES = ROOT / "data" / "captures_partners"
+sys.path.insert(0, str(ROOT))
 OUT = ROOT / "web-next" / "src" / "data" / "cn_partners.json"
 SITE = ROOT / "web-next" / "src" / "data" / "site.json"
 LANE_ORDER = ["baron", "jungle", "mid", "dragon", "support"]
 
 
 def main() -> int:
-    captures = sorted(CAPTURES.glob("partners_*/partners.json"))
+    from src.capture_runs import all_runs
+    # Oldest first; within a run the folder stamp orders the captures.
+    captures = [p for run in all_runs("partners") for p in sorted(run.glob("partners_*/partners.json"))]
     if not captures:
-        print(f"no capture under {CAPTURES.relative_to(ROOT)}; run scripts.walk_partners first")
+        print("no partners capture under data/captures/partners or data/archive/partners; "
+              "run scripts.walk_partners first")
         return 1
     source = captures[-1]
     data = json.loads(source.read_text(encoding="utf-8"))

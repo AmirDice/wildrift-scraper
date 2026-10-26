@@ -36,7 +36,13 @@ sys.path.insert(0, str(ROOT))
 
 from web.champion_roles import roles_for  # noqa: E402
 
-CAPTURES = ROOT / "data" / "captures"
+def _eu_run() -> Path:
+    from src.capture_runs import current_run, kind_dir
+    return current_run("eu") or kind_dir("eu") / "(no run yet)"
+
+
+#: The current EU collection run (src/capture_runs.py).
+CAPTURES = _eu_run()
 MAJORITY = 50.0
 CLOSE_BAND = 5.0          # 45-55% counts as close; outside that the count decides
 MIN_PLAYERS = 20

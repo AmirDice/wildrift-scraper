@@ -47,8 +47,10 @@ from pathlib import Path
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 ROOT = Path(__file__).resolve().parent.parent
-CAPTURES = ROOT / "data" / "captures"
-ARCHIVE = ROOT / "data" / "captures_archive"
+sys.path.insert(0, str(ROOT))
+# Current run plus every archived run of the region (src/capture_runs.py).
+CAPTURES = ROOT / "data" / "captures" / "eu"
+ARCHIVE = ROOT / "data" / "archive" / "eu"
 OUT = ROOT / "data" / "champion_specialisation.json"
 
 MIN_PLAYERS = 15          # below this a median share is not worth publishing
@@ -128,9 +130,10 @@ def main() -> int:
     ap.add_argument("--region", default="eu", choices=["eu", "na", "cn"])
     args = ap.parse_args()
     global CAPTURES, ARCHIVE, OUT
+    from src.capture_runs import ARCHIVE as RUN_ARCHIVE, current_run, kind_dir
+    CAPTURES = current_run(args.region) or kind_dir(args.region) / "(no run yet)"
+    ARCHIVE = RUN_ARCHIVE / args.region
     if args.region in ("na", "cn"):
-        CAPTURES = ROOT / "data" / f"captures_{args.region}"
-        ARCHIVE = ROOT / "data" / f"captures_{args.region}_archive"
         OUT = ROOT / "data" / f"champion_specialisation_{args.region}.json"
     site_name = "site.json" if args.region == "eu" else f"site_{args.region}.json"
     site_path = ROOT / "web-next" / "src" / "data" / site_name
