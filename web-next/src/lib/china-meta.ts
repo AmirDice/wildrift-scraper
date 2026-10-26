@@ -4,7 +4,7 @@ import runeIconsData from "@/data/rune_icons.json";
 import spellsData from "@/data/spells.json";
 import siteData from "@/data/site.json";
 import historyData from "@/data/champion_change_history.json";
-import { bestDuos } from "@/lib/cn-partners";
+import { bestDuos, partnerQueues } from "@/lib/cn-partners";
 
 /**
  * "China this week" on the meta page: what the CN Legendary loadout captures
@@ -216,7 +216,7 @@ export function chinaThisWeek(patch: string) {
     items,
     keystones,
     spells: spellsByLane(),
-    duos: bestDuos(6),
+    duos: partnerQueues().map((q) => ({ ...q, groups: bestDuos(q.id, 6) })).filter((q) => q.groups.length),
     patch: patchShifts(patch),
   };
 }

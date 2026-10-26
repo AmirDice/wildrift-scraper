@@ -12,9 +12,13 @@ import siteData from "@/data/site.json";
  * own rate, half the average. The same shrinkage as the loadouts, with the
  * prior taken from the data because these shares run two orders of
  * magnitude below a loadout row's.
+ *
+ * Two queues are published: Solo queue (the app's Legendary filter) and
+ * Premade (its Challenger filter), named as the owner names them.
  */
 type Pair = { a: string; aLane: string; b: string; bLane: string; winRate: number; pickRate: number };
-const DATA = partnerData as unknown as { capturedAt: string | null; bracket: string | null; pairs: Pair[] };
+type Queue = { id: string; label: string; capturedAt: string | null; pairs: Pair[] };
+const QUEUES = (partnerData as unknown as { queues: Queue[] }).queues.filter((q) => q.pairs.length);
 const CHAMPS = new Map((siteData.champions as { slug: string; name: string; icon: string }[]).map((c) => [c.slug, c]));
 
 export type Partner = { slug: string; name: string; icon: string; lane: string; winRate: number; pickRate: number; score: number };
@@ -29,13 +33,18 @@ function rank(list: { winRate: number; pickRate: number }[]) {
   return (p: { winRate: number; pickRate: number }) => (p.winRate * p.pickRate + average * prior) / (p.pickRate + prior);
 }
 
-export function partnersCapturedAt(): string | null {
-  return DATA.pairs.length ? DATA.capturedAt : null;
+/** The published queues, in display order (Solo queue first). */
+export function partnerQueues(): { id: string; label: string; capturedAt: string | null }[] {
+  return QUEUES.map(({ id, label, capturedAt }) => ({ id, label, capturedAt }));
+}
+
+function pairsOf(queue: string): Pair[] {
+  return QUEUES.find((q) => q.id === queue)?.pairs ?? [];
 }
 
 /** A champion's partners in one of its lanes, grouped by the partner's lane, best first. */
-export function partnersFor(slug: string, lane: string, perLane = 5): { lane: string; partners: Partner[] }[] {
-  const mine = DATA.pairs.flatMap((p) => {
+export function partnersFor(slug: string, lane: string, queue: string, perLane = 5): { lane: string; partners: Partner[] }[] {
+  const mine = pairsOf(queue).flatMap((p) => {
     if (p.a === slug && p.aLane === lane) return [{ slug: p.b, lane: p.bLane, winRate: p.winRate, pickRate: p.pickRate }];
     if (p.b === slug && p.bLane === lane) return [{ slug: p.a, lane: p.aLane, winRate: p.winRate, pickRate: p.pickRate }];
     return [];
@@ -59,9 +68,9 @@ export function partnersFor(slug: string, lane: string, perLane = 5): { lane: st
 export type Duo = { a: Partner; b: Partner; winRate: number; pickRate: number; score: number };
 
 /** The best pairs for each lane pairing (Dragon + Support, Jungle + Mid, ...). */
-export function bestDuos(perPair = 8): { lanes: [string, string]; duos: Duo[] }[] {
+export function bestDuos(queue: string, perPair = 8): { lanes: [string, string]; duos: Duo[] }[] {
   const groups = new Map<string, Pair[]>();
-  for (const p of DATA.pairs) {
+  for (const p of pairsOf(queue)) {
     const lanes = [p.aLane, p.bLane].sort((x, y) => LANE_ORDER.indexOf(x) - LANE_ORDER.indexOf(y));
     const key = lanes.join("+");
     groups.set(key, [...(groups.get(key) ?? []), p]);

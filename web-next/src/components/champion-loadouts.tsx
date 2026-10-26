@@ -335,10 +335,26 @@ function EmptyState({ champion }: { champion: string }) {
 
 /** Best duo partners for this lane, from China's 最佳拍档 lists. */
 type PartnerGroup = { lane: string; partners: { slug: string; name: string; icon: string; lane: string; winRate: number; pickRate: number }[] };
+/** One queue's partners (Solo queue, Premade), per loadout lane. */
+type PartnerQueue = { id: string; label: string; capturedAt: string | null; byLane: Record<string, PartnerGroup[]> };
 
-function PartnersPanel({ champion, lane, groups, capturedAt }: { champion: string; lane: string; groups: PartnerGroup[]; capturedAt: string | null }) {
+function PartnersPanel({ champion, lane, queues }: { champion: string; lane: string; queues: PartnerQueue[] }) {
+  const [queueId, setQueueId] = useState(queues[0]?.id ?? "");
+  const queue = queues.find((q) => q.id === queueId) ?? queues[0];
+  const groups = queue?.byLane[lane] ?? [];
+  const capturedAt = queue?.capturedAt ?? null;
   return (
     <div className="mt-4">
+      {queues.length > 1 && (
+        <div className="mb-3 flex flex-wrap gap-1.5" role="group" aria-label="Queue">
+          {queues.map((q) => (
+            <button key={q.id} type="button" onClick={() => setQueueId(q.id)} aria-pressed={q.id === queue?.id}
+              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${q.id === queue?.id ? "bg-accent/20 text-text ring-1 ring-accent/40" : "bg-white/[0.05] text-muted hover:text-text"}`}>
+              {q.label}
+            </button>
+          ))}
+        </div>
+      )}
       <p className="max-w-3xl text-xs leading-relaxed text-muted">
         {`The champions ${champion} wins most with from ${LANE_LABEL[lane] ?? lane}, by the partner's lane. Each pair's win rate is pulled toward its list's average by how rarely the pair is seen, so a duo played a handful of times cannot top the list.`}
       </p>
@@ -361,12 +377,13 @@ function PartnersPanel({ champion, lane, groups, capturedAt }: { champion: strin
           </section>
         ))}
       </div>
-      {capturedAt && <p className="mt-3 text-[0.65rem] text-faint">{`Duo lists captured ${formatCaptureDate(capturedAt) ?? capturedAt}.`}</p>}
+      {!groups.length && <p className="mt-4 text-sm text-muted">{`No ${queue?.label ?? ""} duos recorded for this lane.`}</p>}
+      {capturedAt && <p className="mt-3 text-[0.65rem] text-faint">{`${queue?.label} duo lists captured ${formatCaptureDate(capturedAt) ?? capturedAt}.`}</p>}
     </div>
   );
 }
 
-export function ChampionLoadouts({ champion, loadouts, partners, partnersAt = null }: { champion: string; loadouts: ChampionLoadoutLane[]; partners?: Record<string, PartnerGroup[]>; partnersAt?: string | null }) {
+export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champion: string; loadouts: ChampionLoadoutLane[]; partners?: PartnerQueue[] }) {
   const [laneIndex, setLaneIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey | "partners">("items");
   const [expanded, setExpanded] = useState(false);
@@ -377,7 +394,9 @@ export function ChampionLoadouts({ champion, loadouts, partners, partnersAt = nu
   // pick changed for ~70% of lanes between captures, the week's barely does.
   const [period, setPeriod] = useState<"week" | "latest" | "patches">("week");
   const lane = loadouts[Math.min(laneIndex, Math.max(loadouts.length - 1, 0))];
-  const partnerGroups = lane ? partners?.[lane.lane] ?? [] : [];
+  // The tab shows when any queue has partners for this lane.
+  const partnerQueuesHere = lane ? partners.filter((q) => (q.byLane[lane.lane] ?? []).length) : [];
+  const partnerGroups = partnerQueuesHere.flatMap((q) => q.byLane[lane!.lane]);
   const tabs = useMemo(() => [
     ...BASE_TABS.map((tab) => tab.key === "versus"
       ? { ...tab, label: lane?.versusKind === "partners" ? "Best partners" : "Matchups", short: lane?.versusKind === "partners" ? "Partners" : "Matchups" }
@@ -470,7 +489,7 @@ export function ChampionLoadouts({ champion, loadouts, partners, partnersAt = nu
             ))}
           </div>
         </div>
-        {showPartners ? <PartnersPanel champion={champion} lane={lane.lane} groups={partnerGroups} capturedAt={partnersAt} /> : <>
+        {showPartners ? <PartnersPanel champion={champion} lane={lane.lane} queues={partnerQueuesHere} /> : <>
         {activeTab !== "partners" && TAB_QUESTION[activeTab] && (
           <div className="mt-3">
             <AskAgent question={TAB_QUESTION[activeTab]!(champion)} />

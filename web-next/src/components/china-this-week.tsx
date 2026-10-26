@@ -69,6 +69,8 @@ function RankedList({ rows, unit }: { rows: Ranked[]; unit: string }) {
 export function ChinaThisWeek({ data }: { data: Data }) {
   const [tab, setTab] = useState<TabKey>("rising");
   const [lane, setLane] = useState<Lane5 | "all">("all");
+  const [queueId, setQueueId] = useState(data.duos[0]?.id ?? "");
+  const queue = data.duos.find((q) => q.id === queueId) ?? data.duos[0];
   const laneOptions: [Lane5 | "all", string][] = [["all", "All lanes"], ...LANES.map((l): [Lane5, string] => [l, LANE_NAME[l]])];
   const span = data.window ? `${data.window.captures} captures, ${day(data.window.from.slice(5))} to ${day(data.window.to.slice(5))}` : "latest capture";
 
@@ -86,6 +88,9 @@ export function ChinaThisWeek({ data }: { data: Data }) {
 
         {(tab === "items" || tab === "keystones") && (
           <div className="mt-4"><Pills value={lane} options={laneOptions} onChange={setLane} label="Lane" /></div>
+        )}
+        {tab === "duos" && data.duos.length > 1 && queue && (
+          <div className="mt-4"><Pills value={queue.id} options={data.duos.map((q): [string, string] => [q.id, q.label])} onChange={setQueueId} label="Queue" /></div>
         )}
 
         <div className="mt-4">
@@ -120,7 +125,7 @@ export function ChinaThisWeek({ data }: { data: Data }) {
             <>
               <p className="mb-3 text-xs text-faint">The best pairs for each lane pairing, from China&rsquo;s best-partner lists. Win rates are pulled toward each list&rsquo;s average by how rarely the pair is seen.</p>
               <div className="grid gap-3 lg:grid-cols-2">
-                {data.duos.map((group) => (
+                {(queue?.groups ?? []).map((group) => (
                   <div key={group.lanes.join("+")} className="rounded-xl border border-white/[0.07] bg-black/15 p-3">
                     <p className="text-xs font-semibold uppercase tracking-wide text-faint">{group.lanes.map((l) => LANE_NAME[l as Lane5] ?? l).join(" + ")}</p>
                     <ul className="mt-2 space-y-1.5">
