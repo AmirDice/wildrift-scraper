@@ -111,7 +111,10 @@ function WhyRow({ icon, round, name, reason, partners, inBuild }: {
  */
 const GUIDE_SECTIONS = [
   ["earlyGame", "Early game", "text-emerald-300"],
+  ["laneMatchup", "Your lane opponent", "text-rose-300"],
   ["powerSpike", "Your power spike", "text-gold"],
+  ["midGame", "Mid game (5 to 10 min)", "text-sky-300"],
+  ["lateGame", "Late game (10 min on)", "text-violet-300"],
   ["teamfight", "In a fight", "text-accent"],
   ["pitfall", "What wastes this build", "text-bad"],
 ] as const;
@@ -433,8 +436,12 @@ export type Advice = {
   playGuide?: {
     earlyGame?: string;
     powerSpike?: string;
+    midGame?: string;
+    lateGame?: string;
     teamfight?: string;
     pitfall?: string;
+    /** Counter builds only, when the lane opponent is known. */
+    laneMatchup?: string;
   };
   validationErrors?: string[];
   /** Additive metadata (schemaVersion 2): what the build was optimised for, and

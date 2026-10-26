@@ -131,6 +131,19 @@ SYSTEM = (
     "- pitfall: the mistake that wastes THIS build specifically. Not generic advice like "
     "'do not get caught' -- the one that follows from these items, these runes, these "
     "summoners, or this champion's cooldowns.\n"
+    "THE GUIDE IS ALSO READ DURING THE MATCH, one section at a time as the clock moves, "
+    "so add two sections keyed to the clock:\n"
+    "- midGame: roughly minutes 5 to 10. Where to be and what to do with the items that "
+    "are done by then: which objectives, side lane or grouping, which fights to take and "
+    "which to skip.\n"
+    "- lateGame: minute 10 onward, when games are decided. How this loadout closes a game "
+    "or holds one: its role in the fights over Baron and Elder, and what to buy or swap "
+    "if behind.\n"
+    "When YOUR LANE OPPONENT is named below, also write laneMatchup: how to play the lane "
+    "against THAT champion with this loadout -- their threat window (the level, cooldown "
+    "or item when they win trades), when you win trades, what to dodge or bait, and what "
+    "to do once the wave or a level turns it your way. Name the opponent. Leave "
+    "laneMatchup out when no lane opponent is named.\n"
     "Two or three plain sentences each, written to a player who knows the game. No "
     "headings, no bullet characters, no markdown.\n"
 
@@ -243,7 +256,8 @@ SYSTEM = (
     '"when":"..."}],'
     '"snowballSwap":null or {"item":"<slug>","replaces":"<slug>","atPosition":1-5,'
     '"resultingOrder":["<slug>","<slug>","<slug>","<slug>","<slug>"],"when":"..."},'
-    '"playGuide":{"earlyGame":"...","powerSpike":"...","teamfight":"...","pitfall":"..."},'
+    '"playGuide":{"earlyGame":"...","powerSpike":"...","midGame":"...","lateGame":"...",'
+    '"teamfight":"...","pitfall":"...","laneMatchup":"... (only with a lane opponent)"},'
     '"why":["3-5 short bullets"]}'
 )
 

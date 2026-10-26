@@ -76,7 +76,23 @@ function trim(advice: Advice) {
     // build with no room for prose around it, so the one thing worth carrying
     // is the reasoning that names which piece answers which enemy.
     counterSummary: advice.counterSummary ?? null,
+    // How to play it, for the overlay's in-game card: early, mid and late
+    // game follow the match clock, laneMatchup is the lane opponent. Builds
+    // cached before those sections existed carry only the original four.
+    playGuide: playGuide(advice.playGuide),
   };
+}
+
+const GUIDE_KEYS = ["earlyGame", "powerSpike", "midGame", "lateGame", "teamfight", "pitfall", "laneMatchup"];
+
+function playGuide(raw: unknown): Record<string, string> | null {
+  if (!raw || typeof raw !== "object") return null;
+  const out: Record<string, string> = {};
+  for (const key of GUIDE_KEYS) {
+    const v = (raw as Record<string, unknown>)[key];
+    if (typeof v === "string" && v.trim()) out[key] = v.trim().slice(0, 600);
+  }
+  return Object.keys(out).length ? out : null;
 }
 
 /** How long an items call may follow its runes call without paying again.
