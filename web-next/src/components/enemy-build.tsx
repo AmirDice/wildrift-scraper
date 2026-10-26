@@ -957,7 +957,7 @@ function QuotaWall({ quota, signedIn, authConfigured }: {
       {!canUpgrade && signedIn && quota.creditsAvailable && (
         <>
           <p className="mt-3 text-xs font-semibold text-text">Need more today? Pay once, no subscription.</p>
-          <CreditPacks compact />
+          <CreditPacks />
         </>
       )}
       {!canUpgrade && !quota.creditsAvailable && quota.plusAvailable && (
