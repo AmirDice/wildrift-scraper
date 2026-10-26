@@ -221,7 +221,7 @@ export function DraftAssistant({ reader }: {
   /** A screen reader for this board, rendered above it and handed the
    *  function that fills seats. The second-screen page passes one; /draft
    *  passes nothing and is unchanged. */
-  reader?: (applyScan: (scan: { bans: string[]; allies: string[]; enemies: string[] }) => void) => ReactNode;
+  reader?: (applyScan: (scan: { bans: string[]; allies: string[]; enemies: string[]; live?: boolean }) => void) => ReactNode;
 } = {}) {
   // Live champions without a collected ladder sample still belong in champ
   // select. Their roster-backed kit can be analysed even though they stay out
@@ -445,9 +445,28 @@ export function DraftAssistant({ reader }: {
    * which is you. Anything already on the board is skipped, so scanning twice
    * changes nothing.
    */
-  const applyScan = useCallback((scan: { bans: string[]; allies: string[]; enemies: string[] }) => {
+  const applyScan = useCallback((scan: { bans: string[]; allies: string[]; enemies: string[]; live?: boolean }) => {
     const slugOf = (name: string) =>
       champions.find((c) => c.name === name)?.slug ?? null;
+    if (scan.live) {
+      // A live mirror sends the WHOLE draft as the reader tracks it, so the
+      // board mirrors it: an enemy hovering Ezreal, then Corki, then locking
+      // Ashe ends as Ashe, and a pre-pick that gets banned leaves its seat.
+      // Adding only (the screenshot path below) kept every hover forever.
+      setState((s) => {
+        const seats = (names: string[], size: number, skip: string | null) => {
+          const slugs = names.map(slugOf).filter((x): x is string => Boolean(x) && x !== skip).slice(0, size);
+          return [...slugs, ...Array<Slot>(size - slugs.length).fill(null)];
+        };
+        return {
+          ...s,
+          bans: seats(scan.bans, s.bans.length, null),
+          allies: seats(scan.allies, s.allies.length, s.me),
+          enemies: seats(scan.enemies, s.enemies.length, null),
+        };
+      });
+      return;
+    }
     setState((s) => {
       const taken = new Set<string>([
         ...picked(s.bans), ...picked(s.allies), ...picked(s.enemies), ...(s.me ? [s.me] : []),
