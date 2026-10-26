@@ -15,6 +15,9 @@ import { BuildsGeneratedCount, BuildsGeneratedPill } from "@/components/builds-c
 import { SeasonCard } from "@/components/season-card";
 import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champion-change-ranking";
 import { ITEM_CATALOG_COUNT } from "@/lib/advisor-catalog";
+import { ChinaThisWeek } from "@/components/china-this-week";
+import { chinaThisWeek } from "@/lib/china-meta";
+import { SKIPPED_PATCH } from "@/lib/announcement";
 
 // The title and description come from the root layout; the home page only has
 // to claim its own canonical so the root never competes with itself over
@@ -264,6 +267,15 @@ export default function HomePage() {
       {/* Biggest winners & losers this patch */}
       <Container className="py-2">
         <MoversHighlight />
+      </Container>
+
+      {/* What China's Legendary queue is building this week: the same section
+          as the meta page's Overview, the freshest data on the site. */}
+      <Container className="py-2">
+        <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
+        <div className="mt-3 flex justify-end">
+          <Link href="/meta" className="text-sm font-semibold text-accent transition hover:text-text">Full meta breakdown &rarr;</Link>
+        </div>
       </Container>
 
       {/* Featured champion */}

@@ -68,7 +68,10 @@ export default function MetaPage() {
         {
           key: "overview",
           label: "Overview",
-          blurb: "The headline numbers, and what the freshly collected boards agree on.",
+          blurb: "The headline numbers, what China's Legendary players are building this week, and what the freshly collected boards agree on.",
+          // The China section lives here now (owner, 2026-10-26), so links to
+          // /meta#china-this-week, the banner's among them, open this tab.
+          anchors: ["china-this-week"],
           content: (
             <>
               <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -77,6 +80,7 @@ export default function MetaPage() {
                 <Head label="Strongest class" value={h.topClass.class} sub={`${h.topClass.wr.toFixed(1)}% top-5 WR`} accent="text-gold" />
                 <Head label="Strongest role" value={h.topRole.role} sub={`${h.topRole.wr.toFixed(1)}% top picks`} />
               </div>
+              <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
               <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
             </>
           ),
@@ -84,14 +88,8 @@ export default function MetaPage() {
         {
           key: "builds",
           label: "Builds",
-          blurb: "Every rune and item the top boards equip, and what China's Legendary players are building this week.",
-          anchors: ["china-this-week"],
-          content: (
-            <>
-              <UsageTables />
-              <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
-            </>
-          ),
+          blurb: "Every rune and item the top boards equip, by usage and by win rate.",
+          content: <UsageTables />,
         },
         {
           key: "champions",
