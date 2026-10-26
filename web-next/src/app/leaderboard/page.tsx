@@ -9,6 +9,7 @@ import { RecordsSection } from "@/components/merged/records-section";
 import { PlayerQuickSearch } from "@/components/player-quick-search";
 import { AdSlot } from "@/components/ad-slot";
 import championSkins from "@/data/champion_skins.json";
+import { leaderboardUpdated } from "@/lib/updated-label";
 
 type SkinEntry = { num: number; name: string };
 
@@ -80,8 +81,10 @@ function podiumSkinPortraits(slug: string) {
 // around position 6-8 and "wild rift leaderboard eu" around 3, where the head
 // terms (tier list, meta) are stuck in the forties. The singular "Leaderboard"
 // and the explicit EU qualifier both match how people actually search for it.
+const UPDATED = leaderboardUpdated();
+
 export const metadata: Metadata = {
-  title: "Wild Rift Leaderboards | Best Players Across EU, NA and CN",
+  title: `Wild Rift Leaderboards | Best Players Across EU, NA and CN${UPDATED ? ` (Updated ${UPDATED})` : ""}`,
   description:
     "Wild Rift champion leaderboards with current-season top-three podiums across EU, NA and CN, plus win rate, games played, Champion Score and mastery.",
   alternates: { canonical: "/leaderboard" },

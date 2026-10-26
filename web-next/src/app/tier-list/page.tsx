@@ -8,12 +8,15 @@ import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { NextStep } from "@/components/next-step";
 import { CollectionSchedule } from "@/components/collection-schedule";
+import { tierListUpdated } from "@/lib/updated-label";
 
 // The patch belongs in the title: people search "wild rift tier list patch
 // 7.2a", and a tier list with no patch on it reads as undated to both a
 // searcher and a crawler. CURRENT_PATCH tracks the data, so this cannot drift.
+const UPDATED = tierListUpdated();
+
 export const metadata: Metadata = {
-  title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU, NA & China Win Rates`,
+  title: `Wild Rift Tier List Patch ${CURRENT_PATCH}${UPDATED ? ` (Updated ${UPDATED})` : ""} | EU, NA & China Win Rates`,
   description:
     `The Wild Rift tier list for patch ${CURRENT_PATCH}, combining real top-player win rates from EU and NA with official China server data from lolm.qq.com. Switch regions and filter by role from GOD to L tiers.`,
   alternates: { canonical: "/tier-list" },

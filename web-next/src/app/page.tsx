@@ -18,11 +18,17 @@ import { ITEM_CATALOG_COUNT } from "@/lib/advisor-catalog";
 import { ChinaThisWeek } from "@/components/china-this-week";
 import { chinaThisWeek } from "@/lib/china-meta";
 import { SKIPPED_PATCH } from "@/lib/announcement";
+import { tierListUpdated } from "@/lib/updated-label";
+import { CURRENT_PATCH } from "@/lib/patch";
 
 // The title and description come from the root layout; the home page only has
 // to claim its own canonical so the root never competes with itself over
 // "/" vs "/?ref=..." style variants.
+// The home page carries the patch and the newest data date like the tier
+// list, since it ranks for the same "wild rift tier list" head terms.
+const UPDATED = tierListUpdated();
 export const metadata: Metadata = {
+  title: { absolute: `WrTrueMeta | Wild Rift Tier List${CURRENT_PATCH ? ` Patch ${CURRENT_PATCH}` : ""}, Win Rates & Meta${UPDATED ? ` (Updated ${UPDATED})` : ""}` },
   alternates: { canonical: "/" },
 };
 

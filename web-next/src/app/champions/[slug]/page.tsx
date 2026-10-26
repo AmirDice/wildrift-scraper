@@ -44,6 +44,7 @@ import { REGION_LABEL, REGION_LONG, type Region } from "@/lib/region-labels";
 import { WinRateHistory } from "@/components/win-rate-history";
 import { getWinRateHistory } from "@/lib/wr-history";
 import { CollectionSchedule } from "@/components/collection-schedule";
+import { CURRENT_PATCH } from "@/lib/patch";
 
 /** One server choice on the champion page: its board record, its players
  *  and its best-player ranking. */
@@ -88,7 +89,9 @@ export async function generateMetadata(props: PageProps<"/champions/[slug]">): P
   // "<champion> counter wild rift", so both the name-first title and the word
   // "counters" in the description are there to match real queries rather than
   // to describe the page to ourselves.
-  const title = `${champion.name} Wild Rift Build, Counters & Win Rate`;
+  // The patch follows the data (lib/patch.ts), so "fiora build 7.3b" style
+  // queries match without anyone editing a title on patch day.
+  const title = `${champion.name} Wild Rift Build${CURRENT_PATCH ? ` Patch ${CURRENT_PATCH}` : ""}, Counters & Win Rate`;
   // Same blended figures the page itself shows, so the snippet in search
   // results cannot quote a different tier from the one above the fold.
   const meta = getGlobalBySlug(champion.slug) ?? champion;
