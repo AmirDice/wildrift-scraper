@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container, Card } from "@/components/ui";
 import { ADSENSE_CLIENT, ADS_LIVE } from "@/lib/ads";
+import { ConsentSettingsButton } from "@/components/analytics-consent";
 
 export const metadata: Metadata = {
   title: "Privacy & Ads",
@@ -143,6 +144,12 @@ export default function PrivacyPage() {
             </a>
             .
           </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            Visitors from those regions are asked first, in a small banner, whether Google Analytics may set
+            cookies; that question covers analytics only, never advertising. Rejecting is as easy as allowing, the
+            choice is kept on your device for a year, and you can change it at any time here.
+          </p>
+          <ConsentSettingsButton />
           <p className="mt-3 text-sm leading-relaxed text-muted">
             The site also uses Grow by Mediavine, which lets you save pages to come back to and
             gives us anonymous statistics about how readers engage with the site. Grow may store

@@ -13,7 +13,8 @@ import { AnchorAd } from "@/components/anchor-ad";
 import { ADSENSE_CLIENT, ADS_LIVE } from "@/lib/ads";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/next";
-import { CONSENT_REGIONS, GA_ID, GROW_SITE_ID } from "@/lib/analytics";
+import { CONSENT_REGIONS, CONSENT_RESTORE_SNIPPET, GA_ID, GROW_SITE_ID } from "@/lib/analytics";
+import { AnalyticsConsent } from "@/components/analytics-consent";
 import { getChampions, pendingChampions } from "@/lib/data";
 
 export const metadata: Metadata = {
@@ -194,12 +195,17 @@ gtag('consent', 'default', {
 gtag('consent', 'default', {
   ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted', analytics_storage: 'granted'
 });
+${CONSENT_RESTORE_SNIPPET}
 gtag('js', new Date());
 gtag('config', '${GA_ID}');`}
             </Script>
             <Script id="ga-tag" strategy="afterInteractive" src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} />
           </>
         )}
+        {/* Analytics-only consent for Europe until AdSense's own message can
+            serve (it needs an approved site); it stands down by itself once
+            Google's banner appears. Production only, like GA. */}
+        {GA_ID ? <AnalyticsConsent /> : null}
         <Analytics />
       </body>
     </html>

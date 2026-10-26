@@ -29,3 +29,14 @@ export const CONSENT_REGIONS = [
   "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
   "IS", "LI", "NO", "GB", "CH",
 ];
+
+/** Where the stopgap analytics banner (components/analytics-consent.tsx)
+ *  keeps the visitor's choice. */
+export const ANALYTICS_CONSENT_KEY = "wrtm-analytics-consent";
+
+/** Inline snippet for the GA init script: re-applies a stored "granted"
+ *  BEFORE gtag's config call, so a returning visitor's first page view is
+ *  counted fully instead of as a cookieless ping. Here and not in the client
+ *  component, because a client module's exports reach a server component as
+ *  references, not values. */
+export const CONSENT_RESTORE_SNIPPET = `try{var c=JSON.parse(localStorage.getItem(${JSON.stringify(ANALYTICS_CONSENT_KEY)})||"null");if(c&&c.choice==="granted"&&Date.now()-c.at<31536000000){gtag('consent','update',{analytics_storage:'granted'});}}catch(e){}`;
