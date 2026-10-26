@@ -89,6 +89,14 @@ KEY_NAME = "GEMINI_API_KEY" if IS_GEMINI else "DEEPSEEK_API_KEY"
 # explicit playstyles escalate. Unset means no escalation (everything on
 # ADVISOR_MODEL), so this is inert unless configured.
 PREMIUM_MODEL = os.environ.get("ADVISOR_MODEL_PREMIUM", "").strip()
+# Counter builds (the draft page and the overlay, both full builds and the
+# runes-first pass) run on the FASTEST model: they are generated during a
+# draft, against a timer. Owner's call, 2026-10-26. Studio builds stay on
+# ADVISOR_MODEL. Known cost of the lite model, measured before (see above):
+# it can override explicit playstyles and tank identities. Counter requests
+# are adaptive, so the playstyle half rarely applies. Set
+# ADVISOR_MODEL_COUNTER to an empty string to put counter back on ADVISOR_MODEL.
+COUNTER_MODEL = os.environ.get("ADVISOR_MODEL_COUNTER", "gemini-3.5-flash-lite").strip()
 
 
 def _complex_champions() -> frozenset[str]:
@@ -131,12 +139,15 @@ def _complex_champions() -> frozenset[str]:
 COMPLEX_CHAMPIONS: frozenset[str] = frozenset()
 
 
-def model_for_request(playstyle: str, champion: str = "") -> str:
+def model_for_request(playstyle: str, champion: str = "", mode: str = "studio") -> str:
     """Which model authors this build. Escalation applies only within the
     Gemini family: mixing providers per-request would change auth and the
     response contract mid-pipeline. Two triggers, both measured failures of
     the cheap model: an explicit playstyle it ignores, or a champion whose
-    identity it overrides even on standard requests."""
+    identity it overrides even on standard requests. Counter mode has its
+    own model, chosen for speed."""
+    if mode == "counter" and COUNTER_MODEL and IS_GEMINI and COUNTER_MODEL.lower().startswith("gemini"):
+        return COUNTER_MODEL
     if not (PREMIUM_MODEL and IS_GEMINI and PREMIUM_MODEL.lower().startswith("gemini")):
         return MODEL
     if playstyle not in ("standard", "adaptive") or champion in COMPLEX_CHAMPIONS:
@@ -3875,13 +3886,16 @@ def advise(champion: str, role: str, enemies: list[str],
     champion_class = champion_record.get("class", "")
     emit({"stage": "model", "chars": 0})
 
-    request_model = model_for_request(playstyle, champion)
+    request_model = model_for_request(playstyle, champion, mode)
     if request_model != MODEL:
-        why = (f"champion {champion!r} is in the complex set"
-               if playstyle in ("standard", "adaptive")
-               else f"playstyle {playstyle!r} is an explicit request")
-        print(f"[advisor] escalated to {request_model}: {why} "
-              f"the base model measurably gets wrong", file=sys.stderr)
+        if mode == "counter" and request_model == COUNTER_MODEL:
+            print(f"[advisor] counter build on {request_model}", file=sys.stderr)
+        else:
+            why = (f"champion {champion!r} is in the complex set"
+                   if playstyle in ("standard", "adaptive")
+                   else f"playstyle {playstyle!r} is an explicit request")
+            print(f"[advisor] escalated to {request_model}: {why} "
+                  f"the base model measurably gets wrong", file=sys.stderr)
 
     def call(text: str, thinking_level: str = "medium") -> dict:
         # Pass each keyword only when it deviates from the default, so the
@@ -5025,7 +5039,7 @@ def advise_runes(champion: str, role: str, enemies: list[str],
     ] if x)
 
     emit({"stage": "model", "chars": 0})
-    request_model = model_for_request(playstyle, champion)
+    request_model = model_for_request(playstyle, champion, mode)
 
     def call(text: str) -> dict:
         kwargs = {}
