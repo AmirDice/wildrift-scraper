@@ -100,10 +100,14 @@ COUNTER_MODEL = os.environ.get("ADVISOR_MODEL_COUNTER", "gemini-3.5-flash-lite")
 # How hard the model thinks, per half of a counter build (owner's call,
 # 2026-10-26). The rune page has the deadline -- it is entered in champion
 # select -- and LOW thinking brought the pass from 6.5-10 s to 2.4-4 s on
-# flash-lite with no repair needed. The items are bought over the next twenty
-# minutes, so they get HIGH. Studio builds keep the default (medium).
+# flash-lite, and matched the ladder's keystones better than medium or high.
+# Counter ITEMS think at MEDIUM: 4 champions x 3 samples per level on
+# flash-lite scored 0.53 / 0.49 / 0.45 ladder match (low / medium / high),
+# with medium the steady one (13-46 s, no warnings; low had a 109 s build
+# and a shipped warning, high only drifted off-ladder). 3.8 flash scored
+# 0.53-0.54 at every level for 55-209 s median. Studio keeps medium.
 RUNES_THINKING = os.environ.get("ADVISOR_RUNES_THINKING", "low").strip() or "low"
-COUNTER_ITEMS_THINKING = os.environ.get("ADVISOR_COUNTER_THINKING", "high").strip() or "high"
+COUNTER_ITEMS_THINKING = os.environ.get("ADVISOR_COUNTER_THINKING", "medium").strip() or "medium"
 
 
 def _complex_champions() -> frozenset[str]:
