@@ -93,7 +93,7 @@ def _same_table(a, b) -> bool:
 def _settle(client: ADBClient, want: str, attempts: int = 3):
     """Screenshot until the frame actually shows `want`, else give up."""
     for i in range(attempts):
-        time.sleep(0.6 + 0.4 * i)        # lists animate in; let them land
+        time.sleep(1.0 + 0.4 * i)        # lists animate in; let them land
         frame = client.screenshot()
         if L.detect_active_tab(frame) == want:
             return frame
