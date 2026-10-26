@@ -63,7 +63,7 @@ const ROUTES: Route[] = [
       "Download scrcpy, which is free and open source, and run it. The phone screen opens in a window with almost no delay.",
       "Start champion select, then press Read a live mirror below and share the scrcpy window.",
     ],
-    note: "Works on Windows, macOS and Linux, and on any Android phone regardless of brand.",
+    note: "Works on Windows, macOS and Linux, and on any Android phone regardless of brand. For the lightest mirror, start it as: scrcpy --max-size 1024 --max-fps 15 --video-bit-rate 2M. The reader needs no more than that.",
   },
   {
     id: "airplay",
@@ -151,6 +151,17 @@ export function SecondScreenGuide() {
         {route.steps.map((step) => <li key={step}>{step}</li>)}
       </ol>
       {route.note && <p className="mt-2 text-xs text-faint">{route.note}</p>}
+      {route.id !== "screenshot" && (
+        <div className="mt-3 rounded-xl border border-gold/25 bg-gold/[0.06] px-3 py-2.5 text-xs">
+          <p className="font-semibold text-gold">Mirror only during champion select</p>
+          <p className="mt-1 text-muted">
+            Mirroring uses the phone&rsquo;s video chip, the same one that records your screen, so it
+            costs a little battery and warmth rather than game performance. Champion select is the
+            lightest screen in Wild Rift, and the draft is all the assistant needs, so stop mirroring
+            once the game loads. A cable is lighter on the battery than Wi-Fi and charges the phone too.
+          </p>
+        </div>
+      )}
       {route.id !== "screenshot" && (
         <p className="mt-2 text-xs text-faint">
           When the share picker opens, choose the <strong>mirror window</strong> rather than
