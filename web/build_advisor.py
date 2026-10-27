@@ -4511,8 +4511,11 @@ def advise(champion: str, role: str, enemies: list[str],
             # selection -- so there is nothing worth preserving.
             print(f"[advisor] full regeneration; unrepairable sections: {blocking}",
                   file=sys.stderr)
-            res = _call(key, prompt + "\n\nYour previous answer had ERRORS. Fix them and "
-                        "return the corrected JSON only:\n- " + "\n- ".join(report.flat()))
+            # Through call(), not _call(): the bare call ran on ADVISOR_MODEL, so
+            # a counter build drafted on Flash-Lite was regenerated on 3.8 Flash,
+            # 67-74s in production on 2026-10-27 and most of the wait.
+            res = call(prompt + "\n\nYour previous answer had ERRORS. Fix them and "
+                       "return the corrected JSON only:\n- " + "\n- ".join(report.flat()))
             report = _check(res)
             continue
         for section in targeted:
