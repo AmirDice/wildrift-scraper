@@ -407,6 +407,20 @@ def _patch_calendar() -> tuple[list[tuple[str, str]], dict[str, set[str]]]:
     runes = list(load_json(WEB_DATA / "rune_icons.json"))
     calendar, changed = [], {}
     for entry in doc.get("patches", []):
+        # A mode-only patch is not a ranked patch. 7.3c changed nothing but
+        # AAA ARAM augments, and counting it labelled China's 21-27 October
+        # games "7.3c", so the impact page measured a week of drift between
+        # 7.3b and a patch that did not touch the Rift. Keep a patch only if
+        # it changes a champion outside a mode, or names an item or rune in a
+        # block that is not under GAME MODE CHANGES.
+        standard = any(not c.get("modeOnly") for c in entry.get("championChanges") or [])
+        rift_text = json.dumps([b for b in entry.get("textBlocks", [])
+                                if not str(b).lstrip().upper().startswith("GAME MODE CHANGES")],
+                               ensure_ascii=False)
+        if not standard and not any(
+                len(name) > 4 and re.search(r"(?<![A-Za-z])" + re.escape(name) + r"(?![A-Za-z])", rift_text)
+                for name in items + runes):
+            continue
         calendar.append((entry["patch"], str(entry["publishedAt"])[:10]))
         text = json.dumps(entry.get("changeLines", []), ensure_ascii=False) + json.dumps(entry.get("textBlocks", []), ensure_ascii=False)
         changed[entry["patch"]] = {
