@@ -51,11 +51,10 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`Every ability, item and rune number on the site is on patch ${SKIPPED_PATCH}, `
-            + `and now so are the EU and NA win rates: both ladders were collected again `
-            + `from 19 to 22 October, the first boards played on ${EU_WINRATE_PATCH}. `
-            + `China's board is still the ${CN_WINRATE_PATCH} one from 11 October, so there a champion `
-            + `${SKIPPED_PATCH} changed still shows how it performed before the change.`}
+          {`Every ability, item and rune number on the site is on patch ${SKIPPED_PATCH}. `
+            + `The EU and NA win rates come from boards collected from 19 to 22 October on `
+            + `${EU_WINRATE_PATCH}, and China's board is the ${CN_WINRATE_PATCH} one from 11 October, `
+            + `so a champion ${SKIPPED_PATCH} changed still shows how it performed before the change.`}
         </p>
       </div>
 

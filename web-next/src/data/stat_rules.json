@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "targetPatch": "7.3b",
+  "targetPatch": "7.3d",
   "champions": {
     "Pantheon": {
       "baseStats": {

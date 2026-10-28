@@ -656,10 +656,10 @@
     "flurryCooldownSec": 25
   },
   "stormrazor": {
-    "burstProcFlat": 120,
+    "burstProcFlat": 100,
     "burstProcCdSec": 6,
-    "msPct": 11,
-    "_why": "Bolt is 120 magic on the Energized attack with 45% Move Speed for 1.5s. Energized recharges while moving and attacking, so it is charged every 6 seconds rather than once a fight. msPct is a PERMANENT bonus in the engine, so the burst is discounted to its uptime: 45% for 1.5s of every 6 is about 11%."
+    "msPct": 9,
+    "_why": "Bolt is 100 magic on the Energized attack with 35% Move Speed for 1.5s. Energized recharges while moving and attacking, so it is charged every 6 seconds rather than once a fight. msPct is a PERMANENT bonus in the engine, so the burst is discounted to its uptime: 35% for 1.5s of every 6 is about 9%."
   },
   "rapid-firecannon": {
     "burstProcFlat": 80,
@@ -670,12 +670,12 @@
   },
   "fiendhunter-bolts": {
     "ultAttackCount": 3,
-    "ultAttackCritMultiplierPct": 80,
-    "ultAttackTruePctIfCrit": 15,
+    "ultAttackCritMultiplierPct": 85,
+    "ultAttackTruePctIfCrit": 17.5,
     "ultAttackWindowS": 8,
     "ultAttackAsPct": 50,
     "ultAttackCooldownS": 45,
-    "_why": "Opening Barrage is modeled when the rotation casts an ultimate: the next three attacks within 8 seconds are forced crits at 80% normal crit damage, while attacks that would already crit add 15% true damage. The temporary 50% attack-speed window increases the expected attack count for the active portion of the reference fight; the three-hit cap still limits the crit replacement."
+    "_why": "Opening Barrage is modeled when the rotation casts an ultimate: the next three attacks within 8 seconds are forced crits at 85% normal crit damage, while attacks that would already crit add 17.5% true damage. The temporary 50% attack-speed window increases the expected attack count for the active portion of the reference fight; the three-hit cap still limits the crit replacement."
   },
   "immortal-shieldbow": {
     "shieldFlat": {

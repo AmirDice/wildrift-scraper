@@ -17,7 +17,7 @@ import { getChampionChangeRanking, getMostAdjustedChampions } from "@/lib/champi
 import { ITEM_CATALOG_COUNT } from "@/lib/advisor-catalog";
 import { ChinaThisWeek } from "@/components/china-this-week";
 import { chinaThisWeek } from "@/lib/china-meta";
-import { SKIPPED_PATCH } from "@/lib/announcement";
+import { IMPACT_PATCH } from "@/lib/announcement";
 import { tierListUpdated } from "@/lib/updated-label";
 import { CURRENT_PATCH } from "@/lib/patch";
 
@@ -278,7 +278,7 @@ export default function HomePage() {
       {/* What China's Legendary queue is building this week: the same section
           as the meta page's Overview, the freshest data on the site. */}
       <Container className="py-2">
-        <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
+        <ChinaThisWeek data={chinaThisWeek(IMPACT_PATCH)} />
         <div className="mt-3 flex justify-end">
           <Link href="/meta" className="text-sm font-semibold text-accent transition hover:text-text">Full meta breakdown &rarr;</Link>
         </div>

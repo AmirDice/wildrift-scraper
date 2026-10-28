@@ -579,7 +579,7 @@
     "cost": 3000,
     "stats": {
       "ad": {
-        "value": 50,
+        "value": 55,
         "percent": false
       },
       "crit": {
@@ -704,7 +704,7 @@
     "categories": [
       "Physical"
     ],
-    "cost": 3400,
+    "cost": 3300,
     "stats": {
       "hp": {
         "value": 425,
@@ -3794,7 +3794,7 @@
     },
     "passives": [
       "Energized: Moving and attacking generate an Energized attack.",
-      "Bolt: Your Energized attack deals 120 bonus magic damage and grants 45% Movement Speed [moveSpeed] for 1.5 seconds."
+      "Bolt: Your Energized attack deals 100 bonus magic damage and grants 35% Movement Speed [moveSpeed] for 1.5 seconds."
     ],
     "tags": [
       "mobility"
@@ -3860,7 +3860,7 @@
     },
     "passives": [
       "Night Vigil: Gain 20 ultimate Ability Haste [abilityHaste].",
-      "Opening Barrage: After casting your ultimate, your next 3 attacks within 8 seconds gain 50% Attack Speed and are guaranteed to Critically Strike for 80% of your normal Critical Strike damage. An attack that would already Critically Strike deals 15% bonus true damage instead. (45s Cooldown)"
+      "Opening Barrage: After casting your ultimate, your next 3 attacks within 8 seconds gain 50% Attack Speed and are guaranteed to Critically Strike for 85% of your normal Critical Strike damage. An attack that would already Critically Strike deals 17.5% bonus true damage instead. (45s Cooldown)"
     ],
     "tags": [
       "mobility"
@@ -3965,7 +3965,7 @@
         "percent": true
       },
       "healShieldPower": {
-        "value": 8,
+        "value": 6,
         "percent": true
       }
     },
@@ -4003,7 +4003,7 @@
         "percent": true
       },
       "healShieldPower": {
-        "value": 8,
+        "value": 6,
         "percent": true
       }
     },

@@ -18,7 +18,15 @@
  * apart: every number a patch changes directly (ability ratios, cooldowns,
  * item stats) is on this patch, and only the measured win rates are not.
  */
-export const SKIPPED_PATCH = "7.3b";
+export const SKIPPED_PATCH = "7.3d";
+
+/**
+ * The patch the China patch-impact views measure. Separate from SKIPPED_PATCH
+ * because they need days of China's games on a patch before they say anything:
+ * on 7.3d's first day there are none, so they stay on 7.3b until China's
+ * daily data has caught up.
+ */
+export const IMPACT_PATCH = "7.3b";
 
 /**
  * The patch whose games the win rates were actually collected from.
@@ -57,7 +65,7 @@ export const NOT_RECAPTURED: Record<"EU" | "NA", string[]> = {
 };
 
 /** The patch the next collection and the next round of work is aimed at. */
-export const NEXT_PATCH = "7.3b";
+export const NEXT_PATCH = "7.3d";
 
 /** The announced window for the EU/NA/CN ladder collection. */
 export const COLLECTION_START = "Monday, October 5, 2026";
@@ -93,7 +101,7 @@ export const ANNOUNCEMENT = {
   key: "wtm-announce-meta-china-week-2026-10-v10",
   href: "/meta#builds",
   lead: "What China is building this week",
-  short: `New on the meta page: the builds rising fastest in China's Legendary queue, the items and keystones winning most by role, summoner spells by lane, and a full breakdown of what patch ${SKIPPED_PATCH} did to every item it changed. Every champion page now also tracks its builds across patches, so a strong older build is not lost when players move on.`,
+  short: `New on the meta page: the builds rising fastest in China's Legendary queue, the items and keystones winning most by role, summoner spells by lane, and a full breakdown of what patch ${IMPACT_PATCH} did to every item it changed. Every champion page now also tracks its builds across patches, so a strong older build is not lost when players move on.`,
   cta: "See the meta",
   badges: ["New"],
   /** Pages the banner points at, so it does not appear on top of itself. */
@@ -110,6 +118,27 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "28 October 2026",
+    title: "Patch 7.3d applied",
+    body:
+      "Shyvana's human form hits harder: more Health and attack speed growth, "
+      + "shorter cooldowns and much higher Flame Breath ratios, with less "
+      + "omnivamp and haste from her late upgrades. Camille, Lee Sin and Akali "
+      + "gain attack speed growth, Lee Sin's ultimate hits harder and Akali has "
+      + "more armor. Nasus has more Attack Damage and resists on his ultimate but "
+      + "less Spirit Fire damage. Malphite's shield and Thunderclap, Ekko's "
+      + "damage to monsters, Samira's ratios, Ashe's crit bonus and Singed's "
+      + "Health, speed and cooldowns were cut, and Miss Fortune's Love Tap and "
+      + "Bullet Time went up. Divine Sunderer is 100 gold cheaper, Essence Reaver "
+      + "has 5 more Attack Damage, Fiendhunter Bolts' Opening Barrage hits "
+      + "harder, Stormrazor's Bolt is weaker, and Whispering Circlet and Diadem "
+      + "of Songs lost Heal and Shield Power. Three of our numbers did not match "
+      + "what Riot says they were before the patch (Shyvana's Twin Bite "
+      + "cooldowns, Malphite's Thunderclap armor ratio and Samira's melee Flair "
+      + "ratio); all three now carry the 7.3d values. Win rates are still the "
+      + "7.3b boards in EU and NA until the next collection.",
+  },
   {
     date: "24 October 2026",
     title: "China this week, patch impact, and builds across patches",

@@ -20,7 +20,7 @@
       "attackSpeedRatio": 0.625,
       "baseAttackSpeed": 0.625,
       "baseBonusAttackSpeed": 0.28,
-      "attackSpeedPerLevel": 0.02,
+      "attackSpeedPerLevel": 0.04,
       "source": "appendix"
     },
     "Akshan": {
@@ -118,7 +118,7 @@
       "attackSpeedRatio": 0.644,
       "baseAttackSpeed": 0.644,
       "baseBonusAttackSpeed": 0.24,
-      "attackSpeedPerLevel": 0.016,
+      "attackSpeedPerLevel": 0.028,
       "source": "appendix"
     },
     "Cho'Gath": {
@@ -398,7 +398,7 @@
       "attackSpeedRatio": 0.651,
       "baseAttackSpeed": 0.651,
       "baseBonusAttackSpeed": 0.23,
-      "attackSpeedPerLevel": 0.02,
+      "attackSpeedPerLevel": 0.04,
       "source": "appendix"
     },
     "Leona": {
@@ -692,7 +692,7 @@
       "attackSpeedRatio": 0.638,
       "baseAttackSpeed": 0.638,
       "baseBonusAttackSpeed": 0.25,
-      "attackSpeedPerLevel": 0.012,
+      "attackSpeedPerLevel": 0.024,
       "source": "appendix"
     },
     "Singed": {
@@ -990,7 +990,7 @@
       "source": "appendix"
     }
   },
-  "patch": "7.3a",
+  "patch": "7.3d",
   "measuredBefore7_3": {
     "Lux": {
       "attackSpeedRatio": 0.75,

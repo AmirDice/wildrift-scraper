@@ -1,6 +1,150 @@
 {
   "schemaVersion": 1,
   "champions": {
+    "Shyvana": {
+      "totalChanges": 28,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 21,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Camille": {
+      "totalChanges": 27,
+      "modeOnlyChanges": 7,
+      "balanceChanges": 19,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Malphite": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 11,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Ekko": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Lee Sin": {
+      "totalChanges": 25,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 22,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Akali": {
+      "totalChanges": 25,
+      "modeOnlyChanges": 8,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Nasus": {
+      "totalChanges": 21,
+      "modeOnlyChanges": 7,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Samira": {
+      "totalChanges": 21,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Ashe": {
+      "totalChanges": 24,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 19,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Miss Fortune": {
+      "totalChanges": 28,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 23,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Singed": {
+      "totalChanges": 12,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Jarvan IV": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Taliyah": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 3,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Ryze": {
+      "totalChanges": 8,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.3c",
+      "lastChangedAt": "2026-10-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3c",
+      "lastBalanceAt": "2026-10-21T09:00:00.000Z"
+    },
+    "Kayn": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Vladimir": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 10,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
     "Volibear": {
       "totalChanges": 8,
       "modeOnlyChanges": 0,
@@ -91,28 +235,10 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Samira": {
-      "totalChanges": 20,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 16,
-      "lastChangedPatch": "7.3a",
-      "lastChangedAt": "2026-09-29T09:00:00.000Z",
-      "lastBalancePatch": "7.3a",
-      "lastBalanceAt": "2026-09-29T09:00:00.000Z"
-    },
     "Rammus": {
       "totalChanges": 23,
       "modeOnlyChanges": 3,
       "balanceChanges": 20,
-      "lastChangedPatch": "7.3a",
-      "lastChangedAt": "2026-09-29T09:00:00.000Z",
-      "lastBalancePatch": "7.3a",
-      "lastBalanceAt": "2026-09-29T09:00:00.000Z"
-    },
-    "Malphite": {
-      "totalChanges": 13,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 10,
       "lastChangedPatch": "7.3a",
       "lastChangedAt": "2026-09-29T09:00:00.000Z",
       "lastBalancePatch": "7.3a",
@@ -181,15 +307,6 @@
       "lastBalancePatch": "7.3a",
       "lastBalanceAt": "2026-09-29T09:00:00.000Z"
     },
-    "Nasus": {
-      "totalChanges": 20,
-      "modeOnlyChanges": 7,
-      "balanceChanges": 13,
-      "lastChangedPatch": "7.3a",
-      "lastChangedAt": "2026-09-29T09:00:00.000Z",
-      "lastBalancePatch": "7.3a",
-      "lastBalanceAt": "2026-09-29T09:00:00.000Z"
-    },
     "Ezreal": {
       "totalChanges": 19,
       "modeOnlyChanges": 4,
@@ -221,15 +338,6 @@
       "totalChanges": 21,
       "modeOnlyChanges": 1,
       "balanceChanges": 19,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Miss Fortune": {
-      "totalChanges": 27,
-      "modeOnlyChanges": 5,
-      "balanceChanges": 22,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -325,15 +433,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Ashe": {
-      "totalChanges": 23,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 18,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Graves": {
       "totalChanges": 21,
       "modeOnlyChanges": 2,
@@ -415,15 +514,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Ekko": {
-      "totalChanges": 14,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 13,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Xin Zhao": {
       "totalChanges": 22,
       "modeOnlyChanges": 3,
@@ -455,15 +545,6 @@
       "totalChanges": 23,
       "modeOnlyChanges": 6,
       "balanceChanges": 17,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Akali": {
-      "totalChanges": 24,
-      "modeOnlyChanges": 8,
-      "balanceChanges": 16,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -527,33 +608,6 @@
       "totalChanges": 21,
       "modeOnlyChanges": 6,
       "balanceChanges": 14,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Camille": {
-      "totalChanges": 26,
-      "modeOnlyChanges": 7,
-      "balanceChanges": 18,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Jarvan IV": {
-      "totalChanges": 18,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 14,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Lee Sin": {
-      "totalChanges": 24,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 21,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -739,15 +793,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Kayn": {
-      "totalChanges": 19,
-      "modeOnlyChanges": 4,
-      "balanceChanges": 14,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Karma": {
       "totalChanges": 12,
       "modeOnlyChanges": 0,
@@ -919,15 +964,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Shyvana": {
-      "totalChanges": 27,
-      "modeOnlyChanges": 6,
-      "balanceChanges": 20,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Zyra": {
       "totalChanges": 14,
       "modeOnlyChanges": 2,
@@ -1036,28 +1072,10 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Vladimir": {
-      "totalChanges": 14,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 10,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Nami": {
       "totalChanges": 11,
       "modeOnlyChanges": 3,
       "balanceChanges": 7,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Singed": {
-      "totalChanges": 11,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 8,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -1207,15 +1225,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Ryze": {
-      "totalChanges": 7,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 6,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Mel": {
       "totalChanges": 4,
       "modeOnlyChanges": 1,
@@ -1247,15 +1256,6 @@
       "totalChanges": 6,
       "modeOnlyChanges": 1,
       "balanceChanges": 5,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Taliyah": {
-      "totalChanges": 4,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 3,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",

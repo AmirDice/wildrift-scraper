@@ -180,9 +180,9 @@
         "lvl15": 2730
       },
       "armor": {
-        "base": 34,
+        "base": 37,
         "perLevel": 6,
-        "lvl15": 118
+        "lvl15": 121
       },
       "mr": {
         "base": 38,
@@ -4820,9 +4820,9 @@
         "lvl15": 60
       },
       "ad": {
-        "base": 58,
+        "base": 62,
         "perLevel": 5,
-        "lvl15": 128
+        "lvl15": 132
       }
     }
   },
@@ -6545,8 +6545,8 @@
     "baseStats": {
       "hp": {
         "base": 660,
-        "perLevel": 120,
-        "lvl15": 2340
+        "perLevel": 130,
+        "lvl15": 2480
       },
       "armor": {
         "base": 46,
@@ -6608,9 +6608,9 @@
     "ccImmune": false,
     "baseStats": {
       "hp": {
-        "base": 690,
+        "base": 660,
         "perLevel": 112,
-        "lvl15": 2258
+        "lvl15": 2228
       },
       "armor": {
         "base": 46,

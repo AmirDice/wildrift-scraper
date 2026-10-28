@@ -1,0 +1,582 @@
+{
+ "patch": "7.3d",
+ "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-3d/",
+ "parsedAt": "2026-10-28T11:45:02+00:00",
+ "blades": [
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 0,
+     "title": "",
+     "path": [
+      ""
+     ],
+     "notes": [
+      "We're back with another round of balance changes, and things are about to get a little Rift-y. Akali is stepping out of the shadows, Lee Sin is kicking things up a notch, and Miss Fortune is hoping to turn her luck around. Meanwhile, Malphite's getting knocked down a peg, Ashe is cooling off, and Singed might finally have to slow his roll. We've also got some item adjustments, a little extra oomph for Baron Nashor, and turret changes that might make those risky dives worth a shot. Let's get into it!",
+      "Reminder: content will be released throughout the patch."
+     ],
+     "lines": []
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "SHYVANA",
+   "summary": "Shyvana previously relied on her fast jungle clears to get ahead and scale into a late-game powerhouse. However, with jungle clear speeds becoming more consistent across champions, she's lost some of that early advantage and has struggled to hold her own when behind. We're giving her human form some extra fighting power while toning down her fully scaled strength. This should help Shyvana stay competitive when she's behind without making her quite so overwhelming once she reaches her full potential.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Health per level: 120 → 130",
+      "Health Regen per level: 9 → 12",
+      "Attack Speed per level: 0.012 → 0.024"
+     ]
+    },
+    {
+     "title": "Twin Bite",
+     "lines": [
+      "Cooldown: 8.5/7.5/6.5/5.5s → 7/6.5/6/5.5s"
+     ]
+    },
+    {
+     "title": "Burnout",
+     "lines": [
+      "Cooldown: 13/12/11/10s → 12/11/10/9s",
+      "Wings of the Cloud’s Bonus Movement Speed: 25% → 15%"
+     ]
+    },
+    {
+     "title": "Flame Breath",
+     "lines": [
+      "Cooldown: 11/10/9/8 → 10/9/8/7",
+      "Damage Ratio: 30% Attack Damage + 40% Ability Power → 50% Attack",
+      "Damage + 80% Ability Power",
+      "Dragon Form Detonation damage Ratio: 50% Attack Damage + 70%",
+      "Ability Power → 100% Attack Damage + 100% Ability Power Dragon",
+      "Form scorched earth Attack Damage ratio: 10% → 15%"
+     ]
+    },
+    {
+     "title": "Dragon's Descent",
+     "lines": [
+      "Life of the Ocean Omnivamp: 20% → 10%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "CAMILLE",
+   "summary": "Recent Attack Speed adjustments have made Camille's combos feel less fluid than intended. We're increasing her Attack Speed growth to help restore the smoothness and responsiveness of her combos.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Attack Speed per level: 0.016 → 0.028"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "MALPHITE",
+   "summary": "Malphite continues to be a rock-solid pick, but he's bringing a bit too much damage and durability to the Rift. We're further reducing his burst potential and survivability to give opponents more opportunities to fight back.",
+   "blocks": [
+    {
+     "title": "Granite Shield",
+     "lines": [
+      "Maximum Health ratio: 11% → 10%"
+     ]
+    },
+    {
+     "title": "Thunderclap",
+     "lines": [
+      "Base damage of the first attack: 40/60/80/100 → 30/45/60/75",
+      "Armor ratio of the first attack: 30% → 20%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "EKKO",
+   "summary": "Ekko has been scaling faster than intended following the latest patch, allowing him to get ahead a little too easily. We're dialing back some of his power to keep his snowball potential in check.",
+   "blocks": [
+    {
+     "title": "Z-Drive Resonance",
+     "lines": [
+      "Damage modifier against monsters: 120% → 110%"
+     ]
+    },
+    {
+     "title": "Timewinder",
+     "lines": [
+      "Damage modifier against monsters: 115% → 100%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "LEE SIN",
+   "summary": "Lee Sin has been struggling across all skill levels, so we're giving his base damage a small boost and smoothing out his combos to help him get back into fighting shape.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Attack Speed per level: 0.02 → 0.04"
+     ]
+    },
+    {
+     "title": "Dragon's Rage",
+     "lines": [
+      "Base Damage: 125/350/575 → 150/375/600"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "AKALI",
+   "summary": "Akali has been struggling to find her footing on the Rift for a while now. Rather than simply increasing her damage, we're strengthening her early laning phase and making her late-game combos smoother and faster to execute, giving skilled Akali players more opportunities to outplay their opponents.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Attack Speed per level: 0.02 → 0.04",
+      "Base Armor: 34 → 37"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "NASUS",
+   "summary": "Nasus has been struggling to hold his own in Baron Lane and teamfights since the latest patch. We're giving him a helping hand in those areas while toning down his waveclear to keep his Mid Lane performance in check.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Attack Damage:58 → 62"
+     ]
+    },
+    {
+     "title": "Spirit Fire",
+     "lines": [
+      "Base Damage: 55/110/165/220 → 50/90/130/170"
+     ]
+    },
+    {
+     "title": "Fury of the Sands",
+     "lines": [
+      "Armor and Magic Resistance: 40/50/60 → 40/55/70"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "SAMIRA",
+   "summary": "Samira has been showing off a little too much since her last round of buffs. We're partially reverting some of the scaling increases to her abilities to bring her power back in line without undoing all of her recent improvements",
+   "blocks": [
+    {
+     "title": "Flair",
+     "lines": [
+      "Attack Damage ratio: 125% → 115%"
+     ]
+    },
+    {
+     "title": "Inferno Trigger",
+     "lines": [
+      "Attack Damage ratio: 50% → 45%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "ASHE",
+   "summary": "Ashe has been dominating Dragon Lane across all skill levels, consistently outperforming her fellow marksmen. We're reducing her basic attack damage throughout the game to bring her power more in line with other Dragon Laners.",
+   "blocks": [
+    {
+     "title": "Frost Shot",
+     "lines": [
+      "Bonus damage dealt to the target by basic attacks: 0 ~ 130% (Based on crit stats) → 0 ~ 123.5% (Based on crit stats)"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "MISS FORTUNE",
+   "summary": "The recent marksman item overhaul and Critical Strike Damage adjustments have left Miss Fortune's builds struggling to keep up. We're giving her a small boost to help her find her footing again and bring her performance back in line with other marksmen.",
+   "blocks": [
+    {
+     "title": "Love Tap",
+     "lines": [
+      "Bonus Attack Damage Multiplier: 40%→ 50%"
+     ]
+    },
+    {
+     "title": "Bullet Time",
+     "lines": [
+      "Critical Strike Damage: 130% ~ 139% (Based on crit stats) → 135% ~ 145.5%(Based on crit stats)"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "SINGED",
+   "summary": "Singed has been a dominant force in both Baron Lane and Mid Lane for quite some time. We're looking to tone down his laning and teamfighting power in the early and mid game, as well as his ability to disrupt enemy teams in the late game.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Health: 690 → 660",
+      "Movement Speed: 355 → 350"
+     ]
+    },
+    {
+     "title": "Mega Adhesive",
+     "lines": [
+      "Cooldown: 11s → 14/13/12/11s"
+     ]
+    },
+    {
+     "title": "Fling",
+     "lines": [
+      "Cooldown: 12s → 13s"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "Item",
+     "path": [
+      "Item"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Fiendhunter Bolts",
+     "path": [
+      "Item",
+      "Fiendhunter Bolts"
+     ],
+     "notes": [
+      "Fiendhunter Bolts and its intended users are still struggling to keep up with other options. We're giving the item a straightforward stat boost to help its users pack a bigger punch after casting their ultimate.",
+      "Opening Barrage"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Opening Barrage",
+     "path": [
+      "Item",
+      "Fiendhunter Bolts",
+      "Opening Barrage"
+     ],
+     "notes": [],
+     "lines": [
+      "Normal Critical Strike Damage: 80% → 85%",
+      "True Damage: 15% → 17.5%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Divine Sunderer",
+     "path": [
+      "Item",
+      "Divine Sunderer"
+     ],
+     "notes": [
+      "Divine Sunderer's high cost has made it difficult to compete with other first-item options. We're lowering its price to help its users reach their power spikes sooner and make it a more appealing early purchase.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Price: 3400 → 3300"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Essence Reaver",
+     "path": [
+      "Item",
+      "Essence Reaver"
+     ],
+     "notes": [
+      "Essence Reaver and its intended users have been falling behind in the current meta. We're giving the item a boost to help it compete with other options and make it a more appealing choice for champions who rely on it.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Attack Damage: 50 → 55"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Whispering Circlet",
+     "path": [
+      "Item",
+      "Whispering Circlet"
+     ],
+     "notes": [
+      "Whispering Circlet and Diadem of Songs continue to outshine other enchanter support options. We're trimming some of their base stats to bring their power more in line with other support items and encourage greater build diversity.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Heal and Shield Power: 8% → 6%"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Diadem of Songs",
+     "path": [
+      "Item",
+      "Diadem of Songs"
+     ],
+     "notes": [
+      "Base Stats"
+     ],
+     "lines": [
+      "Heal and Shield Power: 8% → 6%"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Stormrazor",
+     "path": [
+      "Item",
+      "Stormrazor"
+     ],
+     "notes": [
+      "Stormrazor has become a go-to choice for marksmen, boasting both a high pick rate and strong win rate. Its Movement Speed boost has made it a little too easy to kite opponents while dishing out significant damage, so we're dialing back the effect to give opponents more opportunities to fight back.",
+      "Bolt"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Bolt",
+     "path": [
+      "Item",
+      "Stormrazor",
+      "Bolt"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage: 120 → 100",
+      "Movement Speed: 45% → 35%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 2,
+     "title": "GAMEPLAY",
+     "path": [
+      "GAMEPLAY"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Baron Nashor",
+     "path": [
+      "GAMEPLAY",
+      "Baron Nashor"
+     ],
+     "notes": [
+      "Securing the first Baron Nashor has become more rewarding following the latest patch, but it's still not having quite the impact we'd like. We're increasing the power of Hand of Baron to make securing this major objective feel more rewarding and give teams a stronger opportunity to push their advantage.",
+      "Hand of Baron"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Hand of Baron",
+     "path": [
+      "GAMEPLAY",
+      "Baron Nashor",
+      "Hand of Baron"
+     ],
+     "notes": [],
+     "lines": [
+      "Minion damage reduction against champions:Melee Minion/ Caster Minion: 50 - 70% → 55 - 75%Cannon Minion/Siege Minion: 30% → 35%",
+      "Minion damage reduction against other minions:Melee Minion: 80% → 90%Other Minions: 20% → 25% (Except Super Minion)",
+      "Minion damage reduction against turrets: 25% → 30% (Except Super Minion)"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Minions",
+     "path": [
+      "GAMEPLAY",
+      "Minions"
+     ],
+     "notes": [
+      "Similar to Hand of Baron, Minion Push Advantage hasn't been giving teams quite enough pushing power. We're increasing the damage reduction granted to minions when their team is ahead, helping teams turn their lead into stronger pushes and create more opportunities to close out games."
+     ],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Turrets",
+     "path": [
+      "GAMEPLAY",
+      "Turrets"
+     ],
+     "notes": [
+      "The turret damage stacking mechanic has made early-game dives a little too punishing for junglers and laners alike. We're slightly reducing its power to give players more opportunities to make aggressive plays and pull off successful dives during the laning phase."
+     ],
+     "lines": [
+      "Turret damage multiplier on consecutive attacks: 100%/150%/215%/300% → 100%/150%/210%/270%"
+     ]
+    },
+    {
+     "level": 2,
+     "title": "GAME MODE CHANGES",
+     "path": [
+      "GAME MODE CHANGES"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 3,
+     "title": "AAA ARAM",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Augment Adjustments",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Augment Adjustments"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Violet Toxin",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Violet Toxin"
+     ],
+     "notes": [],
+     "lines": [
+      "On-hit Damage: 40 ~ 80 + 40%Bonus Attack Damage + 10% Ability Power → 20 ~ 40 + 40%Bonus Attack Damage + 10% Ability Power"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Chromacrash Series",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Chromacrash Series"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage per second: 10 ~ 20 + 30% Bonus Attack Damage + 15% Ability Power → 5 ~ 12 + 30%Bonus Attack Damage + 10%Ability Power"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Rhythm Hunter",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Rhythm Hunter"
+     ],
+     "notes": [],
+     "lines": [
+      "Steelbuff per stack: 8 → 6"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Red-Blue Remix",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Red-Blue Remix"
+     ],
+     "notes": [],
+     "lines": [
+      "Maximum Stack per minute: 60 → 75"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Transmissible Agents",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Transmissible Agents"
+     ],
+     "notes": [],
+     "lines": [
+      "Transmissible Healing and Shielding: 50% → 40%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Crimson Burst",
+     "path": [
+      "GAME MODE CHANGES",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Crimson Burst"
+     ],
+     "notes": [],
+     "lines": [
+      "Cooldown: 5s → 4s"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "K/DA Ahri Skin Updates",
+     "path": [
+      "K/DA Ahri Skin Updates"
+     ],
+     "notes": [
+      "Following your feedback on K/DA Lumen Ahri, K/DA Lollipop Ahri, and K/DA Gilded Ahri's appearance, we've made adjustments to her facial features, gestures and shadows across all three splash arts and turntables. Thank you for taking the time to share your thoughts with us. Your feedback continues to be an important part of how we improve Wild Rift."
+     ],
+     "lines": []
+    }
+   ]
+  }
+ ]
+}

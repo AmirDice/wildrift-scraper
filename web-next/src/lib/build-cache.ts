@@ -430,7 +430,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // players build are no longer "never-build" (Mortal Reminder on Vi, 67% of
   // EU games, was rejected), Riven may build a crit path, and every champion
   // can choose an AD/AP/hybrid path and a damage type.
-  return `build:v86:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v87: patch 7.3d. Shyvana, Camille, Malphite, Ekko, Lee Sin, Akali, Nasus,
+  // Samira, Ashe, Miss Fortune and Singed changed; Fiendhunter Bolts, Divine
+  // Sunderer, Essence Reaver, Whispering Circlet, Diadem of Songs and
+  // Stormrazor moved. Every cached build predates all of it.
+  return `build:v87:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

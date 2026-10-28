@@ -8,7 +8,7 @@ import { UsageTables } from "@/components/usage-tables";
 import { MetaTabs } from "@/components/meta-tabs";
 import { ChinaThisWeek } from "@/components/china-this-week";
 import { chinaThisWeek } from "@/lib/china-meta";
-import { SKIPPED_PATCH } from "@/lib/announcement";
+import { IMPACT_PATCH } from "@/lib/announcement";
 import { DeepDiveSections } from "@/components/deep-dive";
 import {
   tierDistribution, wrHistogram, wrVsGames, classMeta, roleMeta,
@@ -80,7 +80,7 @@ export default function MetaPage() {
                 <Head label="Strongest class" value={h.topClass.class} sub={`${h.topClass.wr.toFixed(1)}% top-5 WR`} accent="text-gold" />
                 <Head label="Strongest role" value={h.topRole.role} sub={`${h.topRole.wr.toFixed(1)}% top picks`} />
               </div>
-              <ChinaThisWeek data={chinaThisWeek(SKIPPED_PATCH)} />
+              <ChinaThisWeek data={chinaThisWeek(IMPACT_PATCH)} />
               <LadderPulseSection championIcons={Object.fromEntries(getChampions().map((c) => [c.slug, c.icon]))} />
             </>
           ),

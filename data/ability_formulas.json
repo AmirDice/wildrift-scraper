@@ -2410,10 +2410,10 @@
             "name": "Thunderclap empowered first attack",
             "type": "physical",
             "base": [
-              40,
+              30,
+              45,
               60,
-              80,
-              100
+              75
             ],
             "ratios": [
               {
@@ -2422,7 +2422,7 @@
               },
               {
                 "stat": "armor",
-                "pct": 40
+                "pct": 20
               }
             ],
             "when": "per auto"
@@ -2526,7 +2526,7 @@
             "ratios": [
               {
                 "stat": "ownMaxHp",
-                "pct": 11
+                "pct": 10
               }
             ]
           }
@@ -5212,7 +5212,8 @@
         "defensive": [],
         "unmodeled": [
           "Crit chance is converted to increased damage; crit damage stat scales the bonus.",
-          "7.3: Slow effect: 15 / 17.5 / 20 / 22.5 / 25% (based on level) → 20 / 22.5 / 25 / 27.5 / 30% (based on level)"
+          "7.3: Slow effect: 15 / 17.5 / 20 / 22.5 / 25% (based on level) → 20 / 22.5 / 25 / 27.5 / 30% (based on level)",
+          "7.3d: bonus attack damage from crit stats 0 ~ 130% -> 0 ~ 123.5% (not modelled)."
         ]
       }
     },
@@ -7508,7 +7509,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Expands into a field slowing by 30%/40%/50%/60%; deals 115% damage to monsters."
+          "Expands into a field slowing by 30%/40%/50%/60%; deals 100% damage to monsters."
         ]
       },
       "2": {
@@ -7666,7 +7667,7 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "Procs every 3rd attack/ability vs same target; 5s cooldown per target; 120% damage to monsters."
+          "Procs every 3rd attack/ability vs same target; 5s cooldown per target; 110% damage to monsters."
         ]
       }
     },
@@ -14422,9 +14423,9 @@
             "name": "Dragon's Rage primary",
             "type": "physical",
             "base": [
-              125,
-              350,
-              575
+              150,
+              375,
+              600
             ],
             "ratios": [
               {
@@ -16814,14 +16815,15 @@
               16
             ],
             "when": "per cast",
-            "note": "Each wave can critically strike for 130% damage"
+            "note": "Each wave can critically strike for 135% - 145.5% damage (based on Critical Damage)"
           }
         ],
         "steroids": [],
         "defensive": [],
         "unmodeled": [
           "Channels for 3 sec, can be recast to cancel.",
-          "7.3: Critical ratio: 130% → 130% + (Critical Damage-2) × 0.3"
+          "7.3: Critical ratio: 130% → 130% + (Critical Damage-2) × 0.3",
+          "7.3d: wave critical damage 130% ~ 139% -> 135% ~ 145.5% (based on crit stats)."
         ]
       },
       "P": {
@@ -16835,7 +16837,7 @@
             "ratios": [
               {
                 "stat": "bonusAd",
-                "pct": 40
+                "pct": 50
               }
             ],
             "hits": 1,
@@ -18449,10 +18451,10 @@
             "name": "Spirit Fire Initial",
             "type": "magic",
             "base": [
-              55,
-              110,
-              165,
-              220
+              50,
+              90,
+              130,
+              170
             ],
             "ratios": [
               {
@@ -18527,8 +18529,8 @@
             "stat": "armor",
             "flat": [
               40,
-              50,
-              60
+              55,
+              70
             ],
             "note": "for 12 seconds"
           },
@@ -18536,8 +18538,8 @@
             "stat": "mr",
             "flat": [
               40,
-              50,
-              60
+              55,
+              70
             ],
             "note": "for 12 seconds"
           }
@@ -21385,7 +21387,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 125
+                "pct": 115
               }
             ],
             "hits": 1,
@@ -21403,7 +21405,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 110
+                "pct": 115
               }
             ],
             "hits": 1,
@@ -21516,7 +21518,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 50
+                "pct": 45
               }
             ],
             "hits": 10,
@@ -22372,10 +22374,10 @@
       "1": {
         "name": "Twin Bite",
         "cooldowns": [
-          8,
           7,
+          6.5,
           6,
-          5
+          5.5
         ],
         "damage": [
           {
@@ -22419,10 +22421,10 @@
       "2": {
         "name": "Burnout",
         "cooldowns": [
-          13,
           12,
           11,
-          10
+          10,
+          9
         ],
         "damage": [
           {
@@ -22459,16 +22461,16 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "Attacking extends duration up to 4s. Dragon Form: larger area. Wings of the Cloud: additional 25% haste in Dragon Form (at 200 stacks)."
+          "Attacking extends duration up to 4s. Dragon Form: larger area. Wings of the Cloud: additional 15% haste in Dragon Form (at 200 stacks)."
         ]
       },
       "3": {
         "name": "Flame Breath",
         "cooldowns": [
-          11,
           10,
           9,
-          8
+          8,
+          7
         ],
         "damage": [
           {
@@ -22483,11 +22485,11 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 30
+                "pct": 50
               },
               {
                 "stat": "ap",
-                "pct": 40
+                "pct": 80
               }
             ],
             "hits": 1,
@@ -22513,11 +22515,11 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 50
+                "pct": 100
               },
               {
                 "stat": "ap",
-                "pct": 70
+                "pct": 100
               }
             ],
             "hits": 1,
@@ -22531,7 +22533,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 10
+                "pct": 15
               },
               {
                 "stat": "ap",
@@ -22603,7 +22605,7 @@
         ],
         "defensive": [],
         "unmodeled": [
-          "Passive: generates 1/1.5/2 Fury per second and 2 Fury per attack. At 100 Fury can cast. Active: transforms, flies to target, knocks enemies. Life of the Ocean: 20% Omnivamp in Dragon Form (at 400 stacks)."
+          "Passive: generates 1/1.5/2 Fury per second and 2 Fury per attack. At 100 Fury can cast. Active: transforms, flies to target, knocks enemies. Life of the Ocean: 10% Omnivamp in Dragon Form (at 400 stacks)."
         ]
       },
       "P": {
@@ -22879,9 +22881,9 @@
       "2": {
         "name": "Mega Adhesive",
         "cooldowns": [
-          11,
-          11,
-          11,
+          14,
+          13,
+          12,
           11
         ],
         "damage": [
@@ -22913,10 +22915,10 @@
       "3": {
         "name": "Fling",
         "cooldowns": [
-          12,
-          12,
-          12,
-          12
+          13,
+          13,
+          13,
+          13
         ],
         "damage": [
           {

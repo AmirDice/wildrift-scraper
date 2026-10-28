@@ -325,9 +325,9 @@
         "lvl15": 50
       },
       "armor": {
-        "base": 34,
+        "base": 37,
         "perLevel": 6,
-        "lvl15": 118
+        "lvl15": 121
       },
       "mr": {
         "base": 38,
@@ -346,8 +346,8 @@
       },
       "attackSpeed": {
         "base": 0.8,
-        "perLevel": 0.0125,
-        "lvl15": 0.975
+        "perLevel": 0.025,
+        "lvl15": 1.15
       }
     },
     "primaryDamage": "magic",
@@ -2506,8 +2506,8 @@
       },
       "attackSpeed": {
         "base": 0.7986,
-        "perLevel": 0.0103,
-        "lvl15": 0.9428
+        "perLevel": 0.01803,
+        "lvl15": 1.051
       }
     },
     "primaryDamage": "physical",
@@ -3609,7 +3609,7 @@
         "slot": "P",
         "name": "Z-Drive Resonance",
         "cooldowns": [],
-        "text": "Every third attack or damaging ability agains the same target deals an additional 30 ( +80% AP ) magic damage . If the target was a champion, Ekko gains 40% Movement Speed for 2.5 seconds. Deals 120% damage to monsters. Cannot affect the same target for 5 seconds.",
+        "text": "Every third attack or damaging ability agains the same target deals an additional 30 ( +80% AP ) magic damage . If the target was a champion, Ekko gains 40% Movement Speed for 2.5 seconds. Deals 110% damage to monsters. Cannot affect the same target for 5 seconds.",
         "damageTypes": [
           "magic"
         ],
@@ -3627,7 +3627,7 @@
           "7",
           "6"
         ],
-        "text": "Throw a temporal device, dealing 90 / 110 / 130 / 150 ( +30% AP ) magic damage . On hitting a champion or the distance limit, it expands into a field that slows by 30% / 40% / 50% / 60% . The device then returns to Ekko, dealing 7 0 / 105 / 140 / 175 ( +60% AP ) magic damage . Deals 115% damage to monsters.",
+        "text": "Throw a temporal device, dealing 90 / 110 / 130 / 150 ( +30% AP ) magic damage . On hitting a champion or the distance limit, it expands into a field that slows by 30% / 40% / 50% / 60% . The device then returns to Ekko, dealing 7 0 / 105 / 140 / 175 ( +60% AP ) magic damage . Deals 100% damage to monsters.",
         "damageTypes": [
           "magic"
         ],
@@ -8959,8 +8959,8 @@
       },
       "attackSpeed": {
         "base": 0.8007,
-        "perLevel": 0.01302,
-        "lvl15": 0.983
+        "perLevel": 0.02604,
+        "lvl15": 1.1653
       }
     },
     "primaryDamage": "physical",
@@ -9064,7 +9064,7 @@
           "60",
           "50"
         ],
-        "text": "Launches a powerful roundhouse kick at an enemy champion, dealing 125 / 350 / 575 ( +190% bonus AD + 12% / 15% / 18% of the target's bonus health ) physical damage and knocking them back. Enemies the target collides with along the way are knocked Airborne for 1 second and take 100 / 300 / 500 ( +200% bonus AD + 10% / 13% / 16% of the target's maximum Health ). Damage dealt to monsters is caped at 800 .",
+        "text": "Launches a powerful roundhouse kick at an enemy champion, dealing 150 / 375 / 600 ( +190% bonus AD + 12% / 15% / 18% of the target's bonus health ) physical damage and knocking them back. Enemies the target collides with along the way are knocked Airborne for 1 second and take 100 / 300 / 500 ( +200% bonus AD + 10% / 13% / 16% of the target's maximum Health ). Damage dealt to monsters is caped at 800 .",
         "damageTypes": [
           "physical"
         ],
@@ -10081,7 +10081,7 @@
         "slot": "P",
         "name": "Granite Shield",
         "cooldowns": [],
-        "text": "Shield 72 ( 11% maximum HP ) damage after not taking damage for 8 seconds.",
+        "text": "Shield 72 ( 10% maximum HP ) damage after not taking damage for 8 seconds.",
         "damageTypes": [],
         "scales": [
           "maxHp"
@@ -10119,7 +10119,7 @@
           "8",
           "7"
         ],
-        "text": "Passive: Gains 8 Armor ( 25% / 30% / 35% / 40% Armor ). Active: For the next 6 seconds, attacks deal 20 / 30 / 40 / 50 ( +15% AP +15% Armor ) physical damage in a cone. The first attack is empowered to deal 40 / 60 / 80 / 100 ( +40% AP +40% Armor ) bonus physical damage to the target.",
+        "text": "Passive: Gains 8 Armor ( 25% / 30% / 35% / 40% Armor ). Active: For the next 6 seconds, attacks deal 20 / 30 / 40 / 50 ( +15% AP +15% Armor ) physical damage in a cone. The first attack is empowered to deal 30 / 45 / 60 / 75 ( +40% AP +20% Armor ) bonus physical damage to the target.",
         "damageTypes": [
           "physical"
         ],
@@ -10858,7 +10858,7 @@
         "slot": "P",
         "name": "Love Tap",
         "cooldowns": [],
-        "text": "Applies Love Tap when attack enemy champions or epic monsters. At 3 stacks, increases Miss Fortune's damage to the target by 6% - 9.5% ( + 0.4x per level ). At 3 stacks deal ( 15 +40% bonus AD ) × ( 0.6 + Critical Rate × 0.4 ) physical damage to the target. Deals 50% damage to minions and monsters.",
+        "text": "Applies Love Tap when attack enemy champions or epic monsters. At 3 stacks, increases Miss Fortune's damage to the target by 6% - 9.5% ( + 0.4x per level ). At 3 stacks deal ( 15 +50% bonus AD ) × ( 0.6 + Critical Rate × 0.4 ) physical damage to the target. Deals 50% damage to minions and monsters.",
         "damageTypes": [
           "physical"
         ],
@@ -10933,7 +10933,7 @@
           "65",
           "60"
         ],
-        "text": "Channels a 3 seconds barrage of bullets, with 12 / 14 / 16 waves that each deal 20 / 30 / 40 ( +60% AD +20% AP ) physical damage . Each wave can Crit for 130% damage, increased by 30% of Critical Damage above 200%. Re-activate : Cancel the barrage.",
+        "text": "Channels a 3 seconds barrage of bullets, with 12 / 14 / 16 waves that each deal 20 / 30 / 40 ( +60% AD +20% AP ) physical damage . Each wave can Crit for 135% - 145.5% damage (based on Critical Damage). Re-activate : Cancel the barrage.",
         "damageTypes": [
           "physical"
         ],
@@ -11438,9 +11438,9 @@
         "lvl15": 355
       },
       "ad": {
-        "base": 58,
+        "base": 62,
         "perLevel": 5,
-        "lvl15": 128
+        "lvl15": 132
       },
       "attackSpeed": {
         "base": 0.7975,
@@ -11517,7 +11517,7 @@
           "12",
           "12"
         ],
-        "text": "Creates a flaming zone, dealing 55 / 110 / 165 / 220 ( +40% AP ) magic damage . The zone persists for 5 seconds, dealing 11 / 22 / 33 / 44 ( +12% AP ) magic damage over time and reducing Armor by 20% / 25% / 30% / 35% .",
+        "text": "Creates a flaming zone, dealing 50 / 90 / 130 / 170 ( +40% AP ) magic damage . The zone persists for 5 seconds, dealing 11 / 22 / 33 / 44 ( +12% AP ) magic damage over time and reducing Armor by 20% / 25% / 30% / 35% .",
         "damageTypes": [
           "magic"
         ],
@@ -11534,7 +11534,7 @@
           "80",
           "70"
         ],
-        "text": "Enhances himself to gain 300 / 450 / 600 Health , 40 / 50 / 60 Armor and Magic Resist for 12 seconds. Deals 3% / 4% / 5% ( +0.01% AP ) magic damage",
+        "text": "Enhances himself to gain 300 / 450 / 600 Health , 40 / 55 / 70 Armor and Magic Resist for 12 seconds. Deals 3% / 4% / 5% ( +0.01% AP ) magic damage",
         "damageTypes": [
           "magic"
         ],
@@ -14757,7 +14757,7 @@
           "4",
           "2"
         ],
-        "text": "Samira fires a shot, dealing 15 / 20 / 25 / 30 ( +110% AD ) physical damage to the first enemy hit. If this ability is cast towards an enemy in melee range, Samira will slash with her blade in a cone instead, dealing the same damage to all enemies within. Either hit can critically strike for 25% bonus damage. If cast during Wild Rush Samira will strike all enemies in her path upon completion.",
+        "text": "Samira fires a shot, dealing 15 / 20 / 25 / 30 ( +115% AD ) physical damage to the first enemy hit. If this ability is cast towards an enemy in melee range, Samira will slash with her blade in a cone instead, dealing the same damage to all enemies within. Either hit can critically strike for 25% bonus damage. If cast during Wild Rush Samira will strike all enemies in her path upon completion.",
         "damageTypes": [
           "physical"
         ],
@@ -14813,7 +14813,7 @@
           "6",
           "6"
         ],
-        "text": "Samira can only use this ability if her current Style rating is \"S\" . Samira unleashes a torrent of shots from her weapons, reducing her Movement Speed by 30% while wildly shooting up to 5 enemies around her 10 times over 2.23 seconds, each shot dealing 20 / 40 / 60 (+ 50% AD ) physical damage . Each shot can critically strike and trigger 66.7% Life Steal. Deals 25% damage to minions.",
+        "text": "Samira can only use this ability if her current Style rating is \"S\" . Samira unleashes a torrent of shots from her weapons, reducing her Movement Speed by 30% while wildly shooting up to 5 enemies around her 10 times over 2.23 seconds, each shot dealing 20 / 40 / 60 (+ 45% AD ) physical damage . Each shot can critically strike and trigger 66.7% Life Steal. Deals 25% damage to minions.",
         "damageTypes": [
           "physical"
         ],
@@ -15454,13 +15454,13 @@
     "baseStats": {
       "hp": {
         "base": 660,
-        "perLevel": 120,
-        "lvl15": 2340
+        "perLevel": 130,
+        "lvl15": 2480
       },
       "hpRegen": {
-        "base": 9,
+        "base": 12,
         "perLevel": 1,
-        "lvl15": 23
+        "lvl15": 26
       },
       "armor": {
         "base": 46,
@@ -15484,8 +15484,8 @@
       },
       "attackSpeed": {
         "base": 0.7975,
-        "perLevel": 0.00766,
-        "lvl15": 0.9047
+        "perLevel": 0.01531,
+        "lvl15": 1.0118
       }
     },
     "primaryDamage": "magic",
@@ -15516,10 +15516,10 @@
         "slot": "1",
         "name": "Twin Bite",
         "cooldowns": [
-          "8",
           "7",
+          "6.5",
           "6",
-          "5"
+          "5.5"
         ],
         "text": "Empowers Shyvana's next attack to strike twice, dealing 58 ( 100% AD ) and 12 ( 20% / 40% / 60% / 80% AD ) physical damage respectively. Attacks reduce the cooldown of Twin Bite by 0.5 seconds. Dragon Form : Strikes in a larger area and applies on-hits to all enemies. Acquiring 100 stacks of Draconic Bloodline , grants Weight of the Mountain, causing Twin Bite to slow enemies hit by 30% while in Dragon Form .",
         "damageTypes": [
@@ -15537,12 +15537,12 @@
         "slot": "2",
         "name": "Burnout",
         "cooldowns": [
-          "13",
           "12",
           "11",
-          "10"
+          "10",
+          "9"
         ],
-        "text": "Deals 35 / 50 / 65 / 80 ( +30% bonus AD ) magic damage per second to nearby enemies and hastes Shyvana by 30% / 35% / 40% / 45% decaying over 3 seconds. Attacking extends the duration of Burnout up to 4 seconds. Dragon Form : Expands the flames, dealing damage to a larger area. Acquiring 200 stacks of Draconic Bloodline , grants Wings of the Cloud, causing Burnout to haste Shyvana by an additional 25% while in Dragon Form .",
+        "text": "Deals 35 / 50 / 65 / 80 ( +30% bonus AD ) magic damage per second to nearby enemies and hastes Shyvana by 30% / 35% / 40% / 45% decaying over 3 seconds. Attacking extends the duration of Burnout up to 4 seconds. Dragon Form : Expands the flames, dealing damage to a larger area. Acquiring 200 stacks of Draconic Bloodline , grants Wings of the Cloud, causing Burnout to haste Shyvana by an additional 15% while in Dragon Form .",
         "damageTypes": [
           "magic"
         ],
@@ -15556,12 +15556,12 @@
         "slot": "3",
         "name": "Flame Breath",
         "cooldowns": [
-          "11",
           "10",
           "9",
-          "8"
+          "8",
+          "7"
         ],
-        "text": "Launches a fireball that deals 60 / 110 / 160 / 210 ( +30% AD +40% AP ) magic damage to enemies hit and Scorches them for 5 seconds. Shyvana's attacks on Scorched enemies deal 3% bonus magic damage of their max Health. Dragon Form : The fireball explodes on impact, dealing 110 ( +50% AD +70% AP ) magic damage in an area that leaves a fire for 4 seconds that deals 28 ( +10% AD +20% AP ) magic damage and Scorches enemies within it. Acquiring 300 stacks of Draconic Bloodline , grants Breath of the Infernal, converting the damage dealt to Scorched enemies to True Damage while in Dragon Form .",
+        "text": "Launches a fireball that deals 60 / 110 / 160 / 210 ( +50% AD +80% AP ) magic damage to enemies hit and Scorches them for 5 seconds. Shyvana's attacks on Scorched enemies deal 3% bonus magic damage of their max Health. Dragon Form : The fireball explodes on impact, dealing 110 ( +100% AD +100% AP ) magic damage in an area that leaves a fire for 4 seconds that deals 28 ( +15% AD +20% AP ) magic damage and Scorches enemies within it. Acquiring 300 stacks of Draconic Bloodline , grants Breath of the Infernal, converting the damage dealt to Scorched enemies to True Damage while in Dragon Form .",
         "damageTypes": [
           "magic",
           "true"
@@ -15583,7 +15583,7 @@
           "1",
           "1"
         ],
-        "text": "Passive : Generates 1 / 1.5 / 2 Fury per second and 2 Fury per attack. At 100 Fury , Shyvana can cast Dragon's Descent , Svhyvana remains in Dragon from until she has consumed all of her Fury . Active : Transforms into a dragon, gaining 350 / 475 / 600 Health and flying to a target location. Enemies along Shyvana's path take 150 / 250 / 350 ( +80% AP ) magic damage and are knocked towards her landing point. Acquiring 400 stacks of Draconic Bloodline , grants Life of the Ocean, gaining 20% Omnivamp in Dragon Form .",
+        "text": "Passive : Generates 1 / 1.5 / 2 Fury per second and 2 Fury per attack. At 100 Fury , Shyvana can cast Dragon's Descent , Svhyvana remains in Dragon from until she has consumed all of her Fury . Active : Transforms into a dragon, gaining 350 / 475 / 600 Health and flying to a target location. Enemies along Shyvana's path take 150 / 250 / 350 ( +80% AP ) magic damage and are knocked towards her landing point. Acquiring 400 stacks of Draconic Bloodline , grants Life of the Ocean, gaining 10% Omnivamp in Dragon Form .",
         "damageTypes": [
           "magic"
         ],
@@ -15602,9 +15602,9 @@
     "name": "Singed",
     "baseStats": {
       "hp": {
-        "base": 690,
+        "base": 660,
         "perLevel": 112,
-        "lvl15": 2258
+        "lvl15": 2228
       },
       "hpRegen": {
         "base": 9,
@@ -15632,9 +15632,9 @@
         "lvl15": 60
       },
       "moveSpeed": {
-        "base": 355,
+        "base": 350,
         "perLevel": 0,
-        "lvl15": 355
+        "lvl15": 350
       },
       "ad": {
         "base": 64,
@@ -15692,9 +15692,9 @@
         "slot": "2",
         "name": "Mega Adhesive",
         "cooldowns": [
-          "11",
-          "11",
-          "11",
+          "14",
+          "13",
+          "12",
           "11"
         ],
         "text": "Tosses an adhesive that sticks to the ground for 3 seconds at the target area. The adhesive explodes on landing, dealing 50 / 70 / 90 / 100 ( +25% AP ) magic damage and slowing by 35% / 40% / 45% / 50% . Enemies in the area are also grounded and cannot use movement abilities. If the target is flung into the adhesive, they are also rooted.",
@@ -15712,10 +15712,10 @@
         "slot": "3",
         "name": "Fling",
         "cooldowns": [
-          "12",
-          "12",
-          "12",
-          "12"
+          "13",
+          "13",
+          "13",
+          "13"
         ],
         "text": "Raises his shield and dashes toward the target, knocking aside enemies in his way. If he hits the target, he flings them behind him, dealing magic damage equal to 40 / 60 / 80 / 100 ( +50% AP ) plus 5% / 6% / 7% / 8% of the target's max Health. If the target is flung into Mega Adhesive, they are also rooted for 1.25 / 1.5 / 1.75 / 2 seconds. Deals a maximum of 500 damage against non-champions.",
         "damageTypes": [

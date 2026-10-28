@@ -2144,39 +2144,6 @@
     ]
   },
   {
-    "slug": "divine-sunderer",
-    "name": "Divine Sunderer",
-    "cost": 3400,
-    "icon": "/items/divine-sunderer.webp",
-    "category": "Physical",
-    "categories": [
-      "Physical"
-    ],
-    "tags": [
-      "mana",
-      "sustain"
-    ],
-    "stats": {
-      "hp": {
-        "value": 425,
-        "percent": false
-      },
-      "ad": {
-        "value": 25,
-        "percent": false
-      },
-      "abilityHaste": {
-        "value": 25,
-        "percent": false
-      }
-    },
-    "scopedStats": {},
-    "statRules": {},
-    "passives": [
-      "Spellblade: After using an ability, your next attack within 10 seconds deals (10% melee / 7% ranged) of target’s maximum health as bonus physical damage. If the target is a champion, heal for (6% melee / 2.5% ranged) of the target's maximum health. (1.5s Cooldown) Damage is reduced vs structure."
-    ]
-  },
-  {
     "slug": "infinity-edge",
     "name": "Infinity Edge",
     "cost": 3400,
@@ -2288,6 +2255,39 @@
     "passives": [
       "Defy: If a champion you damaged within the last 3 seconds dies, the stored Cauterize damage is cleansed and you heal over 2 seconds for 90% bonus Attack Damage.",
       "Cauterize: Store 30% of physical and magic damage taken (12% for ranged champions) and take it as true damage over 3 seconds instead."
+    ]
+  },
+  {
+    "slug": "divine-sunderer",
+    "name": "Divine Sunderer",
+    "cost": 3300,
+    "icon": "/items/divine-sunderer.webp",
+    "category": "Physical",
+    "categories": [
+      "Physical"
+    ],
+    "tags": [
+      "mana",
+      "sustain"
+    ],
+    "stats": {
+      "hp": {
+        "value": 425,
+        "percent": false
+      },
+      "ad": {
+        "value": 25,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 25,
+        "percent": false
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Spellblade: After using an ability, your next attack within 10 seconds deals (10% melee / 7% ranged) of target’s maximum health as bonus physical damage. If the target is a champion, heal for (6% melee / 2.5% ranged) of the target's maximum health. (1.5s Cooldown) Damage is reduced vs structure."
     ]
   },
   {
@@ -2871,7 +2871,7 @@
     ],
     "stats": {
       "ad": {
-        "value": 50,
+        "value": 55,
         "percent": false
       },
       "crit": {
@@ -3138,7 +3138,7 @@
     },
     "passives": [
       "Energized: Moving and attacking generate an Energized attack.",
-      "Bolt: Your Energized attack deals 120 bonus magic damage and grants 45% Movement Speed for 1.5 seconds."
+      "Bolt: Your Energized attack deals 100 bonus magic damage and grants 35% Movement Speed for 1.5 seconds."
     ],
     "addedIn": "7.3"
   },
@@ -3727,7 +3727,7 @@
     },
     "passives": [
       "Night Vigil: Gain 20 ultimate Ability Haste.",
-      "Opening Barrage: After casting your ultimate, your next 3 attacks within 8 seconds gain 50% Attack Speed and are guaranteed to Critically Strike for 80% of your normal Critical Strike damage. An attack that would already Critically Strike deals 15% bonus true damage instead. (45s Cooldown)"
+      "Opening Barrage: After casting your ultimate, your next 3 attacks within 8 seconds gain 50% Attack Speed and are guaranteed to Critically Strike for 85% of your normal Critical Strike damage. An attack that would already Critically Strike deals 17.5% bonus true damage instead. (45s Cooldown)"
     ],
     "addedIn": "7.3"
   },
@@ -4102,7 +4102,7 @@
         "percent": true
       },
       "healShieldPower": {
-        "value": 8,
+        "value": 6,
         "percent": true
       }
     },
@@ -4216,7 +4216,7 @@
         "percent": true
       },
       "healShieldPower": {
-        "value": 8,
+        "value": 6,
         "percent": true
       }
     },
