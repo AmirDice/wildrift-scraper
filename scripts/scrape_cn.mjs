@@ -39,13 +39,11 @@ const HISTORY_DIR = path.join(ROOT, "data", "history", "cn");
 // postPatchDays is 0 and the site says it is waiting rather than presenting
 // pre-patch drift as the patch's verdict.
 //
-// 7.3d: Riot published the notes on 28 October 2026. 7.3b's content arrived
-// the day after its notes, so the 29th is taken as the first day of games and
-// the 28th as the last clean snapshot. If the update landed on the 28th itself,
-// move both back a day.
+// 7.3d went live on Wednesday 28 October 2026, the day Riot published the
+// notes (confirmed by the owner), so the 27th is the last clean snapshot.
 const MOVERS_PATCH = "7.3d";
-const MOVERS_PATCH_LIVE = "2026-10-29";
-const MOVERS_BASELINE_DATE = "2026-10-28";
+const MOVERS_PATCH_LIVE = "2026-10-28";
+const MOVERS_BASELINE_DATE = "2026-10-27";
 
 const HERO_LIST_URL = "https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js";
 const RANK_URL = "https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2";
