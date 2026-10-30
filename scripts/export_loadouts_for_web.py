@@ -547,6 +547,10 @@ def attach_patches(output: dict[str, Any]) -> int:
 
 
 IMPACT_OUTPUT = WEB_DATA / "cn_patch_impact.json"
+#: Items and runes each ranked patch's notes name, for the movers page: a
+#: champion the patch never touched can still move because an item it builds
+#: changed (Zeri rose on 7.3d with Essence Reaver and Fiendhunter Bolts buffed).
+CHANGED_OUTPUT = WEB_DATA / "patch_changed_items.json"
 #: An item counts as a lane's core item from this share of its games.
 CORE_SHARE = 20
 
@@ -787,6 +791,9 @@ def main() -> None:
         sys.path.insert(0, str(ROOT))   # run as a file, scripts/ is not a package root
         from scripts.export_partners_for_web import main as export_partners
         export_partners()
+    _calendar, changed = _patch_calendar()
+    CHANGED_OUTPUT.write_text(json.dumps({patch: sorted(names) for patch, names in changed.items() if names},
+                                         ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     impact = export_patch_impact()
     if impact:
         print(f"Patch impact {impact['previous']} -> {impact['patch']}: {impact['lanes']} lanes, "

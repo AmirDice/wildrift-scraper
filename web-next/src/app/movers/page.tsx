@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/ui";
 import { getChampion } from "@/lib/data";
 import { topWinners, topLosers, MOVERS_META, type Mover } from "@/lib/movers";
+import { moverWhy } from "@/lib/movers-why";
 import { NextStep } from "@/components/next-step";
 import { AdSlot } from "@/components/ad-slot";
 
@@ -82,7 +83,10 @@ export default function MoversPage() {
 
       <p className="mt-6 text-xs leading-relaxed text-faint">
         Source: official China server data (lolm.qq.com). Champions below a 0.5% pick
-        rate are excluded so one-trick swings don&rsquo;t read as meta movement. For what
+        rate are excluded so one-trick swings don&rsquo;t read as meta movement. Under each
+        name: whether the patch changed that champion, and any item the patch changed that
+        is in one of its commonly built China cores, since an item change moves every
+        champion that builds it. For what
         the patch notes themselves changed, see the{" "}
         <Link href="/changes-report" className="font-semibold text-accent transition hover:opacity-80">
           Balance Report
@@ -109,6 +113,7 @@ function MoverColumn({ title, accent, movers, up = false }: {
       <div className="flex flex-col gap-1">
         {movers.map((m, i) => {
           const champ = getChampion(m.slug);
+          const why = moverWhy(m.slug, m.name);
           return (
             <Link key={m.slug} href={`/champions/${m.slug}`}
                   className="flex items-center gap-2.5 rounded-lg px-1.5 py-1 transition hover:bg-white/[0.05]">
@@ -120,7 +125,15 @@ function MoverColumn({ title, accent, movers, up = false }: {
                   {m.name.slice(0, 2)}
                 </span>
               )}
-              <span className="min-w-0 flex-1 truncate text-sm font-medium">{m.name}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm font-medium">{m.name}</span>
+                {(why.changed || why.items.length > 0) && (
+                  <span className="block truncate text-[0.65rem] text-faint">
+                    {[why.changed ? `changed in ${PATCH}` : "", why.items.length ? `builds ${why.items.join(", ")}` : ""]
+                      .filter(Boolean).join(" · ")}
+                  </span>
+                )}
+              </span>
               <span className="hidden shrink-0 text-xs text-faint sm:inline">pick {m.pickRate.toFixed(1)}%</span>
               <span className="shrink-0 text-xs text-muted">
                 {m.oldWr.toFixed(1)}<span className="text-faint"> → </span>

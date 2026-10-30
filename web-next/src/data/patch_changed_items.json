@@ -1,0 +1,993 @@
+{
+  "7.3d": [
+    "Diadem of Songs",
+    "Divine Sunderer",
+    "Essence Reaver",
+    "Fiendhunter Bolts",
+    "Stormrazor",
+    "Whispering Circlet"
+  ],
+  "7.3b": [
+    "Bloodthirster",
+    "Cheap Shot",
+    "Conqueror",
+    "Electrocute",
+    "Grasp of the Undying",
+    "Lethal Tempo",
+    "Locket of the Iron Solari",
+    "Statikk Shiv",
+    "Thornmail",
+    "Warmog's Armor",
+    "Youmuu's Ghostblade",
+    "Yun Tal Wildarrows"
+  ],
+  "7.3a": [
+    "Death's Dance",
+    "Diadem of Songs",
+    "Infinity Edge",
+    "Whispering Circlet",
+    "Yun Tal Wildarrows"
+  ],
+  "7.3": [
+    "Abyssal Mask",
+    "Amaranth's Twinguard",
+    "Ardent Censer",
+    "At Wit's End",
+    "Berserker's Greaves",
+    "Blade of the Ruined King",
+    "Bloodthirster",
+    "Conqueror",
+    "Cosmic Drive",
+    "Dead Man's Plate",
+    "Death's Dance",
+    "Demolish",
+    "Diadem of Songs",
+    "Dusk and Dawn",
+    "Echoes of Helia",
+    "Essence Reaver",
+    "Fiendhunter Bolts",
+    "Fimbulwinter",
+    "Force of Nature",
+    "Frozen Heart",
+    "Galeforce",
+    "Guinsoo's Rageblade",
+    "Gunmetal Greaves",
+    "Harmonic Echo",
+    "Heartsteel",
+    "Hexoptics C44",
+    "Immortal Shieldbow",
+    "Imperial Mandate",
+    "Infinity Edge",
+    "Infinity Orb",
+    "Ingenious Hunter",
+    "Knight's Vow",
+    "Kraken Slayer",
+    "Legend: Alacrity",
+    "Legend: Haste",
+    "Legend: Tenacity",
+    "Lethal Tempo",
+    "Lord Dominik's Regards",
+    "Luden's Echo",
+    "Magnetic Blaster",
+    "Manamune",
+    "Mantle of the Twelfth Hour",
+    "Mercurial Scimitar",
+    "Mortal Reminder",
+    "Muramana",
+    "Nashor's Tooth",
+    "Navori Quickblades",
+    "Overgrowth",
+    "Phantom Dancer",
+    "Radiant Virtue",
+    "Rapid Firecannon",
+    "Runaan's Hurricane",
+    "Salvation",
+    "Searing Crown",
+    "Serylda's Grudge",
+    "Shurelya's Battlesong",
+    "Soul Transfer",
+    "Staff of Flowing Waters",
+    "Statikk Shiv",
+    "Sterak's Gage",
+    "Stormrazor",
+    "Sunfire Aegis",
+    "Terminus",
+    "The Collector",
+    "Titanic Hydra",
+    "Trinity Force",
+    "Whispering Circlet",
+    "Winter's Approach",
+    "Yordle Trap",
+    "Youmuu's Ghostblade",
+    "Yun Tal Wildarrows",
+    "Zeke's Convergence"
+  ],
+  "7.2e": [
+    "Eclipse",
+    "Seeker's Armguard",
+    "Unending Despair"
+  ],
+  "7.2d": [
+    "Armored Advance",
+    "Battle Zeal",
+    "Black Cleaver",
+    "Cosmic Drive",
+    "Crimson Lucidity",
+    "Cryptbloom",
+    "Cut Down",
+    "Death's Dance",
+    "Dusk and Dawn",
+    "Eclipse",
+    "Edge of Night",
+    "Guardian",
+    "Guardian Angel",
+    "Hextech Rocketbelt",
+    "Immortal Treads",
+    "Infinity Orb",
+    "Legend: Alacrity",
+    "Overgrowth",
+    "Plated Steelcaps",
+    "Rabadon's Deathcap",
+    "Riftmaker",
+    "Serpent's Fang",
+    "Serylda's Grudge",
+    "Spellslinger's Shoes",
+    "Stormsurge",
+    "Trinity Force",
+    "Void Staff",
+    "Youmuu's Ghostblade",
+    "Zhonya's Hourglass"
+  ],
+  "7.2c": [
+    "Armored Advance",
+    "Berserker's Greaves",
+    "Chainlaced Crushers",
+    "Gunmetal Greaves",
+    "Kaenic Rookern",
+    "Mercury's Treads",
+    "Mikael's Blessing",
+    "Plated Steelcaps",
+    "Spellslinger's Shoes",
+    "Stridebreaker",
+    "Sunfire Aegis"
+  ],
+  "7.2b": [
+    "Botanist",
+    "Iceborn Gauntlet",
+    "Lord Dominik's Regards",
+    "Luden's Echo",
+    "Magnetic Blaster",
+    "Navori Quickblades"
+  ],
+  "7.2a": [
+    "Archangel's Staff",
+    "Armorcrusher Boots",
+    "Blackfire Torch",
+    "Blade of the Ruined King",
+    "Dusk and Dawn",
+    "Manamune",
+    "Muramana",
+    "Searing Crown",
+    "Seraph's Embrace"
+  ],
+  "7.2": [
+    "Arcane Comet",
+    "Archangel's Staff",
+    "Ardent Censer",
+    "Armorcrusher Boots",
+    "Armored Advance",
+    "Banshee's Veil",
+    "Battle Zeal",
+    "Berserker's Greaves",
+    "Blackfire Torch",
+    "Blade of the Ruined King",
+    "Bloodletter's Curse",
+    "Bone Plating",
+    "Boots of Dynamism",
+    "Boots of Mana",
+    "Botanist",
+    "Brutal",
+    "Chain Assault",
+    "Chainlaced Crushers",
+    "Conqueror",
+    "Cosmic Drive",
+    "Courage of the Colossus",
+    "Crimson Lucidity",
+    "Cryptbloom",
+    "Cut Down",
+    "Dark Harvest",
+    "Dusk and Dawn",
+    "Edge of Night",
+    "Electrocute",
+    "Empowered Attack",
+    "Empowerment",
+    "Essence Reaver",
+    "First Strike",
+    "Fleet Footwork",
+    "Font of Life",
+    "Force of Nature",
+    "Frozen Heart",
+    "Galeforce",
+    "Gargoyle Stoneplate",
+    "Gluttonous Greaves",
+    "Goredrinker",
+    "Grasp of the Undying",
+    "Guardian",
+    "Guardian Angel",
+    "Gunmetal Greaves",
+    "Harmonic Echo",
+    "Hextech Rocketbelt",
+    "Horizon Focus",
+    "Ice Overlord",
+    "Immortal Treads",
+    "Imperial Mandate",
+    "Infinity Orb",
+    "Ionian Boots of Lucidity",
+    "Legend: Alacrity",
+    "Lethal Tempo",
+    "Liandry's Torment",
+    "Lich Bane",
+    "Locket of the Iron Solari",
+    "Luden's Echo",
+    "Malignance",
+    "Mantle of the Twelfth Hour",
+    "Maw of Malmortius",
+    "Mercurial Scimitar",
+    "Mercury's Treads",
+    "Mikael's Blessing",
+    "Morellonomicon",
+    "Oceanid's Trident",
+    "Overgrowth",
+    "Perseverance",
+    "Phase Rush",
+    "Plated Steelcaps",
+    "Quicksilver Sash",
+    "Rabadon's Deathcap",
+    "Riftmaker",
+    "Rod of Ages",
+    "Rylai's Crystal Scepter",
+    "Salvation",
+    "Second Wind",
+    "Seeker's Armguard",
+    "Seraph's Embrace",
+    "Serylda's Grudge",
+    "Shurelya's Battlesong",
+    "Spellslinger's Shoes",
+    "Staff of Flowing Waters",
+    "Sterak's Gage",
+    "Stormsurge",
+    "Stridebreaker",
+    "Sudden Impact",
+    "Sunfire Aegis",
+    "The Collector",
+    "Thornmail",
+    "Transcendence",
+    "Tyrant",
+    "Unshakeable",
+    "Void Staff",
+    "Yordle Trap",
+    "Zhonya's Hourglass",
+    "Zombie Ward"
+  ],
+  "7.1g": [
+    "Black Cleaver",
+    "Demolish",
+    "Hullbreaker",
+    "Infinity Edge",
+    "Navori Quickblades"
+  ],
+  "7.1e": [
+    "Kraken Slayer",
+    "Phase Rush",
+    "Randuin's Omen",
+    "Sundered Sky"
+  ],
+  "7.1d": [
+    "Absolute Focus",
+    "Empowerment",
+    "Ixtali Seedjar",
+    "Lethal Tempo"
+  ],
+  "7.1c": [
+    "Hubris",
+    "Thornmail"
+  ],
+  "7.1b": [
+    "Ardent Censer",
+    "Battle Zeal",
+    "Cut Down",
+    "Harmonic Echo",
+    "Hubris",
+    "Ionian Boots of Lucidity",
+    "Ixtali Seedjar",
+    "Nashor's Tooth",
+    "Navori Quickblades",
+    "Trinity Force"
+  ],
+  "7.1": [
+    "Absolute Focus",
+    "Axiom Arcanist",
+    "Battle Zeal",
+    "Berserker's Greaves",
+    "Boots of Dynamism",
+    "Boots of Mana",
+    "Botanist",
+    "Brutal",
+    "Celerity",
+    "Cheap Shot",
+    "Cut Down",
+    "Demolish",
+    "Empowered Attack",
+    "Empowerment",
+    "First Strike",
+    "Font of Life",
+    "Gathering Storm",
+    "Gluttonous Greaves",
+    "Goredrinker",
+    "Guardian",
+    "Hubris",
+    "Ice Overlord",
+    "Ingenious Hunter",
+    "Ionian Boots of Lucidity",
+    "Ixtali Seedjar",
+    "Lich Bane",
+    "Lord Dominik's Regards",
+    "Luden's Echo",
+    "Manaflow Band",
+    "Mercury's Treads",
+    "Nimbus Cloak",
+    "Nullifying Orb",
+    "Oceanid's Trident",
+    "Plated Steelcaps",
+    "Relentless Hunter",
+    "Scorch",
+    "The Collector",
+    "Transcendence",
+    "Triumph",
+    "Zombie Ward"
+  ],
+  "7.0f": [
+    "Death's Dance"
+  ],
+  "7.0d": [
+    "Experimental Hexplate",
+    "Knight's Vow",
+    "Kraken Slayer",
+    "Overlord's Bloodmail",
+    "Titanic Hydra",
+    "Unending Despair"
+  ],
+  "7.0c": [
+    "Blade of the Ruined King",
+    "Nullifying Orb",
+    "Perseverance",
+    "Terminus",
+    "Unshakeable"
+  ],
+  "7.0a": [
+    "Lethal Tempo",
+    "Magnetic Blaster",
+    "Radiant Virtue",
+    "Runaan's Hurricane",
+    "Spear of Shojin",
+    "Unshakeable"
+  ],
+  "6.3f": [
+    "Ardent Censer",
+    "Dark Harvest",
+    "Galeforce",
+    "Goredrinker",
+    "Lethal Tempo",
+    "Morellonomicon",
+    "Oceanid's Trident",
+    "Staff of Flowing Waters",
+    "Stridebreaker",
+    "Zeke's Convergence"
+  ],
+  "6.3e": [
+    "Berserker's Greaves",
+    "Bloodthirster",
+    "Magnetic Blaster",
+    "Mercury's Treads",
+    "Phantom Dancer",
+    "Plated Steelcaps",
+    "Rylai's Crystal Scepter"
+  ],
+  "6.3d": [
+    "Dark Harvest",
+    "Electrocute",
+    "Empowered Attack",
+    "Fleet Footwork",
+    "Scorch"
+  ],
+  "6.3c": [
+    "Axiom Arcanist",
+    "Dark Harvest",
+    "First Strike",
+    "Lethal Tempo",
+    "Liandry's Torment",
+    "Radiant Virtue"
+  ],
+  "6.3a": [
+    "Axiom Arcanist",
+    "Berserker's Greaves",
+    "Boots of Dynamism",
+    "Boots of Mana",
+    "Celerity",
+    "Chain Assault",
+    "Dark Harvest",
+    "Gluttonous Greaves",
+    "Ionian Boots of Lucidity",
+    "Mercury's Treads",
+    "Plated Steelcaps",
+    "Tyrant",
+    "Unshakeable"
+  ],
+  "6.3": [
+    "Bloodthirster",
+    "Dawnshroud",
+    "Eclipse",
+    "Heartsteel",
+    "Infinity Edge",
+    "Magnetic Blaster",
+    "Malignance",
+    "Radiant Virtue",
+    "Randuin's Omen",
+    "The Collector",
+    "Void Staff"
+  ],
+  "6.2k": [
+    "Infinity Orb",
+    "Serylda's Grudge"
+  ],
+  "6.2h": [
+    "Dead Man's Plate",
+    "Force of Nature",
+    "Mortal Reminder",
+    "Navori Quickblades",
+    "Soul Transfer"
+  ],
+  "6.2e": [
+    "Death's Dance",
+    "Maw of Malmortius",
+    "Yordle Trap"
+  ],
+  "6.2d": [
+    "The Collector"
+  ],
+  "6.2c": [
+    "Archangel's Staff",
+    "Bloodthirster",
+    "Hullbreaker",
+    "Sunfire Aegis",
+    "Winter's Approach"
+  ],
+  "6.2b": [
+    "Blade of the Ruined King",
+    "Bloodthirster"
+  ],
+  "6.2": [
+    "Guardian",
+    "Harmonic Echo",
+    "Hullbreaker"
+  ],
+  "6.1d": [
+    "Magnetic Blaster",
+    "Salvation"
+  ],
+  "6.1b": [
+    "Ardent Censer",
+    "Harmonic Echo",
+    "Infinity Edge",
+    "Malignance",
+    "Staff of Flowing Waters"
+  ],
+  "6.1": [
+    "Boots of Mana",
+    "First Strike",
+    "Guardian",
+    "Ionian Boots of Lucidity",
+    "Malignance",
+    "Mercury's Treads",
+    "Sudden Impact",
+    "Transcendence"
+  ],
+  "6.0d": [
+    "Empowerment",
+    "Guardian",
+    "Heartsteel",
+    "Manaflow Band",
+    "Manamune"
+  ],
+  "6.0c": [
+    "Rod of Ages",
+    "Sudden Impact"
+  ],
+  "6.0a": [
+    "Randuin's Omen"
+  ],
+  "6.0": [
+    "Abyssal Mask",
+    "Arcane Comet",
+    "Black Cleaver",
+    "Blade of the Ruined King",
+    "Bloodthirster",
+    "Brutal",
+    "Death's Dance",
+    "Divine Sunderer",
+    "Eclipse",
+    "Fimbulwinter",
+    "Grasp of the Undying",
+    "Harmonic Echo",
+    "Heartsteel",
+    "Hubris",
+    "Kaenic Rookern",
+    "Malignance",
+    "Mantle of the Twelfth Hour",
+    "Perseverance",
+    "Riftmaker",
+    "Staff of Flowing Waters",
+    "Stormrazor",
+    "Stormsurge",
+    "Sudden Impact",
+    "Sundered Sky",
+    "Warmog's Armor",
+    "Yordle Trap",
+    "Zeke's Convergence"
+  ],
+  "5.3d": [
+    "First Strike",
+    "Lethal Tempo"
+  ],
+  "5.3c": [
+    "Brutal"
+  ],
+  "5.3b": [
+    "Brutal",
+    "Infinity Edge"
+  ],
+  "5.3a": [
+    "At Wit's End",
+    "Terminus"
+  ],
+  "5.3": [
+    "Ixtali Seedjar",
+    "Lethal Tempo"
+  ],
+  "5.2d": [
+    "Guardian"
+  ],
+  "5.2c": [
+    "Ardent Censer",
+    "Immortal Shieldbow",
+    "Infinity Edge",
+    "Lethal Tempo",
+    "Mortal Reminder",
+    "Salvation"
+  ],
+  "5.2b": [
+    "Infinity Edge"
+  ],
+  "5.2a": [
+    "Arcane Comet",
+    "Blade of the Ruined King",
+    "Coup de Grace",
+    "Liandry's Torment",
+    "Riftmaker"
+  ],
+  "5.2": [
+    "Amaranth's Twinguard",
+    "Blade of the Ruined King",
+    "Dawnshroud",
+    "Guardian",
+    "Guardian Angel",
+    "Harmonic Echo",
+    "Horizon Focus",
+    "Infinity Edge",
+    "Infinity Orb",
+    "Rabadon's Deathcap",
+    "Riftmaker",
+    "Sterak's Gage",
+    "Terminus",
+    "Warmog's Armor",
+    "Youmuu's Ghostblade"
+  ],
+  "5.1c": [
+    "Overgrowth",
+    "Rod of Ages"
+  ],
+  "5.1b": [
+    "Heartsteel",
+    "Infinity Edge",
+    "Mantle of the Twelfth Hour",
+    "Muramana",
+    "Sunfire Aegis",
+    "Terminus",
+    "Titanic Hydra"
+  ],
+  "5.1a": [
+    "Empowered Attack",
+    "First Strike",
+    "Force of Nature",
+    "Infinity Edge",
+    "Kraken Slayer",
+    "Terminus",
+    "Thornmail"
+  ],
+  "5.1": [
+    "First Strike",
+    "Harmonic Echo",
+    "Horizon Focus",
+    "Infinity Orb",
+    "Kraken Slayer"
+  ],
+  "5.0c": [
+    "Black Cleaver",
+    "Divine Sunderer",
+    "Guardian",
+    "Spear of Shojin",
+    "Stormrazor",
+    "Trinity Force"
+  ],
+  "5.0A": [
+    "Guardian",
+    "Heartsteel"
+  ],
+  "5.0": [
+    "Black Mist Scythe",
+    "Bulwark of the Mountain",
+    "Conqueror",
+    "Essence Reaver",
+    "First Strike",
+    "Guardian",
+    "Immortal Shieldbow",
+    "Kraken Slayer",
+    "Lethal Tempo",
+    "Seraph's Embrace",
+    "Sterak's Gage"
+  ],
+  "4.4d": [
+    "Guardian",
+    "Guardian Angel",
+    "Maw of Malmortius"
+  ],
+  "4.4b": [
+    "Bloodthirster",
+    "Chempunk Chainsword",
+    "Conqueror",
+    "Immortal Shieldbow",
+    "Kraken Slayer",
+    "Morellonomicon",
+    "Trinity Force"
+  ],
+  "4.4": [
+    "Rapid Firecannon",
+    "Seeker's Armguard",
+    "Statikk Shiv",
+    "Void Staff"
+  ],
+  "4.3d": [
+    "Boots of Dynamism",
+    "Harmonic Echo",
+    "Hextech Flashtraption",
+    "Plated Steelcaps"
+  ],
+  "4.3c": [
+    "Guardian"
+  ],
+  "4.3b": [
+    "Hullbreaker"
+  ],
+  "4.3a": [
+    "Boots of Mana",
+    "Gluttonous Greaves",
+    "Plated Steelcaps"
+  ],
+  "4.3": [
+    "Black Mist Scythe",
+    "Bulwark of the Mountain"
+  ],
+  "4.2b": [
+    "Hullbreaker"
+  ],
+  "4.2a": [
+    "Bloodthirster",
+    "Essence Reaver",
+    "Guardian",
+    "Infinity Edge",
+    "Phantom Dancer"
+  ],
+  "4.2": [
+    "Essence Reaver",
+    "Immortal Shieldbow",
+    "Infinity Edge",
+    "Muramana",
+    "Perseverance",
+    "Phantom Dancer",
+    "Rapid Firecannon",
+    "Tyrant"
+  ],
+  "4.1b": [
+    "Bone Plating",
+    "Second Wind"
+  ],
+  "4.1": [
+    "Abyssal Mask",
+    "Force of Nature",
+    "Infinity Edge",
+    "Mantle of the Twelfth Hour",
+    "Searing Crown",
+    "Sunfire Aegis",
+    "Thornmail",
+    "Void Staff"
+  ],
+  "4.0b": [
+    "Second Wind"
+  ],
+  "4.0a": [
+    "Horizon Focus"
+  ],
+  "4.0": [
+    "Cosmic Drive",
+    "Dawnshroud",
+    "Frozen Heart",
+    "Morellonomicon",
+    "Mortal Reminder",
+    "Phase Rush"
+  ],
+  "3.5b": [
+    "Guardian",
+    "Sudden Impact"
+  ],
+  "3.5": [
+    "Bloodthirster",
+    "Bone Plating",
+    "Brutal",
+    "Divine Sunderer",
+    "Electrocute",
+    "Horizon Focus",
+    "Morellonomicon",
+    "Phase Rush",
+    "Scorch",
+    "Sudden Impact",
+    "Trinity Force"
+  ],
+  "3.4a": [
+    "Gluttonous Greaves",
+    "Lethal Tempo",
+    "Maw of Malmortius",
+    "Riftmaker",
+    "Sunfire Aegis"
+  ],
+  "3.4": [
+    "Black Mist Scythe",
+    "Bulwark of the Mountain",
+    "Conqueror",
+    "Cosmic Drive",
+    "Frozen Heart",
+    "Hullbreaker",
+    "Imperial Mandate",
+    "Infinity Edge",
+    "Riftmaker"
+  ],
+  "3.3c": [
+    "Guardian",
+    "Guardian Angel",
+    "Navori Quickblades"
+  ],
+  "3.3b": [
+    "Demolish",
+    "Nimbus Cloak",
+    "Nullifying Orb"
+  ],
+  "3.3a": [
+    "Black Cleaver",
+    "Divine Sunderer",
+    "Scorch",
+    "Trinity Force"
+  ],
+  "3.3": [
+    "Brutal",
+    "Conqueror",
+    "Fimbulwinter",
+    "Fleet Footwork",
+    "Grasp of the Undying",
+    "Guardian",
+    "Hullbreaker",
+    "Kraken Slayer",
+    "Mortal Reminder"
+  ],
+  "3.2b": [
+    "Bone Plating",
+    "Electrocute",
+    "Font of Life",
+    "Gluttonous Greaves",
+    "Ionian Boots of Lucidity",
+    "Plated Steelcaps"
+  ],
+  "3.2a": [
+    "Conqueror",
+    "Frozen Heart",
+    "Iceborn Gauntlet",
+    "Kraken Slayer",
+    "Lethal Tempo",
+    "Nimbus Cloak"
+  ],
+  "3.2": [
+    "Conqueror",
+    "Death's Dance",
+    "Demolish",
+    "Fleet Footwork",
+    "Guardian",
+    "Guardian Angel",
+    "Infinity Orb",
+    "Ixtali Seedjar",
+    "Kraken Slayer",
+    "Lethal Tempo",
+    "Morellonomicon",
+    "Nimbus Cloak",
+    "Nullifying Orb",
+    "Scorch",
+    "Void Staff"
+  ],
+  "3.1b": [
+    "Black Cleaver",
+    "Divine Sunderer",
+    "Mortal Reminder",
+    "Stormrazor",
+    "Trinity Force"
+  ],
+  "3.1a": [
+    "Blade of the Ruined King",
+    "Divine Sunderer",
+    "Guardian"
+  ],
+  "3.1": [
+    "Black Cleaver",
+    "Divine Sunderer",
+    "Fimbulwinter",
+    "Hullbreaker",
+    "Stormrazor",
+    "Trinity Force"
+  ],
+  "3.0b": [
+    "Bone Plating",
+    "Conqueror",
+    "Electrocute",
+    "Maw of Malmortius",
+    "Phase Rush",
+    "Second Wind",
+    "Triumph"
+  ],
+  "3.0a": [
+    "Edge of Night"
+  ],
+  "3.0": [
+    "Brutal",
+    "Edge of Night",
+    "Essence Reaver"
+  ],
+  "2.6": [
+    "Edge of Night",
+    "Font of Life",
+    "Ixtali Seedjar",
+    "Rod of Ages",
+    "Triumph"
+  ],
+  "2.5a": [
+    "Black Cleaver",
+    "Death's Dance",
+    "Force of Nature",
+    "Mortal Reminder",
+    "Trinity Force"
+  ],
+  "2.5": [
+    "Rapid Firecannon",
+    "Statikk Shiv",
+    "Stormrazor"
+  ],
+  "2.4b": [
+    "Font of Life",
+    "Liandry's Torment",
+    "Luden's Echo",
+    "Navori Quickblades"
+  ],
+  "2.4a": [
+    "Bloodthirster",
+    "Essence Reaver"
+  ],
+  "2.4": [
+    "At Wit's End",
+    "Bloodthirster",
+    "Essence Reaver",
+    "Grasp of the Undying",
+    "Iceborn Gauntlet",
+    "Navori Quickblades",
+    "Serylda's Grudge",
+    "Stormrazor",
+    "Thornmail"
+  ],
+  "2.3c": [
+    "Celerity",
+    "Eclipse",
+    "Frozen Heart",
+    "Thornmail"
+  ],
+  "2.3b": [
+    "Second Wind"
+  ],
+  "2.3a": [
+    "Phase Rush",
+    "Sunfire Aegis"
+  ],
+  "2.3": [
+    "Black Cleaver",
+    "Trinity Force"
+  ],
+  "2.2b": [
+    "Conqueror"
+  ],
+  "2.2a": [
+    "Infinity Orb",
+    "Sunfire Aegis",
+    "Transcendence",
+    "Triumph"
+  ],
+  "2.2": [
+    "Fimbulwinter",
+    "Force of Nature",
+    "Frozen Heart",
+    "Iceborn Gauntlet",
+    "Lich Bane",
+    "Sunfire Aegis",
+    "Thornmail",
+    "Trinity Force"
+  ],
+  "2.1b": [
+    "Blade of the Ruined King",
+    "Conqueror"
+  ],
+  "2.1a": [
+    "Blade of the Ruined King"
+  ],
+  "2.0a": [
+    "Guardian",
+    "Guardian Angel"
+  ],
+  "2.0": [
+    "Guardian"
+  ],
+  "1.1": [
+    "Abyssal Mask",
+    "Archangel's Staff",
+    "Ardent Censer",
+    "Black Cleaver",
+    "Death's Dance",
+    "Duskblade of Draktharr",
+    "Fimbulwinter",
+    "Fleet Footwork",
+    "Guardian",
+    "Harmonic Echo",
+    "Iceborn Gauntlet",
+    "Ionian Boots of Lucidity",
+    "Lich Bane",
+    "Luden's Echo",
+    "Manamune",
+    "Maw of Malmortius",
+    "Mortal Reminder",
+    "Muramana",
+    "Nashor's Tooth",
+    "Scorch",
+    "Seraph's Embrace",
+    "Trinity Force",
+    "Warmog's Armor",
+    "Winter's Approach",
+    "Youmuu's Ghostblade",
+    "Zeke's Convergence"
+  ],
+  "1.0": [
+    "Fimbulwinter",
+    "Guardian",
+    "Guardian Angel"
+  ]
+}
