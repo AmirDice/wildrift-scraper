@@ -11,7 +11,7 @@ to the LLM when the scores are close.
       -> DERIVE how this champion fights          web/advisor/profiles.py
       -> FILTER only impossible items away        web/advisor/itemmeta.py
       -> ASSEMBLE one prompt from our data        web/advisor/prompt.py
-      -> the model (gemini-3.8-flash by default), JSON only
+      -> the model (gemini-3.5-flash-lite by default), JSON only
       -> VALIDATE legality and completeness       web/advisor/validate.py
       -> REPAIR the broken section alone          web/advisor/repair.py
 
@@ -70,7 +70,10 @@ DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 # latency investigation measured DeepSeek at 272-293s per build, four times
 # Gemini's, and reported it as a production incident before anyone noticed that
 # production was never on DeepSeek. So the default is now what production runs.
-DEFAULT_MODEL = "gemini-3.8-flash"
+# 2026-11-01: the owner moved studio builds to gemini-3.5-flash-lite as well,
+# for speed; counter builds were already on it. Production reads ADVISOR_MODEL
+# from the advisor project's environment, which was changed with this.
+DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MODEL = os.environ.get("ADVISOR_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
 IS_GEMINI = MODEL.lower().startswith("gemini")
 # The key the ACTIVE model needs. Checking DEEPSEEK_API_KEY on a Gemini run
