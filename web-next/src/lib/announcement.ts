@@ -98,14 +98,15 @@ export const ANNOUNCEMENT = {
   // -v9: all 142 recaptured, plus the win-rate history chart and region switch.
   // -v10: the meta page spotlight (China this week, patch impact, builds
   // across patches). Points at /meta rather than /updates.
-  key: "wtm-announce-meta-china-week-2026-10-v10",
-  href: "/meta#builds",
-  lead: "What China is building this week",
-  short: `New on the meta page: the builds rising fastest in China's Legendary queue, the items and keystones winning most by role, summoner spells by lane, and a full breakdown of what patch ${IMPACT_PATCH} did to every item it changed. Every champion page now also tracks its builds across patches, so a strong older build is not lost when players move on.`,
-  cta: "See the meta",
-  badges: ["New"],
+  // -v11: the Build Studio is back to normal speed. Points at /build.
+  key: "wtm-announce-build-studio-back-2026-11-v11",
+  href: "/build",
+  lead: "The Build Studio is back",
+  short: `Build generation is back to normal speed. Some builds were taking over a minute because a retry fell back to a slower model; that is fixed, and builds and counter builds now come back in seconds. China's builds, duos and patch ${NEXT_PATCH} item shifts were also refreshed on 1 November.`,
+  cta: "Generate a build",
+  badges: ["Back"],
   /** Pages the banner points at, so it does not appear on top of itself. */
-  hideOn: ["/meta"],
+  hideOn: ["/build"],
 } as const;
 
 /**
@@ -118,6 +119,18 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "1 November 2026",
+    title: "The Build Studio is back to normal speed",
+    body:
+      "Some generations were taking over a minute. When a build came back "
+      + "with a problem, the full retry skipped the fast model the rest of the "
+      + "generation used and ran on a slower one, so a single retry could "
+      + "double the wait. Retries now stay on the same model, and builds and "
+      + "counter builds come back in seconds again. China's builds, duo "
+      + "partners and item shifts were refreshed from the 1 November captures "
+      + "at the same time.",
+  },
   {
     date: "28 October 2026",
     title: "Patch 7.3d applied",
