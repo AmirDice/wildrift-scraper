@@ -254,7 +254,7 @@ const edgeText = (edge: number) => `${edge >= 0 ? "+" : ""}${edge.toFixed(1)}`;
 function PatchRowCard({ row, patches, position }: { row: LoadoutPatchRow; patches: LoadoutPatches; position: number }) {
   const names = row.entities.map((entity) => entity.name).join(" · ");
   return (
-    <article className={`rounded-2xl border p-3 ${row.flag === "proven" ? "border-gold/40 bg-gold/[0.06]" : "border-white/[0.075] bg-black/[0.16]"}`}>
+    <article className={`min-w-0 overflow-hidden rounded-2xl border p-3 ${row.flag === "proven" ? "border-gold/40 bg-gold/[0.06]" : "border-white/[0.075] bg-black/[0.16]"}`}>
       <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
         <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.045] text-[0.65rem] font-bold text-faint">{position}</span>
         <div className="flex shrink-0 -space-x-1.5">
@@ -358,7 +358,7 @@ function PartnersPanel({ champion, lane, queues }: { champion: string; lane: str
       <p className="max-w-3xl text-xs leading-relaxed text-muted">
         {`The champions ${champion} wins most with from ${LANE_LABEL[lane] ?? lane}, by the partner's lane. Each pair's win rate is pulled toward its list's average by how rarely the pair is seen, so a duo played a handful of times cannot top the list.`}
       </p>
-      <div className="mt-4 grid gap-3 lg:grid-cols-2">
+      <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
         {groups.map((group) => (
           <section key={group.lane} className="rounded-2xl border border-white/[0.075] bg-black/[0.12] p-3.5">
             <h4 className="text-sm font-semibold text-text">{`With ${LANE_LABEL[group.lane] ?? group.lane}`}</h4>
@@ -560,7 +560,11 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
             <p className="mt-4 max-w-3xl text-xs leading-relaxed text-muted">
               {`Each row's edge over its own patch's lane average (${patchView.order.map((patch) => `${patch}: ${patchView.captures[patch]} ${patchView.captures[patch] === 1 ? "capture" : "captures"}`).join(", ")}), with the older patch counting 0.7x. A patch lifts or sinks every build at once, so the edge is what carries over, and a build players moved away from can still rank first.`}
             </p>
-            <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
+            {/* grid-cols-1, not the implicit auto track: an auto track grows to its
+                widest row, a scrolling Marquee is wider than the phone, and the
+                card flickered between the two widths as the scroll switched on
+                and off. */}
+            <div className="mt-4 grid grid-cols-1 gap-2.5 lg:grid-cols-2">
               {(expanded ? patchView.rows : patchView.rows.slice(0, 6)).map((row, index) => <PatchRowCard key={rowKey(row as unknown as LoadoutRow)} row={row} patches={patchView} position={index + 1} />)}
             </div>
             {patchView.rows.length > 6 && (
@@ -573,13 +577,13 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
           </>
         ) : rows.length ? (
           activeTab === "versus" && lane.versusKind === "matchup" ? (
-            <div className="mt-4 grid gap-3 lg:grid-cols-2">
+            <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
               <MatchupPanel title="Best observed matchups" tone="good" rows={favorable} since={since} />
               <MatchupPanel title="Most difficult matchups" tone="bad" rows={difficult} since={since} />
             </div>
           ) : (
             <>
-              <div className="mt-4 grid gap-2.5 lg:grid-cols-2">
+              <div className="mt-4 grid grid-cols-1 gap-2.5 lg:grid-cols-2">
                 {visibleRows.map((row, index) => <StandardRow key={`${activeTab}-${row.rank}-${row.entities.map((entity) => entity.name).join("-")}`} row={row} kind={tabKey} since={since} position={index + 1} recommended={row === recommended} week={usingWeek ? week!.captures : undefined} trend={trendOf.get(rowKey(row))} />)}
               </div>
               {rows.length > 6 && (
