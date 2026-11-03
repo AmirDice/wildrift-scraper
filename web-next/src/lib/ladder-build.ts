@@ -74,6 +74,9 @@ export interface LadderBuild {
    *  rather than how many of them bought each item. */
   ordered?: boolean;
   runes: { keystone?: string; minors: string[]; flex?: string; primaryTree?: string };
+  /** Share of the sampled players running each rune, 0-100. A slot filled
+   *  from the whole ladder (see runePage) has no entry here. */
+  runeRates?: Record<string, number>;
   /** Where this came from, so the UI can label it honestly. */
   source: "ladder";
   /** Pick count of the most-built item, out of the sample. */
@@ -221,6 +224,11 @@ export function ladderConsensusBuild(
         : [];
     }),
   );
+  const of = entry.items[0]?.of;
+  const runeRates = Object.fromEntries(
+    [...(entry.keystones ?? []), ...(entry.minors ?? [])].flatMap((row) =>
+      row.name && row.count != null && of ? [[row.name, (row.count / of) * 100] as const] : []),
+  );
   const order = entry.order ?? [];
   const covers = order.length === shown.length && shown.every((slug) => order.includes(slug));
   return {
@@ -230,6 +238,7 @@ export function ladderConsensusBuild(
     bootsAt: covers && boots ? order.indexOf(boots) : undefined,
     ordered: covers,
     runes: runePage(entry),
+    runeRates,
     source: "ladder",
     sampleOf: entry.items[0]?.count,
     of: entry.items[0]?.of,

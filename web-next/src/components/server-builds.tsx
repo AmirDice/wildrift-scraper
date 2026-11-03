@@ -297,30 +297,41 @@ export function ServerBuilds({
               </span>
             ))}
           </div>
+          {/* Runes as tiles, the same as the items, each with the share of
+              top players running it. A slot the champion's own record left
+              empty is filled from the whole ladder (see runePage) and has no
+              share of its own, so it shows none rather than a made-up one. */}
           {build.runes.keystone && (
-            <div className={`${compact ? "mt-3 border-t border-white/[0.07] pt-3 pr-28" : "mt-3"} flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-muted`}>
+            <div className={compact
+              ? "mt-3 grid grid-cols-3 gap-2 border-t border-white/[0.07] pt-3 sm:grid-cols-5"
+              : "mt-3 flex flex-wrap items-start gap-2.5"}>
               {[
                 { name: build.runes.keystone, keystone: true, flex: false },
                 ...build.runes.minors.map((name) => ({ name, keystone: false, flex: false })),
                 ...(build.runes.flex
                   ? [{ name: build.runes.flex, keystone: false, flex: true }]
                   : []),
-              ].map((rune, i) => (
-                <span key={`${rune.name}-${i}`} className="flex items-center gap-1.5">
-                  {RUNE_ICONS[rune.name] && (
-                    <img
-                      src={RUNE_ICONS[rune.name]}
-                      alt=""
-                      loading="lazy"
-                      className={`rounded-full ${rune.keystone ? "h-7 w-7" : "h-6 w-6"}`}
-                    />
-                  )}
-                  <span className={rune.keystone ? "font-semibold text-text" : ""}>
-                    {rune.name}
-                    {rune.flex && <span className="ml-1 text-faint">(flex)</span>}
+              ].map((rune, i) => {
+                const rate = build.runeRates?.[rune.name];
+                return (
+                  <span key={`${rune.name}-${i}`} className={compact
+                    ? "min-w-0 rounded-xl border border-white/[0.07] bg-black/15 px-2 py-2.5 text-center"
+                    : "w-16 text-center"}>
+                    {RUNE_ICONS[rune.name] && (
+                      <img
+                        src={RUNE_ICONS[rune.name]}
+                        alt={rune.name}
+                        loading="lazy"
+                        className={`mx-auto rounded-full ${compact ? "h-10 w-10" : "h-11 w-11"}`}
+                      />
+                    )}
+                    <span className={`mt-1 block truncate leading-tight ${compact ? "text-[0.68rem]" : "text-[10px]"} ${rune.keystone ? "font-semibold text-text" : compact ? "text-text" : "text-muted"}`} title={rune.flex ? `${rune.name} (secondary tree)` : rune.name}>
+                      {rune.name}
+                    </span>
+                    {rate != null && <span className="mt-0.5 block text-[0.62rem] font-semibold text-accent">{Math.round(rate)}%</span>}
                   </span>
-                </span>
-              ))}
+                );
+              })}
             </div>
           )}
           {(pills.length > 0 || build.stats?.profile) && !compact && (
@@ -338,7 +349,8 @@ export function ServerBuilds({
             </div>
           )}
           <div className={compact
-            ? expanded ? "mt-3 flex justify-end" : "absolute bottom-0 right-0"
+            // its own row: the rune tiles now fill the corner it used to sit in
+            ? "mt-3 flex justify-end"
             : ""}>
           <p className={`${compact ? "sr-only" : "mt-2 text-[11px]"} text-faint`}>
             {build.sample

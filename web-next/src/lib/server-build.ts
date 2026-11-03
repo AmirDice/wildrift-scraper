@@ -74,6 +74,8 @@ export interface ServerBuild {
   /** The card may number these as a buying order only when this is true. */
   ordered?: boolean;
   runes: { keystone?: string; minors: string[]; flex?: string };
+  /** Share of top players running each rune, 0-100, by rune name. */
+  runeRates?: Record<string, number>;
   /** "41 of 50 players" behind the most-built item. */
   sample?: { count: number; of: number } | null;
   /** Optional engine/stat profile, calculated server-side for comparison. */
@@ -89,6 +91,7 @@ interface ConsensusLike {
   bootsAt?: number;
   ordered?: boolean;
   runes: { keystone?: string; minors: string[]; flex?: string };
+  runeRates?: Record<string, number>;
   sampleOf?: number;
   of?: number;
 }
@@ -111,6 +114,7 @@ export function toServerBuild(
       minors: build.runes.minors,
       flex: build.runes.flex,
     },
+    runeRates: build.runeRates,
     sample: build.sampleOf && build.of ? { count: build.sampleOf, of: build.of } : null,
     stats,
   };
