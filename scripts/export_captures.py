@@ -211,6 +211,10 @@ def _players_by_rank(session: Path) -> dict[int, dict]:
         if rank is None:
             continue
         tag = (r.get("riot_tag") or "").strip()
+        current_tier = (canonical_profile_rank(r.get("current_rank"))
+                        or canonical_profile_rank(r.get("tier"))
+                        or canonical_tier(r.get("tier")))
+        peak_tier = canonical_profile_rank(r.get("historical_rank"))
         out[rank] = {
             # The captured identity name (legacy popup when present, otherwise
             # the leaderboard fallback), which is still the best display name
@@ -225,9 +229,11 @@ def _players_by_rank(session: Path) -> dict[int, dict]:
             # New captures read rank from the main profile.  `tier` remains
             # the backwards-compatible field consumed by the scorer, while
             # the explicit fields preserve both badge meanings and counts.
-            "tier": canonical_profile_rank(r.get("current_rank"))
-                    or canonical_profile_rank(r.get("tier"))
-                    or canonical_tier(r.get("tier")),
+            "tier": current_tier or peak_tier,
+            # No rank this season (unranked or not yet placed): the owner's
+            # call, 2026-11-03, is to show the peak badge instead of nothing,
+            # flagged so the site labels it as a peak, never as current.
+            "tier_is_peak": True if (not current_tier and peak_tier) else None,
             "current_rank": canonical_profile_rank(r.get("current_rank"))
                             or canonical_profile_rank(r.get("tier")),
             "current_rank_count": _int(r.get("current_rank_count")),
@@ -335,6 +341,7 @@ def export_champion(champ: str, session: Path) -> tuple[list[dict], dict]:
             "w": _float(r.get("winrate")),
             "tag": None if hidden else who.get("tag"),
             "tier": who.get("tier"),
+            "tierIsPeak": who.get("tier_is_peak"),
             "currentRank": who.get("current_rank"),
             "currentRankCount": who.get("current_rank_count"),
             "historicalRank": who.get("historical_rank"),
@@ -405,14 +412,17 @@ def build_player_index(payloads: list[dict]) -> dict:
             if not name:
                 continue
             rec = by_name.setdefault(name.casefold(), {
-                "n": name, "th": None, "tier": None, "lv": None, "c": [],
+                "n": name, "th": None, "tier": None, "tp": None, "lv": None, "c": [],
             })
             # Identity fields repeat per board; keep the first non-empty and
             # prefer the highest level seen, since it only ever goes up.
             # `th` is the HASHED tag -- see tag_hash. There is deliberately no
             # plaintext tag field anywhere in this file.
             rec["th"] = rec["th"] or tag_hash(p.get("tag"))
-            rec["tier"] = rec["tier"] or p.get("tier")
+            if not rec["tier"] or (rec.get("tp") and p.get("tier") and not p.get("tierIsPeak")):
+                # a current-season rank from any board beats a peak
+                rec["tier"] = p.get("tier") or rec["tier"]
+                rec["tp"] = True if (p.get("tier") and p.get("tierIsPeak")) else None
             if p.get("level") is not None:
                 rec["lv"] = max(rec["lv"] or 0, int(p["level"]))
             rec["c"].append({

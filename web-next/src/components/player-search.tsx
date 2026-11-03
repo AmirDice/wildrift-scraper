@@ -137,7 +137,7 @@ export function PlayerSearch({ champions }: { champions: ChampionRef[] }) {
                 <span className="shrink-0 rounded border border-line bg-white/[0.05] px-1.5 py-0.5 text-[0.65rem] font-semibold tracking-wide text-muted">
                   {p.sv}
                 </span>
-                {p.tier && <TierBadge tier={p.tier} size={20} />}
+                {p.tier && <TierBadge tier={p.tier} size={20} peak={p.tp} />}
               </button>
             </li>
           ))}
@@ -224,7 +224,7 @@ function PlayerProfile({
           {player.tier && (
             <span className="inline-flex items-center gap-1.5 rounded-md border border-line bg-white/[0.04] px-2 py-1 text-xs font-medium">
               <TierBadge tier={player.tier} size={18} />
-              {player.tier}
+              {player.tier}{player.tp && " (peak)"}
             </span>
           )}
           {player.lv != null && <span className="text-xs text-muted">Level {player.lv}</span>}

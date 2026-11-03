@@ -33,6 +33,8 @@ type Row = { r: number; p: string; w: number | null; g: number | null; s: number
 type EnrichedPlayer = Row & {
   tag: string | null;
   tier: string | null;
+  /** `tier` is the peak rank: no rank this season. */
+  tierIsPeak?: boolean | null;
   level: number | null;
   /** Boosting advert: row kept, name and detail withheld. */
   hidden?: boolean | null;
@@ -239,7 +241,7 @@ function ChampionSpotlight({
                   {bp.confidence_wr.toFixed(1)}% confidence
                 </span>
               )}
-              {best?.tier && <TierBadge tier={best.tier} size={18} />}
+              {best?.tier && <TierBadge tier={best.tier} size={18} peak={best.tierIsPeak} />}
             </div>
           </div>
         )}
@@ -285,7 +287,7 @@ function ChampionContextBar({ champ, best }: { champ: SlimChampion; best: Enrich
             <span className="block text-[0.6rem] uppercase tracking-[0.16em] text-muted">Best this season</span>
             <span className="block max-w-[10rem] truncate text-sm font-semibold text-gold" title={bp.player}>{bp.player}</span>
           </span>
-          {best?.tier && <TierBadge tier={best.tier} size={18} />}
+          {best?.tier && <TierBadge tier={best.tier} size={18} peak={best.tierIsPeak} />}
         </div>
       )}
     </div>
@@ -1177,7 +1179,7 @@ export function LeaderboardView({ champions, championsNa, championsCn, itemIcons
                         {row.v && <span className="mt-0.5 block text-[0.6rem] font-semibold uppercase tracking-wide text-faint">{row.v}</span>}
                         {(e?.tier || e?.banned) && (
                           <span className="mt-0.5 flex flex-wrap items-center gap-1">
-                            {e?.tier && <TierBadge tier={e.tier} />}
+                            {e?.tier && <TierBadge tier={e.tier} peak={e.tierIsPeak} />}
                             {e?.banned && (
                               <span
                                 title="This account has been permanently banned. Its row is shown as the game showed it, but its games are excluded from champion win rates and records."

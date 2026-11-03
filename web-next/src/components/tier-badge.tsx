@@ -79,12 +79,16 @@ export function tierRank(tier: string | null | undefined): number | null {
   return base * 10 + (6 - (ROMAN_VALUE[roman] ?? 0));
 }
 
-export function TierBadge({ tier, size = 18 }: { tier: string; size?: number }) {
+/** `peak`: the player has no rank this season, so this is their peak rank,
+ *  labelled as such rather than passed off as current. */
+export function TierBadge({ tier, size = 18, peak = false }: { tier: string; size?: number; peak?: boolean | null }) {
   const { family, roman } = tierParts(tier);
   const icon = TIER_ICONS[family];
+  const title = peak ? `Peak rank: ${tier}. No rank yet this season.` : tier;
+  const peakTag = peak && <span className="text-[0.55rem] font-semibold uppercase tracking-wide text-faint">peak</span>;
   if (icon) {
     return (
-      <span className="inline-flex items-center gap-0.5" title={tier}>
+      <span className="inline-flex items-center gap-0.5" title={title}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={`/tiers/${icon}`}
@@ -96,12 +100,13 @@ export function TierBadge({ tier, size = 18 }: { tier: string; size?: number }) 
           style={{ width: size, height: size }}
         />
         {roman && <span className="text-[0.6rem] font-bold text-muted">{roman}</span>}
+        {peakTag}
       </span>
     );
   }
   return (
-    <span className="rounded bg-white/10 px-1 py-px text-[0.6rem] font-bold text-muted" title={tier}>
-      {tier}
+    <span className="rounded bg-white/10 px-1 py-px text-[0.6rem] font-bold text-muted" title={title}>
+      {tier}{peak && " (peak)"}
     </span>
   );
 }

@@ -105,7 +105,7 @@ export function PlayerQuickSearch() {
                   <span className="shrink-0 rounded border border-line bg-white/[0.05] px-1.5 py-0.5 text-[0.6rem] font-semibold tracking-wide text-muted">
                     {p.sv}
                   </span>
-                  {p.tier && <TierBadge tier={p.tier} size={18} />}
+                  {p.tier && <TierBadge tier={p.tier} size={18} peak={p.tp} />}
                 </button>
               ))
             )}

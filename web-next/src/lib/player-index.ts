@@ -25,6 +25,8 @@ export type IndexPlayer = {
   /** FNV-1a of the folded riot tag. There is no plaintext tag in the data. */
   th: string | null;
   tier: string | null;
+  /** `tier` is the peak rank: no rank this season. */
+  tp?: boolean | null;
   lv: number | null;
   c: IndexEntry[];
   /** Which server's board this account is on. Added at load time from the
