@@ -214,12 +214,24 @@ def run_date(champions: dict[str, list[dict[str, Any]]]) -> str:
     return max(counts, key=counts.get) if counts else datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
 
+def newest_day(champions: dict[str, list[dict[str, Any]]]) -> str:
+    """The newest capture day in a snapshot (YYYY-MM-DD)."""
+    days = [str(r.get("capturedAt") or "")[:10] for rs in champions.values() for r in rs]
+    days = [d for d in days if d]
+    return max(days) if days else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+
 def archive(output: dict[str, Any]) -> Path:
-    """Write the snapshot under its run date, refusing to replace a fuller
-    snapshot with an emptier one (a half-failed extraction must not erase
-    the record it was meant to extend)."""
+    """Write the snapshot under its NEWEST capture day, refusing to replace a
+    fuller snapshot with an emptier one (a half-failed extraction must not
+    erase the record it was meant to extend).
+
+    Not the majority day (run_date): a short walk that re-captured 11 lanes
+    on 2026-11-09 left the 6 November captures in the majority, so it was
+    written over 2026-11-06.json -- erasing that run's record, and with it
+    the second capture the week trend needed for every re-captured lane."""
     HISTORY.mkdir(parents=True, exist_ok=True)
-    path = HISTORY / f"{run_date(output['champions'])}.json"
+    path = HISTORY / f"{newest_day(output['champions'])}.json"
     if path.exists():
         existing = load_json(path)
         if existing.get("coverage", {}).get("lanePages", 0) > output["coverage"]["lanePages"]:
@@ -246,19 +258,40 @@ def row_key(row: dict[str, Any]) -> str:
     return " + ".join(str(entity) for entity in row.get("entities") or [])
 
 
-def attach_movement(output: dict[str, Any], previous: dict[str, Any]) -> int:
-    """Give every row its numbers from the previous snapshot.
+def history_snapshots() -> list[dict[str, Any]]:
+    """Every archived snapshot, oldest first."""
+    docs = [load_json(p) for p in sorted(HISTORY.glob("????-??-??.json"))] if HISTORY.exists() else []
+    return [d for d in docs if isinstance(d.get("champions"), dict)]
+
+
+def _previous_capture(snapshots: list[dict[str, Any]], slug: str, record: dict[str, Any]) -> dict[str, Any] | None:
+    """This lane's newest archived capture at least MIN_GAP_DAYS older than it."""
+    day = datetime.fromisoformat(str(record.get("capturedAt"))[:10])
+    for doc in reversed(snapshots):
+        for old in doc["champions"].get(slug, []):
+            if old.get("lane") != record["lane"] or not old.get("capturedAt"):
+                continue
+            if (day - datetime.fromisoformat(str(old["capturedAt"])[:10])).days >= MIN_GAP_DAYS:
+                return old
+    return None
+
+
+def attach_movement(output: dict[str, Any], snapshots: list[dict[str, Any]]) -> int:
+    """Give every row its numbers from that lane's previous capture.
 
     `prev` holds the old rank, win rate and pick rate; a row the previous
-    snapshot did not list is `new`. Lanes the previous run did not capture
-    get neither, so no row claims a movement it cannot show.
+    capture did not list is `new`. Lanes never captured before get neither,
+    so no row claims a movement it cannot show.
+
+    Per LANE, not against one snapshot: after a partial walk the output mixes
+    lanes from two runs, and one snapshot is either the same capture as half
+    of them (no movement) or two runs back for the other half.
     """
     marked = 0
     for slug, records in output["champions"].items():
-        before = {record["lane"]: record for record in previous.get("champions", {}).get(slug, [])}
         for record in records:
-            old = before.get(record["lane"])
-            if not old or str(old.get("capturedAt"))[:10] >= str(record.get("capturedAt"))[:10]:
+            old = _previous_capture(snapshots, slug, record)
+            if not old:
                 continue
             record["previousCapturedAt"] = old.get("capturedAt")
             for name, tab in record["tabs"].items():
@@ -776,12 +809,8 @@ def main() -> None:
         archive(output)
         return
     archive(output)
-    previous = previous_snapshot(run_date(champions))
-    if previous:
-        marked = attach_movement(output, previous)
-        print(f"Movement against the {run_date(previous['champions'])} snapshot: {marked} rows")
-    else:
-        print("No earlier snapshot: rows carry no movement yet")
+    marked = attach_movement(output, history_snapshots())
+    print(f"Movement against each lane's previous capture: {marked} rows")
     lanes, rows = attach_week_and_trend(output)
     print(f"Week and trend: {lanes} lanes, {rows} rows trended")
     print(f"Across patches: {attach_patches(output)} tabs scored")
