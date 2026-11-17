@@ -39,11 +39,13 @@ const HISTORY_DIR = path.join(ROOT, "data", "history", "cn");
 // postPatchDays is 0 and the site says it is waiting rather than presenting
 // pre-patch drift as the patch's verdict.
 //
-// 7.3d went live on Wednesday 28 October 2026, the day Riot published the
-// notes (confirmed by the owner), so the 27th is the last clean snapshot.
-const MOVERS_PATCH = "7.3d";
-const MOVERS_PATCH_LIVE = "2026-10-28";
-const MOVERS_BASELINE_DATE = "2026-10-27";
+// 7.3f: Riot published the notes on Wednesday 11 November 2026. 7.3d went
+// live the day its notes came out, so the 11th is taken as the first day of
+// games and the 10th as the last clean snapshot (Sylas himself arrived on
+// the 12th). If the balance changes landed a day later, move both forward.
+const MOVERS_PATCH = "7.3f";
+const MOVERS_PATCH_LIVE = "2026-11-11";
+const MOVERS_BASELINE_DATE = "2026-11-10";
 
 const HERO_LIST_URL = "https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js";
 const RANK_URL = "https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2";
