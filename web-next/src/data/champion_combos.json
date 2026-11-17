@@ -1822,6 +1822,20 @@
    ],
    "confidence": "medium",
    "why": "WE, EQ, QQ, R, then autos. One choice per subject; R explodes after its 3-second delay. This is a modeled rotation, not a claim of an optimal combo."
+  },
+  "Sylas": {
+   "combo": [
+    "3",
+    "auto",
+    "1",
+    "auto",
+    "2",
+    "auto",
+    "4",
+    "auto"
+   ],
+   "confidence": "medium",
+   "why": "Abscond/Abduct in, Chain Lash, Kingslayer, weaving a Petricite Burst attack after each. Hijack is listed for timing only: the stolen ultimate is not modelled."
   }
  }
 }

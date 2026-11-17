@@ -248,9 +248,9 @@
         "lvl15": 105
       },
       "mr": {
-        "base": 30,
+        "base": 34,
         "perLevel": 1,
-        "lvl15": 44
+        "lvl15": 48
       },
       "ad": {
         "base": 52,
@@ -2234,9 +2234,9 @@
         "lvl15": 2534
       },
       "armor": {
-        "base": 35,
-        "perLevel": 4,
-        "lvl15": 91
+        "base": 40,
+        "perLevel": 5,
+        "lvl15": 110
       },
       "mr": {
         "base": 40,
@@ -3174,9 +3174,9 @@
         "lvl15": 86
       },
       "mr": {
-        "base": 38,
+        "base": 34,
         "perLevel": 2,
-        "lvl15": 66
+        "lvl15": 62
       },
       "ad": {
         "base": 58,
@@ -7089,6 +7089,73 @@
       }
     }
   },
+  "Sylas": {
+    "slug": "sylas",
+    "name": "Sylas",
+    "class": "Mage",
+    "classes": [
+      "Mage"
+    ],
+    "role": "Mid",
+    "roles": [
+      "Mid"
+    ],
+    "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10120.png",
+    "primaryDamage": "magic",
+    "scalesWith": [
+      "ad",
+      "ap",
+      "attackSpeed"
+    ],
+    "mechanics": [
+      "onHit",
+      "dash",
+      "heal",
+      "cc"
+    ],
+    "ccDepth": 1,
+    "protectsAllies": false,
+    "archetypes": [],
+    "draftKit": {
+      "frontline": 0.4,
+      "peel": 0.1,
+      "engage": 0.45,
+      "antiDive": 0.25,
+      "antiTank": 0.15,
+      "disruption": 0.2,
+      "disengage": 0.1,
+      "sustained": 0.55,
+      "magic": 0.95,
+      "physical": 0.05,
+      "globalPressure": 0.0
+    },
+    "iconLocal": "/champions/sylas.png",
+    "pctHpDamage": false,
+    "trueDamage": false,
+    "ccImmune": false,
+    "baseStats": {
+      "hp": {
+        "base": 630.0,
+        "perLevel": 106.0,
+        "lvl15": 2114.0
+      },
+      "armor": {
+        "base": 40.0,
+        "perLevel": 5.0,
+        "lvl15": 110.0
+      },
+      "mr": {
+        "base": 38.0,
+        "perLevel": 2.0,
+        "lvl15": 66.0
+      },
+      "ad": {
+        "base": 62.0,
+        "perLevel": 3.0,
+        "lvl15": 104.0
+      }
+    }
+  },
   "Syndra": {
     "slug": "syndra",
     "name": "Syndra",
@@ -8729,8 +8796,8 @@
       },
       "armor": {
         "base": 40,
-        "perLevel": 4,
-        "lvl15": 96
+        "perLevel": 5.2,
+        "lvl15": 112.8
       },
       "mr": {
         "base": 38,

@@ -4,6 +4,7 @@ import { buildCacheKey, readCachedBuild, writeCachedBuild } from "@/lib/build-ca
 import { cachedStudioBuild, rememberLatestBuild } from "@/lib/cached-build";
 import { clientIp, consumeQuota, isOwnerKey, ownerKeyStatus, refundQuota } from "@/lib/quota";
 import { ALPHA_DAILY_BUILDS, deviceAllowed, isAlphaDevice } from "@/lib/alpha";
+import { outdatedBody, outdatedOverlay } from "@/lib/overlay-version";
 import { kvGet, kvSet, kvDelete } from "@/lib/kv";
 import { recordGenerationEngagement, trackEvent } from "@/lib/stats";
 import { ITEM_CATALOG_VERSION } from "@/lib/advisor-catalog";
@@ -33,7 +34,7 @@ const ADVISOR_SECRET = process.env.ADVISOR_SECRET || "";
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "content-type, x-device-id, x-owner-key",
+  "Access-Control-Allow-Headers": "content-type, x-device-id, x-owner-key, x-app-version",
 };
 
 const BIAS_VALUES = new Set([
@@ -123,6 +124,8 @@ async function claimPair(key: string): Promise<boolean> {
 }
 
 export async function POST(request: Request) {
+  // Deprecated overlay builds are refused before anything is read or spent.
+  if (outdatedOverlay(request)) return json(outdatedBody(), 426);
   let body: Record<string, unknown>;
   try {
     body = await request.json();

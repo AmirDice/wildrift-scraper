@@ -1769,6 +1769,20 @@
         }
       }
     },
+    "Sylas": {
+      "1": {
+        "Chain Lash": {
+          "primaryPct": 100,
+          "secondaryPct": 100,
+          "maxSecondaryTargets": 2
+        },
+        "Chain Lash explosion": {
+          "primaryPct": 100,
+          "secondaryPct": 100,
+          "maxSecondaryTargets": 2
+        }
+      }
+    },
     "Syndra": {
       "2": {
         "Force of Will": {

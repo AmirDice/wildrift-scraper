@@ -492,9 +492,9 @@
         "lvl15": 105
       },
       "mr": {
-        "base": 30,
+        "base": 34,
         "perLevel": 1,
-        "lvl15": 44
+        "lvl15": 48
       },
       "moveSpeed": {
         "base": 340,
@@ -5156,9 +5156,9 @@
         "lvl15": 26
       },
       "armor": {
-        "base": 35,
-        "perLevel": 4,
-        "lvl15": 91
+        "base": 40,
+        "perLevel": 5,
+        "lvl15": 110
       },
       "mr": {
         "base": 40,
@@ -5835,7 +5835,7 @@
         "slot": "P",
         "name": "Ionian Fervor",
         "cooldowns": [],
-        "text": "Hitting enemies with abilities grant 3% - 17% bonus Attack Speed for 6 seconds, stacking up to 4 times. At max stacks attacks deal an additional 25 - 150 ( +30% AD ) magic damage on hit . Attacking enemy champions refreshes the duration. An ability grants multiple stacks upon hitting multiple champions.",
+        "text": "Hitting enemies with abilities grant 11% - 25% bonus Attack Speed for 6 seconds, stacking up to 4 times. At max stacks attacks deal an additional 10 - 80 ( +20% bonus AD ) magic damage on hit . Attacking enemy champions refreshes the duration. An ability grants multiple stacks upon hitting multiple champions.",
         "damageTypes": [
           "magic"
         ],
@@ -5856,7 +5856,7 @@
           "7",
           "6"
         ],
-        "text": "Dashes through an enemy, dealing 10 / 40 / 70 / 100 ( +65% AD ) physical damage and healing herself for 11% / 14% / 17% / 20% AD . Bladesurge's cooldown is refreshed if the target was Marked or dies to Bladesurge. When aimed, Bladesurge will prioritize targets it will reset on. Deals 150% damage to minions.",
+        "text": "Dashes through an enemy, dealing 10 / 40 / 70 / 100 ( +80% AD ) physical damage and healing herself for 9% / 11% / 13% / 15% AD . Bladesurge's cooldown is refreshed if the target was Marked or dies to Bladesurge. When aimed, Bladesurge will prioritize targets it will reset on. Deals 150% damage to minions.",
         "damageTypes": [
           "physical"
         ],
@@ -7138,7 +7138,7 @@
           "7",
           "6"
         ],
-        "text": "Hurls a spear, dealing 70 / 135 / 200 / 265 ( +110% AD ) physical damage to the first target hit. If this kills the target, the spear continues onward, carrying the target's Rend stacks to the next enemy hit. After casting this ability, Kalista can dash using Martial Poise .",
+        "text": "Hurls a spear, dealing 30 / 110 / 190 / 270 ( +110% AD ) physical damage to the first target hit. If this kills the target, the spear continues onward, carrying the target's Rend stacks to the next enemy hit. After casting this ability, Kalista can dash using Martial Poise .",
         "damageTypes": [
           "physical"
         ],
@@ -7391,9 +7391,9 @@
         "lvl15": 86
       },
       "mr": {
-        "base": 38,
+        "base": 34,
         "perLevel": 2,
-        "lvl15": 66
+        "lvl15": 62
       },
       "moveSpeed": {
         "base": 350,
@@ -9619,7 +9619,7 @@
         "slot": "P",
         "name": "Lightslinger",
         "cooldowns": [],
-        "text": "After using an Ability, Lucian's next Attack within 3.5 seconds will fire two shots. The second shot deals 40% / 50% / 60% physical damage , increased to 100% against minions. The second shot is a separate Attack that applies on-hit effects and can critical strike. Vigilance : When healed or shielded by allied champions, or when a nearby enemy champion is immobilized, Lucian's next two attacks deal an additional 20 ( +10% AD ) magic damage (stores up to four empowered attacks).",
+        "text": "After using an Ability, Lucian's next Attack within 3.5 seconds will fire two shots. The second shot deals 45% / 55% / 65% physical damage , increased to 100% against minions. The second shot is a separate Attack that applies on-hit effects and can critical strike. Vigilance : When healed or shielded by allied champions, or when a nearby enemy champion is immobilized, Lucian's next two attacks deal an additional 20 ( +10% AD ) magic damage (stores up to four empowered attacks).",
         "damageTypes": [
           "physical",
           "magic"
@@ -9643,7 +9643,7 @@
           "6",
           "5"
         ],
-        "text": "Shoots a bolt of piercing light through an enemy unit, damaging enemies in a line for 75 / 125 / 175 / 225 ( +100% AD ) physical damage .",
+        "text": "Shoots a bolt of piercing light through an enemy unit, damaging enemies in a line for 75 / 125 / 175 / 225 ( +120% bonus AD ) physical damage .",
         "damageTypes": [
           "physical"
         ],
@@ -14434,7 +14434,7 @@
         "slot": "P",
         "name": "Junkyard Titan",
         "cooldowns": [],
-        "text": "Every ability Rumble casts generates Heat . While above 50 Heat , Rumble enters the Danger Zone , causing his basic abilities to gain bonus effects. When he reaches 150 Heat , he becomes Overheated for 4 seconds. Overheated : Silences himself, but gains 55% bonus Attack Speed and empowers his attacks to deal additional 5 ( +20% AP ) magic damage plus 5% of the marget's max Health . Percent damage is limited to 65 - 150 on monsters.",
+        "text": "Every ability Rumble casts generates Heat . While above 50 Heat , Rumble enters the Danger Zone , causing his basic abilities to gain bonus effects. When he reaches 150 Heat , he becomes Overheated for 4 seconds. Overheated : Silences himself, but gains 55% bonus Attack Speed and empowers his attacks to deal additional 5 ( +25% AP ) magic damage plus 5% of the marget's max Health . Percent damage is limited to 65 - 150 on monsters.",
         "damageTypes": [
           "magic"
         ],
@@ -14517,7 +14517,7 @@
           "70",
           "60"
         ],
-        "text": "Launches a line of rockets that creates a burning trail on the ground on impact, dealing 700 / 1050 / 1400 ( +200% AP ) magic damage and slowing enemies in the trail by 45% over 5 seconds.",
+        "text": "Launches a line of rockets that creates a burning trail on the ground on impact, dealing 800 / 1200 / 1600 ( +220% AP ) magic damage and slowing enemies in the trail by 45% over 5 seconds.",
         "damageTypes": [
           "magic"
         ],
@@ -15431,11 +15431,11 @@
         "slot": "4",
         "name": "Stand United",
         "cooldowns": [
+          "120",
           "110",
-          "100",
-          "90"
+          "100"
         ],
-        "text": "Channels for 3 seconds, shielding an allied champion for 170 / 340 / 510 ( +135% AP +15% HP ) damage for 5 seconds, increased by 0% - 60% based on target's missing health. Upon completing the channel, Shen teleports to the target ally.",
+        "text": "Channels for 3 seconds, shielding an allied champion for 160 / 260 / 360 ( +135% AP +15% HP ) damage for 5 seconds, increased by 0% - 60% based on target's missing health. Upon completing the channel, Shen teleports to the target ally.",
         "damageTypes": [],
         "scales": [
           "ap"
@@ -16867,6 +16867,169 @@
           "dash",
           "heal"
         ]
+      }
+    ]
+  },
+  {
+    "slug": "sylas",
+    "name": "Sylas",
+    "baseStats": {
+      "hp": {
+        "base": 630.0,
+        "perLevel": 106.0,
+        "lvl15": 2114.0
+      },
+      "hpRegen": {
+        "base": 9.0,
+        "perLevel": 1.0,
+        "lvl15": 23.0
+      },
+      "mana": {
+        "base": 480.0,
+        "perLevel": 37.0,
+        "lvl15": 998.0
+      },
+      "manaRegen": {
+        "base": 15.0,
+        "perLevel": 1.0,
+        "lvl15": 29.0
+      },
+      "armor": {
+        "base": 40.0,
+        "perLevel": 5.0,
+        "lvl15": 110.0
+      },
+      "mr": {
+        "base": 38.0,
+        "perLevel": 2.0,
+        "lvl15": 66.0
+      },
+      "moveSpeed": {
+        "base": 355.0,
+        "perLevel": 0.0,
+        "lvl15": 355.0
+      },
+      "ad": {
+        "base": 62.0,
+        "perLevel": 3.0,
+        "lvl15": 104.0
+      },
+      "attackSpeed": {
+        "base": 0.8,
+        "perLevel": 0.0107,
+        "lvl15": 0.9
+      }
+    },
+    "primaryDamage": "magic",
+    "physicalAbilities": 0,
+    "magicAbilities": 4,
+    "scalesWith": [
+      "ad",
+      "ap",
+      "attackSpeed"
+    ],
+    "mechanics": [
+      "cc",
+      "dash",
+      "heal",
+      "onHit"
+    ],
+    "abilities": [
+      {
+        "slot": "P",
+        "name": "Petricite Burst",
+        "cooldowns": [],
+        "text": "After using an ability, gains a charge (max 3 charges). His next attack expands a charge to whirl his chains, causing the effects: Deals 81 ( 130% AD + 30% AP ) magic damage to the primary target; Deals 25 ( 40% AD + 20% AP ) magic damage to other nearby enemies; Gains 125% Attack Speed while he has at least 1 charge. Deals 100% damage to monsters. Executes minions below 25 Health when they are secondary targets. Only damage against the primary target can Critically Strike.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ad",
+          "ap",
+          "attackSpeed"
+        ],
+        "tags": [
+          "dash",
+          "heal",
+          "onHit"
+        ]
+      },
+      {
+        "slot": "1",
+        "name": "Chain Lash",
+        "cooldowns": [
+          "9",
+          "8",
+          "7",
+          "6"
+        ],
+        "text": "Lashes his chains out, intersecting at the target location and casing the effects below: Deals 40 / 70 / 100 / 130 ( +40% AP ) magic damage ; Slows by 15% / 20% / 25% / 30% for 1.5 seconds; After 0.6 seconds, the place where the chains intersect explode with magical energy, dealing a further 80 / 140 / 200 / 260 ( +80% AP ) magic damage . The explosion deals 30% damage to minions.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc"
+        ]
+      },
+      {
+        "slot": "2",
+        "name": "Kingslayer",
+        "cooldowns": [
+          "12",
+          "10",
+          "8",
+          "6"
+        ],
+        "text": "Lunges at an enemy with magical force, dealing 75 / 125 / 175 / 225 ( +60% AP ) magic damage . If the target is a champion, Sylas restores 30 / 60 / 90 / 120 ( +30% AP +5% bonus HP ) Health . For every 1% of own max HP missing, the healing is increased by 1.67% , up to 60 / 120 / 180 / 240 ( +60% AP +10% bonus HP ) Health .",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "dash",
+          "heal"
+        ]
+      },
+      {
+        "slot": "3",
+        "name": "Abscond / Abduct",
+        "cooldowns": [
+          "12",
+          "11",
+          "10",
+          "9"
+        ],
+        "text": "First Cast : Dashes a short distance. Recast : Throws his chains, pulling himself to the first enemy hit, dealing 80 / 150 / 220 / 290 ( +80% AP ) magic damage and stunning them for 0.5 seconds. On arrival, he knocks up the target for 0.5 seconds.",
+        "damageTypes": [
+          "magic"
+        ],
+        "scales": [
+          "ap"
+        ],
+        "tags": [
+          "cc",
+          "dash"
+        ]
+      },
+      {
+        "slot": "4",
+        "name": "Hijack",
+        "cooldowns": [
+          "80",
+          "55",
+          "30"
+        ],
+        "text": "Throws his chains at the target. If they hit a champion, he hijacks them, allowing him to cast a copy of their ultimate ability. The stolen ability retains its original effects and matches Sylas' ultimate ability level. Hijacking an enemy places a cooldown o them for 200% (modified by Sylas' ability cooldown) of the enemy's ultimate ability's cooldown, with a minimum of 40 seconds, during which Sylas cannot hijack them again. Sylas converts Attack Damage bonuses from the stolen ultimate into Ability Power: Every 1% bonus Attack Damage is converted into 0.4% bonus Ability Power ; Every 1% total Attack Damage is converted into 0.6% bonus Ability Power .",
+        "damageTypes": [],
+        "scales": [
+          "ap"
+        ],
+        "tags": []
       }
     ]
   },
@@ -19567,7 +19730,7 @@
           "6",
           "5"
         ],
-        "text": "Blasts an enemy, dealing 55 / 70 / 85 / 100 ( +35% AP ) magic damage and gaining a shield that absorbs up to 30 / 55 / 80 / 105 ( +15% AP ) damage over 2.5 seconds. The next attack within 3.5 seconds deals 20 / 40 / 60 / 80 ( +100% AD +40% AP ) bonus magic damage . Upgrade - Turbocharge : This ability's shield absorbs up to 50 / 90 / 130 / 170 ( +25% AP ) damage and Viktor gains 3 0% bonus Movement Speed for 2.5 seconds.",
+        "text": "Blasts an enemy, dealing 50 / 70 / 90 / 110 ( +40% AP ) magic damage and gaining a shield that absorbs up to 30 / 55 / 80 / 105 ( +15% AP ) damage over 2.5 seconds. The next attack within 3.5 seconds deals 20 / 40 / 60 / 80 ( +100% AD +40% AP ) bonus magic damage . Upgrade - Turbocharge : This ability's shield absorbs up to 50 / 90 / 130 / 170 ( +25% AP ) damage and Viktor gains 3 0% bonus Movement Speed for 2.5 seconds.",
         "damageTypes": [
           "magic"
         ],
@@ -19606,7 +19769,7 @@
           "8",
           "7"
         ],
-        "text": "Fires a chaos beam that cuts across the battlefield in a line, dealing 75 / 120 / 165 / 210 ( +30% AP ) magic damage to enemies in its path. Upgrade - Blastquake : After a brief delay, an explosion follows the beam's wake, dealing 30 / 70 / 110 / 150 ( +60% AP ) magic damage .",
+        "text": "Fires a chaos beam that cuts across the battlefield in a line, dealing 70 / 115 / 160 / 205 ( +40% AP ) magic damage to enemies in its path. Upgrade - Blastquake : After a brief delay, an explosion follows the beam's wake, dealing 20 / 60 / 100 / 140 ( +75% AP ) magic damage .",
         "damageTypes": [
           "magic"
         ],
@@ -19623,7 +19786,7 @@
           "65",
           "55"
         ],
-        "text": "Conjures a Chaos Storm at the target location for 5.5 seconds, dealing 150 / 225 / 330 ( +60% AP ) magic damage to enemies within the area and disrupting their channeled abilities. The storm then deals 50 / 90 / 130 ( +40% AP ) magic damage to enemies within it every second. Upgrade - Howl : Chaos Storm moves faster. Champion takedowns empower the storm, extending its duration by 3.5 seconds and increasing its area of effect. The storm can be empowered up to 5 times. The closer the storm is to Viktor, the faster it moves.",
+        "text": "Conjures a Chaos Storm at the target location for 5.5 seconds, dealing 150 / 225 / 330 ( +60% AP ) magic damage to enemies within the area and disrupting their channeled abilities. The storm then deals 50 / 90 / 130 ( +35% AP ) magic damage to enemies within it every second. Upgrade - Howl : Chaos Storm moves faster. Champion takedowns empower the storm, extending its duration by 3.5 seconds and increasing its area of effect. The storm can be empowered up to 5 times. The closer the storm is to Viktor, the faster it moves.",
         "damageTypes": [
           "magic"
         ],
@@ -20634,8 +20797,8 @@
       },
       "armor": {
         "base": 40,
-        "perLevel": 4,
-        "lvl15": 96
+        "perLevel": 5.2,
+        "lvl15": 112.8
       },
       "mr": {
         "base": 38,
@@ -20731,7 +20894,7 @@
           "1",
           "1"
         ],
-        "text": "Dashes through target enemy, dealing 70 / 80 / 90 / 100 ( +20% bonus AD + 60% AP ) magic damage . Each cast increasesd the next dash's base damage by 25% , up to + 75% . Cannot be re-cast on the same enemy for 7 / 6 / 5 / 4 seconds. If Steel Tempest is tapped during this dash, it will strike as a circle.",
+        "text": "Dashes through target enemy, dealing 70 / 90 / 110 / 130 ( +20% bonus AD + 60% AP ) magic damage . Each cast increasesd the next dash's base damage by 25% , up to + 75% . Cannot be re-cast on the same enemy for 7 / 6 / 5 / 4 seconds. If Steel Tempest is tapped during this dash, it will strike as a circle.",
         "damageTypes": [
           "magic"
         ],

@@ -1436,6 +1436,19 @@
       "physical": 0.0,
       "globalPressure": 0.0
     },
+    "Sylas": {
+      "frontline": 0.4,
+      "peel": 0.1,
+      "engage": 0.45,
+      "antiDive": 0.25,
+      "antiTank": 0.15,
+      "disruption": 0.2,
+      "disengage": 0.1,
+      "sustained": 0.55,
+      "magic": 0.95,
+      "physical": 0.05,
+      "globalPressure": 0.0
+    },
     "Syndra": {
       "frontline": 0.0,
       "peel": 0.3,

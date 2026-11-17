@@ -1655,7 +1655,7 @@
         "percent": false
       },
       "ap": {
-        "value": 70,
+        "value": 60,
         "percent": false
       }
     },
@@ -1806,14 +1806,14 @@
         "percent": false
       },
       "moveSpeed": {
-        "value": 5,
+        "value": 6,
         "percent": true
       }
     },
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Spellblade: Using an ability causes the next attack used within 10 seconds to deal bonus magic damage equal to 75% base AD + 45% AP. (1.5s Cooldown) Damage is reduced vs structures."
+      "Spellblade: Using an ability causes the next attack used within 10 seconds to deal bonus magic damage equal to 75% base AD + 50% AP. (1.5s Cooldown) Damage is reduced vs structures."
     ]
   },
   {
@@ -1843,7 +1843,7 @@
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Echo: Your next damaging ability or empowered attack deals 75 + 8% Ability Power magic damage to the target and up to 5 nearby enemies. For each target fewer than that, the primary target takes an additional 20 + 1.2% Ability Power magic damage. (9s Cooldown)"
+      "Echo: Your next damaging ability or empowered attack deals 80 + 9% Ability Power magic damage to the target and up to 5 nearby enemies. For each target fewer than that, the primary target takes an additional 22.5 + 1.4% Ability Power magic damage. (9s Cooldown)"
     ]
   },
   {
@@ -1875,37 +1875,6 @@
     "passives": [
       "Stormraider: When damaging a champion, dealing damage equal to 25% of their max Health within 2.5 seconds applies Squall to them and grants you 25% bonus Movement Speed for 2.5s. (25s Cooldown)",
       "Squall: After 2 seconds, strike the target, dealing magic damage equal to 125 plus 10% Ability Power. If the target is killed before the strike, it detonates immediately in a large area and grants 25 gold."
-    ]
-  },
-  {
-    "slug": "hextech-rocketbelt",
-    "name": "Hextech Rocketbelt",
-    "cost": 2700,
-    "icon": "/items/hextech-rocketbelt.webp",
-    "category": "Magic",
-    "categories": [
-      "Magic",
-      "Active"
-    ],
-    "tags": [],
-    "stats": {
-      "hp": {
-        "value": 250,
-        "percent": false
-      },
-      "ap": {
-        "value": 70,
-        "percent": false
-      },
-      "abilityHaste": {
-        "value": 20,
-        "percent": false
-      }
-    },
-    "scopedStats": {},
-    "statRules": {},
-    "passives": [
-      "Protobelt (Active): Dash forward and unleash a cone of missiles, dealing 100 plus 10% Ability Power magic damage. (30s Cooldown) If champions or monsters are hit by more than one missile, missiles after the first will deal only 10% damage."
     ]
   },
   {
@@ -1975,41 +1944,6 @@
     ]
   },
   {
-    "slug": "rod-of-ages",
-    "name": "Rod of Ages",
-    "cost": 2700,
-    "icon": "/items/rod-of-ages.webp",
-    "category": "Magic",
-    "categories": [
-      "Magic"
-    ],
-    "tags": [
-      "burn",
-      "mana",
-      "sustain"
-    ],
-    "stats": {
-      "hp": {
-        "value": 350,
-        "percent": false
-      },
-      "ap": {
-        "value": 50,
-        "percent": false
-      },
-      "mana": {
-        "value": 400,
-        "percent": false
-      }
-    },
-    "scopedStats": {},
-    "statRules": {},
-    "passives": [
-      "Eternity: Restore Mana equal to 15% of the damage taken from champions. Regen Health equal to 20% Mana spent. Capped at 25 Health per cast.",
-      "Veteran: Each stack provides 15 Health, 30 Mana and 4 Ability Power, stacking at a rate of 1 every 35 seconds. Max of 10 stacks, providing 150 Health, 300 Mana, and 40 Ability Power."
-    ]
-  },
-  {
     "slug": "rylais-crystal-scepter",
     "name": "Rylai's Crystal Scepter",
     "cost": 2700,
@@ -2038,36 +1972,34 @@
     ]
   },
   {
-    "slug": "morellonomicon",
-    "name": "Morellonomicon",
+    "slug": "hextech-rocketbelt",
+    "name": "Hextech Rocketbelt",
     "cost": 2650,
-    "icon": "/items/morellonomicon.webp",
+    "icon": "/items/hextech-rocketbelt.webp",
     "category": "Magic",
     "categories": [
       "Magic",
-      "Support"
+      "Active"
     ],
-    "tags": [
-      "antiHeal"
-    ],
+    "tags": [],
     "stats": {
       "hp": {
         "value": 300,
         "percent": false
       },
       "ap": {
-        "value": 75,
+        "value": 70,
         "percent": false
       },
       "abilityHaste": {
-        "value": 15,
+        "value": 20,
         "percent": false
       }
     },
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Affliction: Dealing magic damage to enemy champions inflicts 50% Grievous Wounds for 3 seconds. Grievous Wounds reduces the effectiveness of Healing and Regeneration effects."
+      "Protobelt (Active): Dash forward and unleash a cone of missiles, dealing 110 plus 15% Ability Power magic damage. (30s Cooldown) If champions or monsters are hit by more than one missile, missiles after the first will deal only 10% damage."
     ]
   },
   {
@@ -2101,6 +2033,74 @@
     "statRules": {},
     "passives": [
       "Lethal Weapon: Dealing ability damage to an enemy champion reduces any shields they gain for 3 seconds. Area of effect abilities apply (5% of bonus AP + 25)% shield reduction, capped at 45%; while single target abilities apply (5% of bonus AP + 40)% shield reduction, capped at 60%. When you damage an enemy who is unaffected by Lethal Weapon, all shields on them are reduced by the same values."
+    ]
+  },
+  {
+    "slug": "rod-of-ages",
+    "name": "Rod of Ages",
+    "cost": 2600,
+    "icon": "/items/rod-of-ages.webp",
+    "category": "Magic",
+    "categories": [
+      "Magic"
+    ],
+    "tags": [
+      "burn",
+      "mana",
+      "sustain"
+    ],
+    "stats": {
+      "hp": {
+        "value": 350,
+        "percent": false
+      },
+      "ap": {
+        "value": 50,
+        "percent": false
+      },
+      "mana": {
+        "value": 400,
+        "percent": false
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Eternity: Restore Mana equal to 20% of the damage taken from champions. Regen Health equal to 20% Mana spent. Capped at 25 Health per cast.",
+      "Veteran: Each stack provides 20 Health, 40 Mana and 4 Ability Power, stacking at a rate of 1 every 35 seconds. Max of 10 stacks, providing 200 Health, 400 Mana, and 40 Ability Power."
+    ]
+  },
+  {
+    "slug": "morellonomicon",
+    "name": "Morellonomicon",
+    "cost": 2550,
+    "icon": "/items/morellonomicon.webp",
+    "category": "Magic",
+    "categories": [
+      "Magic",
+      "Support"
+    ],
+    "tags": [
+      "antiHeal"
+    ],
+    "stats": {
+      "hp": {
+        "value": 300,
+        "percent": false
+      },
+      "ap": {
+        "value": 75,
+        "percent": false
+      },
+      "abilityHaste": {
+        "value": 15,
+        "percent": false
+      }
+    },
+    "scopedStats": {},
+    "statRules": {},
+    "passives": [
+      "Affliction: Dealing magic damage to enemy champions inflicts 50% Grievous Wounds for 3 seconds. Grievous Wounds reduces the effectiveness of Healing and Regeneration effects."
     ]
   },
   {
@@ -2565,11 +2565,11 @@
     ],
     "stats": {
       "hp": {
-        "value": 350,
+        "value": 400,
         "percent": false
       },
       "ad": {
-        "value": 40,
+        "value": 45,
         "percent": false
       },
       "abilityHaste": {
@@ -3322,7 +3322,7 @@
     ],
     "stats": {
       "ad": {
-        "value": 65,
+        "value": 60,
         "percent": false
       },
       "abilityHaste": {
@@ -4249,7 +4249,7 @@
     "statRules": {},
     "passives": [
       "Versatile: Gain 14 Attack Damage or 28 Ability Power (Adaptive).",
-      "Soulcast: Every 60 seconds, gains 75 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage, or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
+      "Soulcast: Every 60 seconds, gains 60 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage, or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
     ]
   },
   {
@@ -4275,7 +4275,7 @@
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Soulcast: Every 60 seconds, gains 75 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
+      "Soulcast: Every 60 seconds, gains 60 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
     ]
   }
 ]

@@ -5,6 +5,7 @@ import { CURRENT_PATCH } from "@/lib/patch";
 import itemsData from "@/data/items.json";
 import { cachedStudioBuild } from "@/lib/cached-build";
 import { ladderConsensusBuild } from "@/lib/ladder-build";
+import { appVersionTooOld, outdatedBody } from "@/lib/overlay-version";
 
 /**
  * The per-patch snapshot for external clients: the /draft page and the
@@ -104,7 +105,12 @@ function trimAdvisorBuild(v: Record<string, unknown>): BundleBuild | null {
 }
 
 
-export async function GET() {
+export async function GET(request: Request) {
+  // App-only and CDN-cached, so the version is in the URL (?app=32): the cache
+  // keys on it, and every deprecated build asks for the bare path.
+  if (appVersionTooOld(new URL(request.url).searchParams.get("app"))) {
+    return NextResponse.json(outdatedBody(), { status: 426, headers: { ...CORS, "Cache-Control": "no-store" } });
+  }
   const R = roster();
   // The offline draft roster needs every live champion, including releases
   // whose first ladder sample has not been collected yet. Their win rate is

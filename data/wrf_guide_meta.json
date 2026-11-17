@@ -6082,5 +6082,48 @@
       ]
     },
     "situational": []
+  },
+  "Sylas": {
+    "skillOrder": {
+      "1": [
+        1,
+        12,
+        14,
+        15
+      ],
+      "2": [
+        2,
+        4,
+        6,
+        7
+      ],
+      "3": [
+        3,
+        8,
+        10,
+        11
+      ],
+      "4": [
+        5,
+        9,
+        13
+      ]
+    },
+    "situational": [
+      {
+        "when": "vs Shielding",
+        "items": [
+          "zhonyas-hourglass",
+          "oceanids-trident"
+        ]
+      },
+      {
+        "when": "vs Crowd Control",
+        "items": [
+          "zhonyas-hourglass",
+          "banshees-veil"
+        ]
+      }
+    ]
   }
 }

@@ -51,7 +51,7 @@ _JUNGLE: frozenset[str] = frozenset({
 _MID: frozenset[str] = frozenset({
     "Ahri", "Akali", "Akshan", "Annie", "Aurelion Sol", "Aurora", "Brand",
     "Galio", "Heimerdinger", "Hwei", "Kassadin", "Katarina", "Kennen", "Lissandra",
-    "Lux", "Mel", "Morgana", "Norra", "Orianna", "Ryze", "Swain", "Syndra",
+    "Lux", "Mel", "Morgana", "Norra", "Orianna", "Ryze", "Swain", "Sylas", "Syndra",
     "Taliyah", "Twisted Fate", "Veigar", "Vel'Koz", "Vex", "Viktor",
     "Vladimir", "Yasuo", "Zed", "Ziggs", "Zoe", "Zyra",
 })

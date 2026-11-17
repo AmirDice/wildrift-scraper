@@ -91493,5 +91493,318 @@
       "AP and magic penetration scale all damage choices. Haste shortens shared subject cooldowns.",
       "WW trades away WE damage and mana restoration; the default build metrics use WE."
     ]
+  },
+  "Sylas": {
+    "name": "Sylas",
+    "class": "Mage",
+    "role": "Mid",
+    "damageProfile": "ap-burst",
+    "canOneshot": false,
+    "source": "https://www.wildriftfire.com/guide/sylas",
+    "variants": [
+      "standard"
+    ],
+    "builds": {
+      "standard": {
+        "summary": "wildriftfire's guide build. Fight estimates cover his own kit only: Hijack casts the enemy's ultimate, which the engine cannot simulate.",
+        "label": "Standard",
+        "pathLabel": "Magic",
+        "coreBuild": [
+          {
+            "slug": "lich-bane",
+            "name": "Lich Bane",
+            "cost": 2800,
+            "icon": "/items/lich-bane.webp"
+          },
+          {
+            "slug": "infinity-orb",
+            "name": "Infinity Orb",
+            "cost": 3100,
+            "icon": "/items/infinity-orb.webp"
+          },
+          {
+            "slug": "rabadons-deathcap",
+            "name": "Rabadon's Deathcap",
+            "cost": 3400,
+            "icon": "/items/rabadons-deathcap.webp"
+          },
+          {
+            "slug": "void-staff",
+            "name": "Void Staff",
+            "cost": 3000,
+            "icon": "/items/void-staff.webp"
+          },
+          {
+            "slug": "zhonyas-hourglass",
+            "name": "Zhonya's Hourglass",
+            "cost": 3300,
+            "icon": "/items/zhonyas-hourglass.webp"
+          }
+        ],
+        "boots": {
+          "slug": "boots-of-mana",
+          "name": "Boots of Mana",
+          "cost": 1200,
+          "icon": "/items/boots-of-mana.webp"
+        },
+        "bootsEarly": {
+          "slug": "boots-of-mana",
+          "name": "Boots of Mana",
+          "cost": 1200,
+          "icon": "/items/boots-of-mana.webp"
+        },
+        "bootsUpgradeAfter": 2,
+        "enchantment": null,
+        "situational": [
+          {
+            "when": "vs Shielding",
+            "items": [
+              {
+                "slug": "zhonyas-hourglass",
+                "name": "Zhonya's Hourglass",
+                "cost": 3300,
+                "icon": "/items/zhonyas-hourglass.webp"
+              },
+              {
+                "slug": "oceanids-trident",
+                "name": "Oceanid's Trident",
+                "cost": 2600,
+                "icon": "/items/oceanids-trident.webp"
+              }
+            ]
+          },
+          {
+            "when": "vs Crowd Control",
+            "items": [
+              {
+                "slug": "zhonyas-hourglass",
+                "name": "Zhonya's Hourglass",
+                "cost": 3300,
+                "icon": "/items/zhonyas-hourglass.webp"
+              },
+              {
+                "slug": "banshees-veil",
+                "name": "Banshee's Veil",
+                "cost": 3000,
+                "icon": "/items/banshees-veil.webp"
+              }
+            ]
+          }
+        ],
+        "runes": {
+          "keystone": {
+            "name": "Electrocute",
+            "slug": "electrocute",
+            "icon": "https://www.wildriftfire.com/images/runes/electrocute.png",
+            "reason": "Abduct, Chain Lash and Kingslayer land three hits in one trade."
+          },
+          "primaryTree": "Domination",
+          "treeMinors": [
+            {
+              "name": "Sudden Impact",
+              "slug": "sudden-impact",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/sudden-impact.png",
+              "reason": "Abscond and Kingslayer are both dashes."
+            },
+            {
+              "name": "Chain Assault",
+              "slug": "chain-assault",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/chain-assault.png"
+            },
+            {
+              "name": "Eyeball Collector",
+              "slug": "eyeball-collector",
+              "tree": "Domination",
+              "icon": "https://www.wildriftfire.com/images/runes/eyeball-collector.png"
+            }
+          ],
+          "flexMinor": {
+            "name": "Legend: Haste",
+            "slug": "legend-haste",
+            "tree": "Precision",
+            "icon": "https://www.wildriftfire.com/images/runes/legend-haste.png"
+          }
+        },
+        "summoners": [
+          {
+            "name": "Flash",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerFlash.png"
+          },
+          {
+            "name": "Ignite",
+            "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/spell/SummonerDot.png"
+          }
+        ],
+        "analysis": {
+          "level": 15,
+          "burst": {
+            "0.5": 1014,
+            "1.0": 1520,
+            "2.0": 3434,
+            "3.0": 4816
+          },
+          "dps": {
+            "5": 1473,
+            "10": 1231,
+            "20": 1107
+          },
+          "damage3s": 4023,
+          "damage8s": 9971,
+          "ttk": {
+            "adc": 1.5,
+            "mage": 1.5,
+            "fighter": 2.0,
+            "bruiser": 2.75,
+            "tank": 5.0
+          },
+          "byType": {
+            "physical": 353,
+            "magic": 9281,
+            "true": 65
+          },
+          "byTypePct": {
+            "physical": 4,
+            "magic": 93,
+            "true": 1
+          },
+          "bySource": {
+            "auto": 4939,
+            "ability": 5033
+          },
+          "byAbility": {
+            "Chain Lash": 1999,
+            "Kingslayer": 1046,
+            "Abscond / Abduct": 1379,
+            "Autos": 2836,
+            "Spellblade": 2102,
+            "Procs": 336,
+            "Infinity-orb (<40%)": 272
+          },
+          "items": [
+            {
+              "slug": "lich-bane",
+              "name": "Lich Bane",
+              "dmg": 3227
+            },
+            {
+              "slug": "void-staff",
+              "name": "Void Staff",
+              "dmg": 2739
+            },
+            {
+              "slug": "rabadons-deathcap",
+              "name": "Rabadon's Deathcap",
+              "dmg": 2441
+            },
+            {
+              "slug": "infinity-orb",
+              "name": "Infinity Orb",
+              "dmg": 2284
+            },
+            {
+              "slug": "boots-of-mana",
+              "name": "Boots of Mana",
+              "dmg": 1171
+            },
+            {
+              "slug": "zhonyas-hourglass",
+              "name": "Zhonya's Hourglass",
+              "dmg": 1160
+            }
+          ],
+          "runes": [
+            {
+              "name": "Legend: Haste",
+              "dmg": 1040
+            },
+            {
+              "name": "Electrocute",
+              "dmg": 194
+            },
+            {
+              "name": "Eyeball Collector",
+              "dmg": 123
+            },
+            {
+              "name": "Chain Assault",
+              "dmg": 77
+            },
+            {
+              "name": "Sudden Impact",
+              "dmg": 65
+            }
+          ],
+          "ehp": 4218,
+          "ehpSplit": {
+            "physical": 5285,
+            "magic": 3509
+          },
+          "sustain": 0,
+          "survivalTime": {
+            "adc": 4.69,
+            "bruiser": 6.49,
+            "tank": 10.54
+          },
+          "goldEff": {
+            "gold": 16800,
+            "dmgPerGold": 0.24,
+            "ehpPerGold": 0.25
+          },
+          "healing": {
+            "lifesteal": 0,
+            "physicalVamp": 0,
+            "omnivamp": 0,
+            "onHit": 0,
+            "spellblade": 0,
+            "firstHit": 0,
+            "rune": 0,
+            "itemActive": 0,
+            "conqueror": 0,
+            "conditional": 0,
+            "total": 0
+          },
+          "shields": {
+            "value": 0,
+            "avgUptime": 0.0,
+            "amp": 0
+          },
+          "damagePrevented": {
+            "armor": 1560,
+            "mr": 1034,
+            "dr": 0,
+            "shield": 0,
+            "total": 2594
+          },
+          "cooldownUtil": {
+            "efficiency": 100,
+            "abilities": {
+              "Chain Lash": {
+                "casts": 2,
+                "max": 2
+              },
+              "Kingslayer": {
+                "casts": 2,
+                "max": 2
+              },
+              "Abscond / Abduct": {
+                "casts": 2,
+                "max": 2
+              }
+            }
+          },
+          "damageLost": {
+            "autoUptimePct": 88,
+            "autoDmgLost": 706,
+            "overkill": 518
+          }
+        }
+      }
+    },
+    "synergyNotes": [
+      "Petricite Burst rewards weaving an attack after every ability, which is why the guide opens Lich Bane.",
+      "Hijack copies the enemy's ultimate; its value depends on the enemy team and is not part of any number here."
+    ]
   }
 }

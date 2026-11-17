@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { KV_CONFIGURED } from "@/lib/kv";
 import { ALPHA_GATE, deviceAllowed, redeem } from "@/lib/alpha";
+import { appVersionTooOld, outdatedBody } from "@/lib/overlay-version";
 
 /**
  * POST /api/v1/activate  { code }  with x-device-id
@@ -21,6 +22,9 @@ function device(request: Request): string {
 }
 
 export async function GET(request: Request) {
+  if (appVersionTooOld(request.headers.get("x-app-version"))) {
+    return NextResponse.json(outdatedBody(), { status: 426 });
+  }
   const id = device(request);
   return NextResponse.json({
     gate: ALPHA_GATE,
@@ -32,6 +36,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (appVersionTooOld(request.headers.get("x-app-version"))) {
+    return NextResponse.json(outdatedBody(), { status: 426 });
+  }
   let body: { code?: string };
   try {
     body = await request.json();

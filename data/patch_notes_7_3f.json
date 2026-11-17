@@ -1,0 +1,759 @@
+{
+ "patch": "7.3f",
+ "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-3f/",
+ "parsedAt": "2026-11-17T06:53:36+00:00",
+ "blades": [
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 0,
+     "title": "",
+     "path": [
+      ""
+     ],
+     "notes": [
+      "Hey everyone!",
+      "We're back with another round of balance changes, but first, it's time to break some chains! Sylas, the Unshackled, is making his way to the Rift, and he's ready to steal the show (and your ultimate). Meanwhile, we're turning up the heat (sorry, Rumble) on a few champions and items that have been stealing the spotlight. Kalista and Shen are getting some breathing room adjustments for their opponents, while Yasuo, Lucian, and a few other champions are getting a little extra love. We're also making some changes to mage itemization to give you more ways to work your magic, and taking another pass at the jungle to make sure everyone is clearing on a level playing field. And as for Eclipse? Well, its time in the sun might be coming to an end. Let's dive in!",
+      "Reminder: content will be released throughout the patch"
+     ],
+     "lines": []
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "NEW",
+     "path": [
+      "NEW"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 3,
+     "title": "SYLAS, THE UNSHACKLED",
+     "path": [
+      "NEW",
+      "SYLAS, THE UNSHACKLED"
+     ],
+     "notes": [
+      "Raised in one of Demacia's lesser quarters, Sylas of Dregbourne has come to symbolize the darker side of the Great City. As a boy, his ability to root out hidden sorcery caught the attention of the notorious mageseekers, who eventually imprisoned him for turning those same powers against them. Having now broken free, Sylas lives as a hardened revolutionary, using the magic of those around him to destroy the kingdom he once served... and his band of outcast mage followers seems to grow by the day."
+     ],
+     "lines": []
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "KALISTA",
+   "summary": "Kalista has been a little too dominant in Baron Lane, so we're dialing back her early-game pressure to give her opponents more room to fight back.",
+   "blocks": [
+    {
+     "title": "Pierce",
+     "lines": [
+      "Basic Damage: 70/135/200/265 → 30/110/190/270"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "VIKTOR",
+   "summary": "Viktor has been struggling to make an impact in key moments, so we're shifting some power away from his reliable AoE damage and into his dueling potential and skillshots. This should give him more opportunities to shine when he lands his abilities.",
+   "blocks": [
+    {
+     "title": "Siphon Power",
+     "lines": [
+      "Initial Damage: 45/60/75/90 + 30% Ability Power → 50/70/90/110 + 40% Ability Power"
+     ]
+    },
+    {
+     "title": "Hextech Ray",
+     "lines": [
+      "Initial Damage: 75/120/165/210 + 30% Ability Power → 70/115/160/205 + 40% Ability Power",
+      "Blastquake Damage: 30/70/110/150 + 60% Ability Power → 20/60/100/140 + 75% Ability Power"
+     ]
+    },
+    {
+     "title": "Arcane Storm",
+     "lines": [
+      "Damage over time AP ratio: 40% → 35%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "SHEN",
+   "summary": "With the recent turret changes, Shen has been able to protect his teammates with his ultimate without sacrificing much pressure elsewhere on the map. We're toning down the strength and availability of his protective tools to make those cross-map plays a more meaningful commitment.",
+   "blocks": [
+    {
+     "title": "Stand United",
+     "lines": [
+      "Cooldown: 110/100/90s → 120/110/100s",
+      "Base Shield value: 170/340/510 → 160/260/360"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "IRELIA",
+   "summary": "Irelia has been dishing out a bit too much damage without investing in Attack Damage items, so we're shifting some of her base damage into Attack Speed and Attack Damage scaling. This should better reward her for building offensive items and reinforce her identity as a blade-dancing fighter.",
+   "blocks": [
+    {
+     "title": "Ionian Fervor",
+     "lines": [
+      "Attack Speed: 3% - 17% (Based on level) → 11% - 25% (Based on level)",
+      "Damage: 25 - 150 (Based on level) + 30% Bonus Attack Damage → 10 - 80 (Based on level) + 20% Bonus Attack Damage"
+     ]
+    },
+    {
+     "title": "Bladesurge",
+     "lines": [
+      "Attack Damage Ratio: 65% → 80%",
+      "Healing: 11%/14%/17%/20% Attack Damage → 9%/11%/13%/15% Attack Damage"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "GRAVES",
+   "summary": "Graves has plenty of damage at his disposal, but he's been struggling to stay in the fight long enough to make use of it. We're giving him some extra durability to help him hold his ground during jungle skirmishes and teamfights, giving him more opportunities to let loose.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Armor: 36 → 40",
+      "Armor per level: 4.5 → 5"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "AKSHAN",
+   "summary": "Akshan has been having a tough time holding his own in Mid Lane, particularly against mages. We're giving him some extra durability to help him trade more comfortably in lane and find more opportunities to roam and make plays across the map.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Magic Resistance: 30 → 34"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "LUCIAN",
+   "summary": "Lucian has been struggling to keep up since the latest patch, so we're giving some damage back to his abilities. This should help him pack a stronger punch in the mid and late game and better deliver on his burst-focused playstyle.",
+   "blocks": [
+    {
+     "title": "Lightslinger",
+     "lines": [
+      "Second shot Attack Damage ratio: 40/50/60% → 45/55/65%"
+     ]
+    },
+    {
+     "title": "Piercing Light",
+     "lines": [
+      "Bonus Attack Damage ratio: 100% → 120%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "RUMBLE",
+   "summary": "Rumble has been losing some steam in Baron Lane, so we're giving him a few buffs across his kit to help him turn up the heat and hold his own against the competition.",
+   "blocks": [
+    {
+     "title": "Junkyard Titan",
+     "lines": [
+      "Basic attack Magic Damage Ability power ratio: 20% → 25%"
+     ]
+    },
+    {
+     "title": "The Equalizer",
+     "lines": [
+      "Damage: 700/1050/1400 + 200% Ability Power → 800/1200/1600 + 220% Ability Power"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "KASSADIN",
+   "summary": "Kassadin has been scaling a little too comfortably in high-skill play, and with Rod of Ages getting buffed this patch, we're expecting him to become even stronger. We're getting ahead of that power spike with some nerfs to keep his late-game strength in check.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Magic Resistance: 38 → 34"
+     ]
+    },
+    {
+     "title": "Force Pulse",
+     "lines": [
+      "Ability Power ratio: 60% → 50%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "YASUO",
+   "summary": "Yasuo has continued to struggle, so we're giving him some extra durability to help him survive teamfights and boosting his damage while dashing between enemies. These changes should help him make more of an impact in mid- and late-game fights.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Armor per level: 4.3 → 5.2"
+     ]
+    },
+    {
+     "title": "Sweeping Blade",
+     "lines": [
+      "Base Damage: 70/80/90/100 → 70/90/110/130"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "ITEMS",
+     "path": [
+      "ITEMS"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Luden's Echo",
+     "path": [
+      "ITEMS",
+      "Luden's Echo"
+     ],
+     "notes": [
+      "Mage itemization has been feeling a bit limited, with burn builds dominating at lower skill levels and Magic Penetration builds pulling ahead in high-skill play. We're buffing several underperforming mage items to open up more viable build paths and help different mage playstyles compete on more equal footing.",
+      "Discordic Echo"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Discordic Echo",
+     "path": [
+      "ITEMS",
+      "Luden's Echo",
+      "Discordic Echo"
+     ],
+     "notes": [],
+     "lines": [
+      "First projectile damage: 75 + 8% Ability Power → 80 + 9% Ability Power",
+      "Subsequent projectile damage: 20 + 1.2% Ability Power → 22.5 + 1.4% Ability Power"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Rod of Ages",
+     "path": [
+      "ITEMS",
+      "Rod of Ages"
+     ],
+     "notes": [
+      "Base Stats",
+      "Eternity"
+     ],
+     "lines": [
+      "Price: 2700 → 2600"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Eternity",
+     "path": [
+      "ITEMS",
+      "Rod of Ages",
+      "Eternity"
+     ],
+     "notes": [
+      "Veteran"
+     ],
+     "lines": [
+      "Mana refund: 15% → 20%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 5,
+     "title": "Veteran",
+     "path": [
+      "ITEMS",
+      "Rod of Ages",
+      "Veteran"
+     ],
+     "notes": [],
+     "lines": [
+      "Bonus Health per stack: 15 → 20",
+      "Bonus Mana per stack: 30 → 40"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Lich Bane",
+     "path": [
+      "ITEMS",
+      "Lich Bane"
+     ],
+     "notes": [
+      "Base Stats",
+      "Spell Blade"
+     ],
+     "lines": [
+      "Movement Speed: 5% → 6%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Spell Blade",
+     "path": [
+      "ITEMS",
+      "Lich Bane",
+      "Spell Blade"
+     ],
+     "notes": [],
+     "lines": [
+      "Ability Power ratio: 45% → 50%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Morellonomicon",
+     "path": [
+      "ITEMS",
+      "Morellonomicon"
+     ],
+     "notes": [
+      "Base Stats"
+     ],
+     "lines": [
+      "Price: 2650 → 2550"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Hextech Rocketbelt",
+     "path": [
+      "ITEMS",
+      "Hextech Rocketbelt"
+     ],
+     "notes": [
+      "Base Stats",
+      "Protobelt"
+     ],
+     "lines": [
+      "Price: 2700 → 2650",
+      "Health: 250 → 300"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Protobelt",
+     "path": [
+      "ITEMS",
+      "Hextech Rocketbelt",
+      "Protobelt"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage: 100 + 10% Ability Power → 110 + 15% Ability Power"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Liandry's Torment",
+     "path": [
+      "ITEMS",
+      "Liandry's Torment"
+     ],
+     "notes": [
+      "As mentioned above, burn builds have been performing a little too well. We want Liandry's Torment to remain focused on its passive effects rather than raw Ability Power.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Ability Power: 70 → 60"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Bulwark of the Mountain",
+     "path": [
+      "ITEMS",
+      "Bulwark of the Mountain"
+     ],
+     "notes": [
+      "Supports have been earning Gold a little too quickly, especially following the recent support item cost reductions. We're dialing back some of the Gold they gain through support item systems that require minimal investment to keep their overall economy in check.",
+      "Soulcast"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Soulcast",
+     "path": [
+      "ITEMS",
+      "Bulwark of the Mountain",
+      "Soulcast"
+     ],
+     "notes": [],
+     "lines": [
+      "Gold gained per minute: 75 → 60"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Black Mist Scythe",
+     "path": [
+      "ITEMS",
+      "Black Mist Scythe"
+     ],
+     "notes": [
+      "Soulcast"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Soulcast",
+     "path": [
+      "ITEMS",
+      "Black Mist Scythe",
+      "Soulcast"
+     ],
+     "notes": [],
+     "lines": [
+      "Gold gained per minute: 75 → 60"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Eclipse",
+     "path": [
+      "ITEMS",
+      "Eclipse"
+     ],
+     "notes": [
+      "Eclipse has been shining a little too brightly, becoming a dominant pick for fighters in both Baron Lane and the jungle. We're dialing back some of its power to bring it more in line with other item options.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Attack Damage: 65 → 60"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Goredrinker",
+     "path": [
+      "ITEMS",
+      "Goredrinker"
+     ],
+     "notes": [
+      "Goredrinker has been struggling to keep up with other fighter items, so we're giving it a boost to help it become a more competitive option.",
+      "Base Stats"
+     ],
+     "lines": [
+      "Attack Damage: 40 → 45",
+      "Health: 350 → 400"
+     ]
+    },
+    {
+     "level": 2,
+     "title": "SYSTEMS",
+     "path": [
+      "SYSTEMS"
+     ],
+     "notes": [
+      "Overall, we're happy with how the jungle changes have landed, but a few areas are performing a bit too well. Tank junglers in particular have been clearing camps too efficiently, allowing them to gank frequently without sacrificing much farm. We're slowing down early jungle clears to bring the different jungle classes closer together in power.",
+      "We've also seen jungle farming efficiency increase across the board, so we're reducing some of the rewards from Smite to bring overall jungle progression closer to where it was before the overhaul."
+     ],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Smite",
+     "path": [
+      "SYSTEMS",
+      "Smite"
+     ],
+     "notes": [
+      "Burn Base Damage: 22 - 162 → 18 - 158",
+      "Burn Bonus Armor ratio: 25% → 20%",
+      "Burn Bonus magic Resist ratio: 25% → 20%"
+     ],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Conservation",
+     "path": [
+      "SYSTEMS",
+      "Conservation"
+     ],
+     "notes": [
+      "Gold granted by Conservation: 40 → 30",
+      "Gold granted by Conservation (when behind): 65 → 55"
+     ],
+     "lines": []
+    },
+    {
+     "level": 3,
+     "title": "AAA ARAM",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Augment Adjustments",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "All in Good Fun",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "All in Good Fun"
+     ],
+     "notes": [],
+     "lines": [
+      "Cooldown: 150s → 90s"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Minion Rescue",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Minion Rescue"
+     ],
+     "notes": [],
+     "lines": [
+      "Remaining Cooldown reduction: 10% → 20%。"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Arcane Shadow",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Arcane Shadow"
+     ],
+     "notes": [],
+     "lines": [
+      "Chance to summon a Shadow: 20% → 30%。",
+      "Shadow effectiveness: 50% → 80%。"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Minion Strike",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Minion Strike"
+     ],
+     "notes": [],
+     "lines": [
+      "Critical Rate gained: 25% → 40%。"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Radiant Vow",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Radiant Vow"
+     ],
+     "notes": [],
+     "lines": [
+      "Fixed Damage blocked while active: 10 ~ 60 + 3000% Healing and Shield Power → 10 ~ 30 + 2000% Healing and Shield Power"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Sing With Me",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Sing With Me"
+     ],
+     "notes": [],
+     "lines": [
+      "Bonus Movement Speed: 30% → 15%。",
+      "Shield gained: 10% Base Health → 5% Base Health",
+      "Healing value: 3% Missing Health → 2% Missing Health"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Shifting Debris",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Shifting Debris"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage: 60 ~ 180 + 40% Bonus Attack Damage + 30% Ability Power + 4% Target’s Max Health → 40 ~ 120 + 30% Bonus Attack Damage + 10% Ability Power + 2% Target’s Max Health"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Veiled Counter",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Veiled Counter"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage reduction while dashing: 20% → 15%。",
+      "Damage dealt every 0.75 seconds: 120 ~ 180 + 30% Bonus Attack Damage + 15% Ability Power → 60 ~ 120 + 30% Bonus Attack Damage + 15% Ability Power"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Mystic Punch",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Mystic Punch"
+     ],
+     "notes": [],
+     "lines": [
+      "Cooldown reduced: 0.5s → 0.8s"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "The Brutalizer",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "The Brutalizer"
+     ],
+     "notes": [],
+     "lines": [
+      "Adaptive Force: 20 → 30"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Chain Reaction",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Chain Reaction"
+     ],
+     "notes": [],
+     "lines": [
+      "Cooldown: 8s → 25s"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Mountain Mover",
+     "path": [
+      "SYSTEMS",
+      "AAA ARAM",
+      "Augment Adjustments",
+      "Mountain Mover"
+     ],
+     "notes": [],
+     "lines": [
+      "Movement Speed: 4% → 2%",
+      "Max Stack duration: 5s → 4s"
+     ]
+    },
+    {
+     "level": 3,
+     "title": "QOL Improvements",
+     "path": [
+      "SYSTEMS",
+      "QOL Improvements"
+     ],
+     "notes": [],
+     "lines": [
+      "Improved the hit sound effects for K/DA Augments."
+     ]
+    },
+    {
+     "level": 3,
+     "title": "Bug Fixes",
+     "path": [
+      "SYSTEMS",
+      "Bug Fixes"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Battle Arsenal",
+     "path": [
+      "SYSTEMS",
+      "Bug Fixes",
+      "Battle Arsenal"
+     ],
+     "notes": [],
+     "lines": [
+      "Fixed an issue where Battle Arsenal would fail to trigger when an enemy target took item damage from multiple champions simultaneously."
+     ]
+    }
+   ]
+  }
+ ]
+}

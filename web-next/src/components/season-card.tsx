@@ -23,7 +23,7 @@ const SEASON_START = new Date("2026-09-23T03:00:00Z");
 // Replace with the real date and clear the flag once the client shows it.
 const SEASON_END = new Date("2027-01-14T00:00:00Z");
 const SEASON_END_ESTIMATED = true;
-const NEW_CHAMPION = { name: "Hwei", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Hwei_0.jpg" };
+const NEW_CHAMPION = { name: "Sylas", icon: "https://ddragon.leagueoflegends.com/cdn/img/champion/tiles/Sylas_0.jpg" };
 // ------------------------------------------------------------------------
 
 const WARM = "#4f8dff";

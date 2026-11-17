@@ -13751,6 +13751,73 @@
     "ability_haste",
     "mana"
    ]
+  },
+  "Sylas": {
+   "roles": [
+    "Mid"
+   ],
+   "classes": [
+    "Mage",
+    "Fighter"
+   ],
+   "identitySummary": "Close-range AP skirmisher who dives with Abscond/Abduct, heals through Kingslayer and weaves attacks between spells. Weak when his dashes are down.",
+   "combat": {
+    "range": "short_ranged",
+    "engagement": "high",
+    "playstyle": [
+     "dive",
+     "skirmishing",
+     "teamfight"
+    ],
+    "power_pattern": "mid_game",
+    "primary_win_condition": "teamfighting"
+   },
+   "teamComp": {
+    "needs_frontline": true,
+    "needs_peel": false,
+    "benefits_from_engage": true,
+    "benefits_from_cc": true,
+    "primary_team_role": "playmaker"
+   },
+   "itemizationNeeds": {
+    "primary_damage": "magic",
+    "scaling_priority": [
+     "ability_power",
+     "penetration",
+     "ability_haste"
+    ],
+    "defensive_priority": [
+     "armor",
+     "magic_resistance"
+    ],
+    "situational_needs": [
+     "defensive_item_vs_burst",
+     "penetration_vs_resists",
+     "anti_heal_vs_healing"
+    ]
+   },
+   "hardLimits": {
+    "neverArchetypes": [
+     {
+      "path": "AD Crit On-Hit",
+      "why": "Every ability scales with AP; only Petricite Burst's primary hit can crit, and Hijack converts AD into AP."
+     }
+    ],
+    "avoidStats": [
+     "ad",
+     "crit",
+     "lethality",
+     "armor_pen",
+     "lifesteal"
+    ]
+   },
+   "statPriorities": [
+    "ap",
+    "magic_pen",
+    "ability_haste",
+    "hp"
+   ],
+   "_source": "hand-written 2026-11-17 from the wildriftfire kit and guide"
   }
  }
 }

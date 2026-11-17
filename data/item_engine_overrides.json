@@ -251,14 +251,14 @@
   "ludens-echo": {
     "burstProcCdSec": 9,
     "_why_cd": "Echo: '(9s Cooldown)'",
-    "burstProcFlat": 75,
-    "burstProcApPct": 8,
-    "burstAoeFlat": 75,
-    "burstAoeApPct": 8,
+    "burstProcFlat": 80,
+    "burstProcApPct": 9,
+    "burstAoeFlat": 80,
+    "burstAoeApPct": 9,
     "burstAoeTargets": 5,
-    "burstPrimaryMissingFlat": 20,
-    "burstPrimaryMissingApPct": 1.2,
-    "_why": "Echo is 75 + 8% AP to the primary and up to five nearby targets, with 20 + 1.2% AP added to the primary for each nearby target slot that is empty. The single-target, 1v2, and 1v3 values are now separated."
+    "burstPrimaryMissingFlat": 22.5,
+    "burstPrimaryMissingApPct": 1.4,
+    "_why": "Echo is 80 + 9% AP to the primary and up to five nearby targets, with 22.5 + 1.4% AP added to the primary for each nearby target slot that is empty. The single-target, 1v2, and 1v3 values are now separated."
   },
   "unending-despair": {
     "procMaxHpCdSec": 4,

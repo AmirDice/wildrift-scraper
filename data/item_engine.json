@@ -223,13 +223,13 @@
     "damageAmpPct": 6
   },
   "rod-of-ages": {
-    "hpFlatPassive": 150,
-    "manaFlatPassive": 300,
+    "hpFlatPassive": 200,
+    "manaFlatPassive": 400,
     "apFlatPassive": 40
   },
   "lich-bane": {
     "spellbladeBaseAdPct": 75,
-    "spellbladeApPct": 45
+    "spellbladeApPct": 50
   },
   "archangels-staff": {
     "apFromManaPct": 1
@@ -280,8 +280,8 @@
   },
   "banshees-veil": {},
   "hextech-rocketbelt": {
-    "burstProcFlat": 100,
-    "burstProcApPct": 10
+    "burstProcFlat": 110,
+    "burstProcApPct": 15
   },
   "zhonyas-hourglass": {},
   "redemption": {

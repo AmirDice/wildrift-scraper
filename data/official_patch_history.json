@@ -1,9 +1,278 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-10-28T11:51:55.732Z",
+  "fetchedAt": "2026-11-17T07:07:51.024Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.3f",
+      "title": "Wild Rift Patch Notes 7.3f",
+      "publishedAt": "2026-11-11T10:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-3f/",
+      "championChanges": [
+        {
+          "champion": "KALISTA",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Kalista has been a little too dominant in Baron Lane, so we're dialing back her early-game pressure to give her opponents more room to fight back.",
+          "changes": [
+            {
+              "ability": "Pierce",
+              "text": "Basic Damage: 70/135/200/265 → 30/110/190/270"
+            }
+          ]
+        },
+        {
+          "champion": "VIKTOR",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Viktor has been struggling to make an impact in key moments, so we're shifting some power away from his reliable AoE damage and into his dueling potential and skillshots. This should give him more opportunities to shine when he lands his abilities.",
+          "changes": [
+            {
+              "ability": "Siphon Power",
+              "text": "Initial Damage: 45/60/75/90 + 30% Ability Power → 50/70/90/110 + 40% Ability Power"
+            },
+            {
+              "ability": "Hextech Ray",
+              "text": "Initial Damage: 75/120/165/210 + 30% Ability Power → 70/115/160/205 + 40% Ability Power\n Blastquake Damage: 30/70/110/150 + 60% Ability Power → 20/60/100/140 + 75% Ability Power"
+            },
+            {
+              "ability": "Arcane Storm",
+              "text": "Damage over time AP ratio: 40% → 35%"
+            }
+          ]
+        },
+        {
+          "champion": "SHEN",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "With the recent turret changes, Shen has been able to protect his teammates with his ultimate without sacrificing much pressure elsewhere on the map. We're toning down the strength and availability of his protective tools to make those cross-map plays a more meaningful commitment.",
+          "changes": [
+            {
+              "ability": "Stand United",
+              "text": "Cooldown: 110/100/90s → 120/110/100s\n Base Shield value: 170/340/510 → 160/260/360"
+            }
+          ]
+        },
+        {
+          "champion": "IRELIA",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Irelia has been dishing out a bit too much damage without investing in Attack Damage items, so we're shifting some of her base damage into Attack Speed and Attack Damage scaling. This should better reward her for building offensive items and reinforce her identity as a blade-dancing fighter.",
+          "changes": [
+            {
+              "ability": "Ionian Fervor",
+              "text": "Attack Speed: 3% - 17% (Based on level) → 11% - 25% (Based on level)\n Damage: 25 - 150 (Based on level) + 30% Bonus Attack Damage → 10 - 80 (Based on level) + 20% Bonus Attack Damage"
+            },
+            {
+              "ability": "Bladesurge",
+              "text": "Attack Damage Ratio: 65% → 80%\n Healing: 11%/14%/17%/20% Attack Damage → 9%/11%/13%/15% Attack Damage"
+            }
+          ]
+        },
+        {
+          "champion": "GRAVES",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Graves has plenty of damage at his disposal, but he's been struggling to stay in the fight long enough to make use of it. We're giving him some extra durability to help him hold his ground during jungle skirmishes and teamfights, giving him more opportunities to let loose.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Armor: 36 → 40\n Armor per level: 4.5 → 5"
+            }
+          ]
+        },
+        {
+          "champion": "AKSHAN",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Akshan has been having a tough time holding his own in Mid Lane, particularly against mages. We're giving him some extra durability to help him trade more comfortably in lane and find more opportunities to roam and make plays across the map.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Magic Resistance: 30 → 34"
+            }
+          ]
+        },
+        {
+          "champion": "LUCIAN",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Lucian has been struggling to keep up since the latest patch, so we're giving some damage back to his abilities. This should help him pack a stronger punch in the mid and late game and better deliver on his burst-focused playstyle.",
+          "changes": [
+            {
+              "ability": "Lightslinger",
+              "text": "Second shot Attack Damage ratio: 40/50/60% → 45/55/65%"
+            },
+            {
+              "ability": "Piercing Light",
+              "text": "Bonus Attack Damage ratio: 100% → 120%"
+            }
+          ]
+        },
+        {
+          "champion": "RUMBLE",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Rumble has been losing some steam in Baron Lane, so we're giving him a few buffs across his kit to help him turn up the heat and hold his own against the competition.",
+          "changes": [
+            {
+              "ability": "Junkyard Titan",
+              "text": "Basic attack Magic Damage Ability power ratio: 20% → 25%"
+            },
+            {
+              "ability": "The Equalizer",
+              "text": "Damage: 700/1050/1400 + 200% Ability Power → 800/1200/1600 + 220% Ability Power"
+            }
+          ]
+        },
+        {
+          "champion": "KASSADIN",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Kassadin has been scaling a little too comfortably in high-skill play, and with Rod of Ages getting buffed this patch, we're expecting him to become even stronger. We're getting ahead of that power spike with some nerfs to keep his late-game strength in check.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Magic Resistance: 38 → 34"
+            },
+            {
+              "ability": "Force Pulse",
+              "text": "Ability Power ratio: 60% → 50%"
+            }
+          ]
+        },
+        {
+          "champion": "YASUO",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Yasuo has continued to struggle, so we're giving him some extra durability to help him survive teamfights and boosting his damage while dashing between enemies. These changes should help him make more of an impact in mid- and late-game fights.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Armor per level: 4.3 → 5.2"
+            },
+            {
+              "ability": "Sweeping Blade",
+              "text": "Base Damage: 70/80/90/100 → 70/90/110/130"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "We're back with another round of balance changes and the launch of Sylas! This patch brings champion buffs and nerfs, adjustments to jungle pacing, and item updates to open up more build options across the Rift.",
+        "Hey everyone!\n We're back with another round of balance changes, but first, it's time to break some chains! Sylas, the Unshackled, is making his way to the Rift, and he's ready to steal the show (and your ultimate). Meanwhile, we're turning up the heat (sorry, Rumble) on a few champions and items that have been stealing the spotlight. Kalista and Shen are getting some breathing room adjustments for their opponents, while Yasuo, Lucian, and a few other champions are getting a little extra love. We're also making some changes to mage itemization to give you more ways to work your magic, and taking another pass at the jungle to make sure everyone is clearing on a level playing field. And as for Eclipse? Well, its time in the sun might be coming to an end. Let's dive in!\n Reminder: content will be released throughout the patch",
+        "NEW\n SYLAS, THE UNSHACKLED\n Raised in one of Demacia's lesser quarters, Sylas of Dregbourne has come to symbolize the darker side of the Great City. As a boy, his ability to root out hidden sorcery caught the attention of the notorious mageseekers, who eventually imprisoned him for turning those same powers against them. Having now broken free, Sylas lives as a hardened revolutionary, using the magic of those around him to destroy the kingdom he once served... and his band of outcast mage followers seems to grow by the day.",
+        "Kalista has been a little too dominant in Baron Lane, so we're dialing back her early-game pressure to give her opponents more room to fight back.",
+        "Basic Damage: 70/135/200/265 → 30/110/190/270",
+        "Viktor has been struggling to make an impact in key moments, so we're shifting some power away from his reliable AoE damage and into his dueling potential and skillshots. This should give him more opportunities to shine when he lands his abilities.",
+        "Initial Damage: 45/60/75/90 + 30% Ability Power → 50/70/90/110 + 40% Ability Power",
+        "Initial Damage: 75/120/165/210 + 30% Ability Power → 70/115/160/205 + 40% Ability Power\n Blastquake Damage: 30/70/110/150 + 60% Ability Power → 20/60/100/140 + 75% Ability Power",
+        "Damage over time AP ratio: 40% → 35%",
+        "With the recent turret changes, Shen has been able to protect his teammates with his ultimate without sacrificing much pressure elsewhere on the map. We're toning down the strength and availability of his protective tools to make those cross-map plays a more meaningful commitment.",
+        "Cooldown: 110/100/90s → 120/110/100s\n Base Shield value: 170/340/510 → 160/260/360",
+        "Irelia has been dishing out a bit too much damage without investing in Attack Damage items, so we're shifting some of her base damage into Attack Speed and Attack Damage scaling. This should better reward her for building offensive items and reinforce her identity as a blade-dancing fighter.",
+        "Attack Speed: 3% - 17% (Based on level) → 11% - 25% (Based on level)\n Damage: 25 - 150 (Based on level) + 30% Bonus Attack Damage → 10 - 80 (Based on level) + 20% Bonus Attack Damage",
+        "Attack Damage Ratio: 65% → 80%\n Healing: 11%/14%/17%/20% Attack Damage → 9%/11%/13%/15% Attack Damage",
+        "Graves has plenty of damage at his disposal, but he's been struggling to stay in the fight long enough to make use of it. We're giving him some extra durability to help him hold his ground during jungle skirmishes and teamfights, giving him more opportunities to let loose.",
+        "Armor: 36 → 40\n Armor per level: 4.5 → 5",
+        "Akshan has been having a tough time holding his own in Mid Lane, particularly against mages. We're giving him some extra durability to help him trade more comfortably in lane and find more opportunities to roam and make plays across the map.",
+        "Magic Resistance: 30 → 34",
+        "Lucian has been struggling to keep up since the latest patch, so we're giving some damage back to his abilities. This should help him pack a stronger punch in the mid and late game and better deliver on his burst-focused playstyle.",
+        "Second shot Attack Damage ratio: 40/50/60% → 45/55/65%",
+        "Bonus Attack Damage ratio: 100% → 120%",
+        "Rumble has been losing some steam in Baron Lane, so we're giving him a few buffs across his kit to help him turn up the heat and hold his own against the competition.",
+        "Basic attack Magic Damage Ability power ratio: 20% → 25%",
+        "Damage: 700/1050/1400 + 200% Ability Power → 800/1200/1600 + 220% Ability Power",
+        "Kassadin has been scaling a little too comfortably in high-skill play, and with Rod of Ages getting buffed this patch, we're expecting him to become even stronger. We're getting ahead of that power spike with some nerfs to keep his late-game strength in check.",
+        "Magic Resistance: 38 → 34",
+        "Ability Power ratio: 60% → 50%",
+        "Yasuo has continued to struggle, so we're giving him some extra durability to help him survive teamfights and boosting his damage while dashing between enemies. These changes should help him make more of an impact in mid- and late-game fights.",
+        "Armor per level: 4.3 → 5.2",
+        "Base Damage: 70/80/90/100 → 70/90/110/130",
+        "ITEMS\n Luden's Echo\n Mage itemization has been feeling a bit limited, with burn builds dominating at lower skill levels and Magic Penetration builds pulling ahead in high-skill play. We're buffing several underperforming mage items to open up more viable build paths and help different mage playstyles compete on more equal footing.\n Discordic Echo\n First projectile damage: 75 + 8% Ability Power → 80 + 9% Ability Power\n Subsequent projectile damage: 20 + 1.2% Ability Power → 22.5 + 1.4% Ability Power\n Rod of Ages\n Base Stats\n Price: 2700 → 2600\n Eternity\n Mana refund: 15% → 20%\n Veteran\n Bonus Health per stack: 15 → 20\n Bonus Mana per stack: 30 → 40\n Lich Bane\n Base Stats\n Movement Speed: 5% → 6%\n Spell Blade\n Ability Power ratio: 45% → 50%\n Morellonomicon\n Base Stats\n Price: 2650 → 2550\n Hextech Rocketbelt\n Base Stats\n Price: 2700 → 2650\n Health: 250 → 300\n Protobelt\n Damage: 100 + 10% Ability Power → 110 + 15% Ability Power\n Liandry's Torment\n As mentioned above, burn builds have been performing a little too well. We want Liandry's Torment to remain focused on its passive effects rather than raw Ability Power.\n Base Stats\n Ability Power: 70 → 60\n Bulwark of the Mountain\n Supports have been earning Gold a little too quickly, especially following the recent support item cost reductions. We're dialing back some of the Gold they gain through support item systems that require minimal investment to keep their overall economy in check.\n Soulcast\n Gold gained per minute: 75 → 60\n Black Mist Scythe\n Soulcast\n Gold gained per minute: 75 → 60\n Eclipse\n Eclipse has been shining a little too brightly, becoming a dominant pick for fighters in both Baron Lane and the jungle. We're dialing back some of its power to bring it more in line with other item options.\n Base Stats\n Attack Damage: 65 → 60\n Goredrinker\n Goredrinker has been struggling to keep up with other fighter items, so we're giving it a boost to help it become a more competitive option.\n Base Stats\n Attack Damage: 40 → 45\n Health: 350 → 400\n SYSTEMS\n Overall, we're happy with how the jungle changes have landed, but a few areas are performing a bit too well. Tank junglers in particular have been clearing camps too efficiently, allowing them to gank frequently without sacrificing much farm. We're slowing down early jungle clears to bring the different jungle classes closer together in power.\n We've also seen jungle farming efficiency increase across the board, so we're reducing some of the rewards from Smite to bring overall jungle progression closer to where it was before the overhaul.\n Smite\n Burn Base Damage: 22 - 162 → 18 - 158\n Burn Bonus Armor ratio: 25% → 20%\n Burn Bonus magic Resist ratio: 25% → 20%\n Conservation\n Gold granted by Conservation: 40 → 30\n Gold granted by Conservation (when behind): 65 → 55\n AAA ARAM\n Augment Adjustments\n All in Good Fun\n Cooldown: 150s → 90s\n Minion Rescue\n Remaining Cooldown reduction: 10% → 20%。\n Arcane Shadow\n Chance to summon a Shadow: 20% → 30%。\n Shadow effectiveness: 50% → 80%。\n Minion Strike\n Critical Rate gained: 25% → 40%。\n Radiant Vow\n Fixed Damage blocked while active: 10 ~ 60 + 3000% Healing and Shield Power → 10 ~ 30 + 2000% Healing and Shield Power\n Sing With Me\n Bonus Movement Speed: 30% → 15%。\n Shield gained: 10% Base Health → 5% Base Health\n Healing value: 3% Missing Health → 2% Missing Health\n Shifting Debris\n Damage: 60 ~ 180 + 40% Bonus Attack Damage + 30% Ability Power + 4% Target’s Max Health → 40 ~ 120 + 30% Bonus Attack Damage + 10% Ability Power + 2% Target’s Max Health\n Veiled Counter\n Damage reduction while dashing: 20% → 15%。\n Damage dealt every 0.75 seconds: 120 ~ 180 + 30% Bonus Attack Damage + 15% Ability Power → 60 ~ 120 + 30% Bonus Attack Damage + 15% Ability Power\n Mystic Punch\n Cooldown reduced: 0.5s → 0.8s\n The Brutalizer\n Adaptive Force: 20 → 30\n Chain Reaction\n Cooldown: 8s → 25s\n Mountain Mover\n Movement Speed: 4% → 2%\n Max Stack duration: 5s → 4s\n QOL Improvements\n Improved the hit sound effects for K/DA Augments.\n Bug Fixes\n Battle Arsenal\n Fixed an issue where Battle Arsenal would fail to trigger when an enemy target took item damage from multiple champions simultaneously."
+      ],
+      "changeLines": [
+        "NEW",
+        "Basic Damage: 70/135/200/265 → 30/110/190/270",
+        "Initial Damage: 45/60/75/90 + 30% Ability Power → 50/70/90/110 + 40% Ability Power",
+        "Initial Damage: 75/120/165/210 + 30% Ability Power → 70/115/160/205 + 40% Ability Power",
+        "Blastquake Damage: 30/70/110/150 + 60% Ability Power → 20/60/100/140 + 75% Ability Power",
+        "Damage over time AP ratio: 40% → 35%",
+        "Cooldown: 110/100/90s → 120/110/100s",
+        "Base Shield value: 170/340/510 → 160/260/360",
+        "Attack Speed: 3% - 17% (Based on level) → 11% - 25% (Based on level)",
+        "Damage: 25 - 150 (Based on level) + 30% Bonus Attack Damage → 10 - 80 (Based on level) + 20% Bonus Attack Damage",
+        "Attack Damage Ratio: 65% → 80%",
+        "Healing: 11%/14%/17%/20% Attack Damage → 9%/11%/13%/15% Attack Damage",
+        "Armor: 36 → 40",
+        "Armor per level: 4.5 → 5",
+        "Magic Resistance: 30 → 34",
+        "Second shot Attack Damage ratio: 40/50/60% → 45/55/65%",
+        "Bonus Attack Damage ratio: 100% → 120%",
+        "Basic attack Magic Damage Ability power ratio: 20% → 25%",
+        "Damage: 700/1050/1400 + 200% Ability Power → 800/1200/1600 + 220% Ability Power",
+        "Magic Resistance: 38 → 34",
+        "Ability Power ratio: 60% → 50%",
+        "Armor per level: 4.3 → 5.2",
+        "Base Damage: 70/80/90/100 → 70/90/110/130",
+        "First projectile damage: 75 + 8% Ability Power → 80 + 9% Ability Power",
+        "Subsequent projectile damage: 20 + 1.2% Ability Power → 22.5 + 1.4% Ability Power",
+        "Base Stats",
+        "Price: 2700 → 2600",
+        "Mana refund: 15% → 20%",
+        "Bonus Health per stack: 15 → 20",
+        "Bonus Mana per stack: 30 → 40",
+        "Movement Speed: 5% → 6%",
+        "Ability Power ratio: 45% → 50%",
+        "Price: 2650 → 2550",
+        "Price: 2700 → 2650",
+        "Health: 250 → 300",
+        "Damage: 100 + 10% Ability Power → 110 + 15% Ability Power",
+        "Ability Power: 70 → 60",
+        "Gold gained per minute: 75 → 60",
+        "Attack Damage: 65 → 60",
+        "Attack Damage: 40 → 45",
+        "Health: 350 → 400",
+        "Burn Base Damage: 22 - 162 → 18 - 158",
+        "Burn Bonus Armor ratio: 25% → 20%",
+        "Burn Bonus magic Resist ratio: 25% → 20%",
+        "Gold granted by Conservation: 40 → 30",
+        "Gold granted by Conservation (when behind): 65 → 55",
+        "Cooldown: 150s → 90s",
+        "Remaining Cooldown reduction: 10% → 20%。",
+        "Chance to summon a Shadow: 20% → 30%。",
+        "Shadow effectiveness: 50% → 80%。",
+        "Critical Rate gained: 25% → 40%。",
+        "Fixed Damage blocked while active: 10 ~ 60 + 3000% Healing and Shield Power → 10 ~ 30 + 2000% Healing and Shield Power",
+        "Bonus Movement Speed: 30% → 15%。",
+        "Shield gained: 10% Base Health → 5% Base Health",
+        "Healing value: 3% Missing Health → 2% Missing Health",
+        "Damage: 60 ~ 180 + 40% Bonus Attack Damage + 30% Ability Power + 4% Target’s Max Health → 40 ~ 120 + 30% Bonus Attack Damage + 10% Ability Power + 2% Target’s Max Health",
+        "Damage reduction while dashing: 20% → 15%。",
+        "Damage dealt every 0.75 seconds: 120 ~ 180 + 30% Bonus Attack Damage + 15% Ability Power → 60 ~ 120 + 30% Bonus Attack Damage + 15% Ability Power",
+        "Cooldown reduced: 0.5s → 0.8s",
+        "Adaptive Force: 20 → 30",
+        "Cooldown: 8s → 25s",
+        "Movement Speed: 4% → 2%",
+        "Max Stack duration: 5s → 4s"
+      ]
+    },
+    {
+      "patch": "7.3e",
+      "title": "Wild Rift Patch Notes 7.3e",
+      "publishedAt": "2026-11-04T10:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-3e/",
+      "championChanges": [],
+      "textBlocks": [
+        "Keep the rhythm going with new K/DA, Star Guardian, and Minion Augments, plus some unexpected twists in AAA ARAM!",
+        "The beat goes on! We're halfway through the Soundwave season, and we're keeping the rhythm going with a fresh lineup of Augments for AAA ARAM! From K/DA-inspired attacks and Star Guardian buffs to powerful summons and some unexpected champion swaps, there's plenty of new ways to shake up your matches. Let's dive in!\n Reminder: content will be released throughout the patch.",
+        "GAME MODE CHANGES\n AAA ARAM\n We're halfway through the Soundwave season, and the beat isn't slowing down! Thanks for joining us on this journey and sharing your experiences with us. This time, we're turning up the volume with a new lineup of Augments, each bringing its own unique rhythm to the battlefield.\n First up, the K/DA series brings new ways to automatically attack enemies during combat, while the Star Guardian series is all about teamwork, offering teamwide buffs and powerful bursts of strength to help you and your allies shine.Prefer to let your summons do the heavy lifting? The Minion series gives your summoned units a significant boost. And here's a fun combo: prisms from the K/DA series also count as summons, so they can benefit from these buffs too!\n We're also introducing Mimicking Sands, Arcane Shadow, and All in Good Fun. Similar to Banana & Microwave, these Augments shake things up with unique mechanics, including swapping champions and mimicking their abilities. Experiment with different combinations and see what surprises you can pull off! With so many new interactions hitting the battlefield, we'll be keeping a close eye on how these Augments perform. If you run into any issues, be sure to let us know so we can investigate and address them. And of course, keep the feedback coming! We can't wait to see what creative combinations you discover. See you on the Rift!\n New Augments\n K/DA Series\n Star guardian series\n Minion Series\n Mimicking Sands\n Arcane Shadow\n All in Good Fun"
+      ],
+      "changeLines": [
+        "New Augments"
+      ]
+    },
     {
       "patch": "7.3d",
       "title": "Wild Rift Patch Notes 7.3d",

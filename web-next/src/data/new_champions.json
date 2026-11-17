@@ -1,263 +1,22 @@
 {
   "source": "wildriftfire.com",
-  "generatedAt": "2026-09-22T15:36:25.636Z",
+  "generatedAt": "2026-11-17T07:48:13+00:00",
   "note": "Champions live in Wild Rift but not yet present in our ranked-player dataset.",
   "champions": [
     {
-      "name": "Cho'Gath",
-      "slug": "chogath",
-      "role": "Baron",
-      "class": "Tank",
-      "difficulty": 4,
-      "difficultyLabel": "Moderate",
-      "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Chogath.png",
-      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Chogath_0.jpg",
-      "primaryDamage": "magic",
-      "scalesWith": [],
-      "mechanics": [
-        "cc",
-        "heal"
-      ],
-      "baseStats": {
-        "hp": {
-          "base": 574.0,
-          "perLevel": 80.0,
-          "lvl15": 1694.0
-        },
-        "hpRegen": {
-          "base": 9.0,
-          "perLevel": 0.0,
-          "lvl15": 9.0
-        },
-        "mana": {
-          "base": 272.0,
-          "perLevel": 40.0,
-          "lvl15": 832.0
-        },
-        "manaRegen": {
-          "base": 7.0,
-          "perLevel": 0.0,
-          "lvl15": 7.0
-        },
-        "armor": {
-          "base": 29.0,
-          "perLevel": 4.0,
-          "lvl15": 85.0
-        },
-        "mr": {
-          "base": 32.0,
-          "perLevel": 0.0,
-          "lvl15": 32.0
-        },
-        "moveSpeed": {
-          "base": 355.0,
-          "perLevel": 0.0,
-          "lvl15": 355.0
-        },
-        "ad": {
-          "base": 61.0,
-          "perLevel": 4.0,
-          "lvl15": 117.0
-        },
-        "attackSpeed": {
-          "base": 1.0,
-          "perLevel": 0.0,
-          "lvl15": 1.0
-        }
-      },
-      "abilities": [
-        {
-          "slot": "P",
-          "name": "Carnivore",
-          "text": "Whenever Cho'Gath kills a unit, he recovers 40 - 82 (based on level) Health.",
-          "cooldowns": []
-        },
-        {
-          "slot": "1",
-          "name": "Rupture",
-          "text": "Ruptures the ground at target location, popping enemy units into the air, dealing damage and slowing them.",
-          "cooldowns": [
-            "",
-            "",
-            ""
-          ]
-        },
-        {
-          "slot": "2",
-          "name": "Feral Scream",
-          "text": "Cho'Gath unleashes a terrible scream at enemies in a cone, dealing magic damage and Silencing enemies for a few seconds.",
-          "cooldowns": [
-            "",
-            "",
-            ""
-          ]
-        },
-        {
-          "slot": "3",
-          "name": "Vorpal Spikes",
-          "text": "Cho'gath's attacks passively release deadly spines, dealing damage to all enemy units in front of him.",
-          "cooldowns": [
-            "",
-            "",
-            ""
-          ]
-        },
-        {
-          "slot": "4",
-          "name": "Feast",
-          "text": "Devours an enemy unit, killng champions at low health and most minions instantly.  Every successful Feast increases Cho'Gath's health. Maximum 6 growths.",
-          "cooldowns": [
-            "",
-            "",
-            ""
-          ]
-        }
-      ],
-      "guideTier": null,
-      "guideLane": null,
-      "guideUrl": "https://www.wildriftfire.com/guide/chogath",
-      "comingSoon": true
-    },
-    {
-      "name": "Skarner",
-      "slug": "skarner",
-      "role": "Jungle",
-      "class": "Tank",
-      "difficulty": 5,
-      "difficultyLabel": "Moderate",
-      "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Skarner.png",
-      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Skarner_0.jpg",
+      "name": "Sylas",
+      "slug": "sylas",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 8,
+      "difficultyLabel": "Hard",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10120.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Sylas_0.jpg",
       "primaryDamage": "magic",
       "scalesWith": [
         "ad",
         "ap",
-        "attackSpeed",
-        "bonusAd",
-        "maxHp"
-      ],
-      "mechanics": [
-        "cc",
-        "dash",
-        "heal",
-        "shield"
-      ],
-      "baseStats": {
-        "hp": {
-          "base": 690.0,
-          "perLevel": 128.0,
-          "lvl15": 2482.0
-        },
-        "hpRegen": {
-          "base": 9.0,
-          "perLevel": 1.0,
-          "lvl15": 23.0
-        },
-        "mana": {
-          "base": 380.0,
-          "perLevel": 37.0,
-          "lvl15": 898.0
-        },
-        "manaRegen": {
-          "base": 12.0,
-          "perLevel": 1.0,
-          "lvl15": 26.0
-        },
-        "armor": {
-          "base": 46.0,
-          "perLevel": 4.0,
-          "lvl15": 102.0
-        },
-        "mr": {
-          "base": 40.0,
-          "perLevel": 2.0,
-          "lvl15": 68.0
-        },
-        "moveSpeed": {
-          "base": 350.0,
-          "perLevel": 0.0,
-          "lvl15": 350.0
-        },
-        "ad": {
-          "base": 62.0,
-          "perLevel": 4.0,
-          "lvl15": 118.0
-        },
-        "attackSpeed": {
-          "base": 0.8,
-          "perLevel": 0.015,
-          "lvl15": 1.0
-        }
-      },
-      "abilities": [
-        {
-          "slot": "P",
-          "name": "Threads of Vibration",
-          "text": "Skarner's attacks, Shattered Earth , Upheaval , and Impale apply Quaking to targets for 4 seconds (max 3 stacks) . At 3 stacks of Quaking , enemies take 5% - 10% of their max Health as magic damage over its duration. Deals up to 100 - 450 damage against monsters.",
-          "cooldowns": []
-        },
-        {
-          "slot": "1",
-          "name": "Shattered Earth",
-          "text": "First Cast : Grabs a boulder, empowering his next 3 attacks to gain 25% / 30% / 35% / 40% Attack Speed and deal 15 / 30 / 45 / 60 ( +100% bonus AD +4% bonus Health ) physical damage to nearby enemies. The third attack deals an additional 11% of the target's max Health as physical damage and slows by 45% for 1 second. Recast (Upheaval) : Ends this ability and throws the boulder in a target direction. The boulder explodes on the first enemy hit, dealing 15 / 30 / 45 / 60 ( +100% bonus AD +4% bonus Health ) + 9% of the target's max Health as physical damage to them and nearby enemies and slowing them by 40% for 1 second. Percent Health damage to monsters from the first attack and Upheaval is capped at 200 / 250 / 300 / 350 ( +100% bonus AD +4% bonus Health ). The first two attacks deal 100% damage to structures. The third attack and Upheaval deal 200% damage to structures.",
-          "cooldowns": [
-            "7",
-            "5",
-            "4",
-            "3"
-          ]
-        },
-        {
-          "slot": "2",
-          "name": "Seismic Bastion",
-          "text": "Immediately gains a shield that absorbs damage equal to 10% max Health for 2.5 seconds and triggers an earthquake that deals 50 / 70 / 90 / 110 ( +80% AP ) magic damage and slows nearby enemies by 25% for 1 second.",
-          "cooldowns": [
-            "8",
-            "7",
-            "6",
-            "5"
-          ]
-        },
-        {
-          "slot": "3",
-          "name": "Ixtal's Impact",
-          "text": "First cast : charges in a target direction, ignoring terrain; If he runs into an enemy champion or large monster, he drags them along for the rest of his charge; Colliding into a wall with an enemy in tow deals 60 / 90 / 120 / 150 ( +120% bonus AD +6% max Health ) physical damage to the enemy and stuns them for 1.5 seconds. Recast : Ends his charge early. Colliding into a wall with an enemy in tow reduces Ixtal's Impact's cooldown by 35% .",
-          "cooldowns": [
-            "18",
-            "16",
-            "14",
-            "12"
-          ]
-        },
-        {
-          "slot": "4",
-          "name": "Impale",
-          "text": "Lashes his tails forward, dealing 150 / 250 / 350 ( +100% AP ) magic damage and s uppressing the first 3 enemy champions he hits for 1.5 seconds. Champions hit are dragged along by Skarner for the duration of the suppression . If he hits at least one enemy champion: He gains 40% Movement Speed for 1.5 seconds; If Shattered Earth is active, he will cast Upheaval first.",
-          "cooldowns": [
-            "80",
-            "70",
-            "60"
-          ]
-        }
-      ],
-      "guideTier": "B",
-      "guideLane": "Jungle",
-      "guideUrl": "https://www.wildriftfire.com/guide/skarner"
-    },
-    {
-      "name": "Yunara",
-      "slug": "yunara",
-      "role": "Dragon",
-      "class": "Marksman",
-      "difficulty": 6,
-      "difficultyLabel": "Moderate",
-      "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Yunara.png",
-      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Yunara_0.jpg",
-      "primaryDamage": "magic",
-      "scalesWith": [
-        "ad",
-        "ap",
-        "attackSpeed",
-        "bonusAd"
+        "attackSpeed"
       ],
       "mechanics": [
         "cc",
@@ -267,277 +26,105 @@
       ],
       "baseStats": {
         "hp": {
-          "base": 600.0,
-          "perLevel": 95.0,
-          "lvl15": 1930.0
+          "base": 630.0,
+          "perLevel": 106.0,
+          "lvl15": 2114.0
         },
         "hpRegen": {
-          "base": 6.0,
-          "perLevel": 1.0,
-          "lvl15": 20.0
-        },
-        "mana": {
-          "base": 345.0,
-          "perLevel": 25.0,
-          "lvl15": 695.0
-        },
-        "manaRegen": {
           "base": 9.0,
           "perLevel": 1.0,
           "lvl15": 23.0
         },
+        "mana": {
+          "base": 480.0,
+          "perLevel": 37.0,
+          "lvl15": 998.0
+        },
+        "manaRegen": {
+          "base": 15.0,
+          "perLevel": 1.0,
+          "lvl15": 29.0
+        },
         "armor": {
-          "base": 35.0,
-          "perLevel": 4.0,
-          "lvl15": 91.0
+          "base": 40.0,
+          "perLevel": 5.0,
+          "lvl15": 110.0
         },
         "mr": {
-          "base": 30.0,
+          "base": 38.0,
           "perLevel": 2.0,
-          "lvl15": 58.0
+          "lvl15": 66.0
         },
         "moveSpeed": {
-          "base": 335.0,
+          "base": 355.0,
           "perLevel": 0.0,
-          "lvl15": 335.0
+          "lvl15": 355.0
         },
         "ad": {
-          "base": 58.0,
+          "base": 62.0,
           "perLevel": 3.0,
-          "lvl15": 100.0
+          "lvl15": 104.0
         },
         "attackSpeed": {
-          "base": 0.77,
-          "perLevel": 0.02,
-          "lvl15": 1.1
+          "base": 0.8,
+          "perLevel": 0.0107,
+          "lvl15": 0.9
         }
       },
       "abilities": [
         {
           "slot": "P",
-          "name": "Vow of the First Lands",
-          "text": "Critical Strikes deal an additional 10% (per 100 AP ) magic damage .",
+          "name": "Petricite Burst",
+          "text": "After using an ability, gains a charge (max 3 charges). His next attack expands a charge to whirl his chains, causing the effects: Deals 81 ( 130% AD + 30% AP ) magic damage to the primary target; Deals 25 ( 40% AD + 20% AP ) magic damage to other nearby enemies; Gains 125% Attack Speed while he has at least 1 charge. Deals 100% damage to monsters. Executes minions below 25 Health when they are secondary targets. Only damage against the primary target can Critically Strike.",
           "cooldowns": []
         },
         {
           "slot": "1",
-          "name": "Cultivation of Spirit",
-          "text": "S pirit Charge (Passive) : Attacks deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage ; When not active, launching an attack grants 1 Unleash. Attacking again refreshes Unleash's duration. Max Unleash is 6. If the duration is not refreshed, Yunara loses 1 Unleash every 0.5 seconds. Spirit Unbound (Active) : On cast, consumes Unleash, gaining 22% / 35% / 47% / 60% Attack Speed for 5 seconds. Attacks are empowered during this time to: Deal an additional 10 / 15 / 20 / 25 ( +20% AP ) magic damage on-hit; Spread to enemies nearby the target, dealing them 18 ( 30% AD ) physical damage . Transcendent State : This ability automatically activates until Yunara exits the state. If the attack Critically Strikes, its spread damage will also Critically Strike. Damage from spread attacks is increased to 250% against minions below 30% Health.",
+          "name": "Chain Lash",
+          "text": "Lashes his chains out, intersecting at the target location and casing the effects below: Deals 40 / 70 / 100 / 130 ( +40% AP ) magic damage ; Slows by 15% / 20% / 25% / 30% for 1.5 seconds; After 0.6 seconds, the place where the chains intersect explode with magical energy, dealing a further 80 / 140 / 200 / 260 ( +80% AP ) magic damage . The explosion deals 30% damage to minions.",
           "cooldowns": [
-            "0",
-            "0",
-            "0"
+            "9",
+            "8",
+            "7",
+            "6"
           ]
         },
         {
           "slot": "2",
-          "name": "Arc of Judgment / Arc of Ruin",
-          "text": "Arc of Judgment: Lets rip a spinning prayer bead in the target location, briefly granting vision of the area it travels through. The prayer bead slows enemies hit by 99% , lingering as it travels and resetting its remaining duration. When it reaches its endpoint, it lingers and expands for 1 second, regardless of whether it has hit an enemy. The initial hit deals 60 / 110 / 160 / 210 ( +85% bonus AD +50% AP ) magic damage and slows by 99% , decaying over 1.5 seconds; When lingering, the bead deals an additional 8 / 14 / 20 / 26 ( +12% bonus AD +7.5% AP ) magic damage to nearby enemies every 0.25 seconds. While Yunara is in a Transcendent State, this ability is upgraded to Arc of Ruin. Arc of Ruin : Fires a laser in the target direction that deals 160 ( +120% bonus AD +75% AP ) magic damage and slows by 99% , decaying over 1.5 seconds. Arc of Judgment deals 50% - 100% damage to minions and executes low-Health minions.",
+          "name": "Kingslayer",
+          "text": "Lunges at an enemy with magical force, dealing 75 / 125 / 175 / 225 ( +60% AP ) magic damage . If the target is a champion, Sylas restores 30 / 60 / 90 / 120 ( +30% AP +5% bonus HP ) Health . For every 1% of own max HP missing, the healing is increased by 1.67% , up to 60 / 120 / 180 / 240 ( +60% AP +10% bonus HP ) Health .",
           "cooldowns": [
+            "12",
             "10",
-            "10",
-            "10",
-            "10"
+            "8",
+            "6"
           ]
         },
         {
           "slot": "3",
-          "name": "Kanmei's Steps / Untouchable Shadow",
-          "text": "Kanmei's Steps : Gains 30% / 35% / 40% / 45% Movement Speed for 1.5 seconds, increased to 45% / 52.5% / 60% / 67.5% when moving toward a visible enemy champion nearby. While Yunara is in a Transcendent State, this ability is upgraded to Untouchable Shadow. Untouchable Shadow : Dashes in the target direction.",
+          "name": "Abscond / Abduct",
+          "text": "First Cast : Dashes a short distance. Recast : Throws his chains, pulling himself to the first enemy hit, dealing 80 / 150 / 220 / 290 ( +80% AP ) magic damage and stunning them for 0.5 seconds. On arrival, he knocks up the target for 0.5 seconds.",
           "cooldowns": [
-            "9",
-            "9",
-            "9",
+            "12",
+            "11",
+            "10",
             "9"
           ]
         },
         {
           "slot": "4",
-          "name": "Transcend One's Self",
-          "text": "Passive : Arc of Ruin's base damage and Untouchable Shadow's dash speed scale with this ability's level. Transcendent State (Active) : Enters a Transcendent State for 15 seconds. During this time, Yunara's basic abilities are empowered and cost no Mana. Cultivation of Spirit : Activates automatically for the duration. Arc of Judgment : Upgrades to Arc of Ruin . Its remaining cooldown reduces by 80% when Yunara enters or exits a Transcendent State. Kanmei's Steps : Upgrades to Untouchable Shadow . Its cooldown refreshes when Yunara enters or exits a Transcendent State.",
+          "name": "Hijack",
+          "text": "Throws his chains at the target. If they hit a champion, he hijacks them, allowing him to cast a copy of their ultimate ability. The stolen ability retains its original effects and matches Sylas' ultimate ability level. Hijacking an enemy places a cooldown o them for 200% (modified by Sylas' ability cooldown) of the enemy's ultimate ability's cooldown, with a minimum of 40 seconds, during which Sylas cannot hijack them again. Sylas converts Attack Damage bonuses from the stolen ultimate into Ability Power: Every 1% bonus Attack Damage is converted into 0.4% bonus Ability Power ; Every 1% total Attack Damage is converted into 0.6% bonus Ability Power .",
           "cooldowns": [
-            "70",
-            "60",
-            "50"
+            "80",
+            "55",
+            "30"
           ]
         }
       ],
-      "guideTier": "B",
-      "guideLane": "Duo Lane",
-      "guideUrl": "https://www.wildriftfire.com/guide/yunara"
-    },
-    {
-      "slug": "hwei",
-      "name": "Hwei",
-      "baseStats": {
-        "hp": {
-          "base": 630,
-          "perLevel": 120,
-          "lvl15": 2310
-        },
-        "hpRegen": {
-          "base": 8,
-          "perLevel": 0.65,
-          "lvl15": 17.1
-        },
-        "mana": {
-          "base": 480,
-          "perLevel": 50,
-          "lvl15": 1180
-        },
-        "manaRegen": {
-          "base": 12,
-          "perLevel": 1,
-          "lvl15": 26
-        },
-        "armor": {
-          "base": 34,
-          "perLevel": 4.5,
-          "lvl15": 97.0
-        },
-        "mr": {
-          "base": 36,
-          "perLevel": 1.2,
-          "lvl15": 52.8
-        },
-        "moveSpeed": {
-          "base": 355,
-          "perLevel": 0,
-          "lvl15": 355
-        },
-        "ad": {
-          "base": 54,
-          "perLevel": 3.5,
-          "lvl15": 103.0
-        },
-        "attackSpeed": {
-          "base": 0.75,
-          "perLevel": 0.017,
-          "lvl15": 0.988
-        }
-      },
-      "primaryDamage": "magic",
-      "scalesWith": [
-        "ap"
-      ],
-      "mechanics": [
-        "cc",
-        "shield"
-      ],
-      "abilities": [
-        {
-          "slot": "P",
-          "name": "Signature of the Visionary",
-          "text": "Different spell hits combine into a delayed area explosion: 33–333 by level +33% AP. Marks expire after 4s; repeated hits from one cast cannot repeatedly trigger it.",
-          "cooldowns": [],
-          "damageTypes": [
-            "magic"
-          ],
-          "scales": [
-            "ap"
-          ],
-          "tags": [],
-          "icon": "/abilities/hwei-signature-of-the-visionary.png"
-        },
-        {
-          "slot": "1",
-          "name": "Subject: Disaster",
-          "text": "Choose QQ: 50/90/130/170 +75% AP +4/5/6/7% target maximum health; QW: 80/110/140/170 +30% AP, amplified against isolated or immobilized targets with missing health; or QE: 20/35/50/65 +30% AP eruption and 20/40/60/80 +30% AP per second in lava for 2.5s. Lava slows 30%.",
-          "cooldowns": [
-            "9.5",
-            "8.5",
-            "7.5",
-            "6.5"
-          ],
-          "damageTypes": [
-            "magic"
-          ],
-          "scales": [
-            "ap"
-          ],
-          "tags": [
-            "cc"
-          ],
-          "icon": "/abilities/hwei-subject-disaster.png"
-        },
-        {
-          "slot": "2",
-          "name": "Subject: Serenity",
-          "text": "Choose WQ: an allied movement-speed trail; WW: a 3s allied shield, initially 60/80/100/120 +35% AP, growing toward 108/128/148/168 +71% AP (15% weaker on allies); or WE: three empowered spell/attack hits, each adding 30/40/50/60 +15% AP magic damage and restoring 45/50/55/60 mana.",
-          "cooldowns": [
-            "17",
-            "16.5",
-            "16",
-            "15.5"
-          ],
-          "damageTypes": [
-            "magic"
-          ],
-          "scales": [
-            "ap"
-          ],
-          "tags": [
-            "shield"
-          ],
-          "icon": "/abilities/hwei-subject-serenity.png"
-        },
-        {
-          "slot": "3",
-          "name": "Subject: Torment",
-          "text": "Choose EQ (fear), EW (root and vision), or EE (pull and slow). Each deals 70/120/170/220 +70% AP magic damage. Fear lasts 1/1.125/1.25/1.375s; root lasts 1.25/1.5/1.75/2s.",
-          "cooldowns": [
-            "13",
-            "12",
-            "11",
-            "10"
-          ],
-          "damageTypes": [
-            "magic"
-          ],
-          "scales": [
-            "ap"
-          ],
-          "tags": [
-            "cc"
-          ],
-          "icon": "/abilities/hwei-subject-torment.png"
-        },
-        {
-          "slot": "4",
-          "name": "Spiraling Despair",
-          "text": "Attach an expanding, stacking slow for 3s. Deals 10/20/30 +5% AP magic damage per second, then explodes for 250/350/450 +75% AP magic damage. Wash Brush cancels subject selection; it is not the ultimate.",
-          "cooldowns": [
-            "70",
-            "60",
-            "50"
-          ],
-          "damageTypes": [
-            "magic"
-          ],
-          "scales": [
-            "ap"
-          ],
-          "tags": [
-            "cc"
-          ],
-          "icon": "/abilities/hwei-spiraling-despair.webp"
-        }
-      ],
-      "sourceUrl": "https://wr-meta.com/505-hwei.html",
-      "role": "Mid",
-      "class": "Mage",
-      "difficulty": 9,
-      "difficultyLabel": "Very Hard",
-      "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Hwei.png",
-      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Hwei_0.jpg",
       "guideTier": null,
       "guideLane": "Mid Lane",
-      "guideUrl": "https://wr-meta.com/505-hwei.html",
-      "skillPriority": [
-        "Q",
-        "E",
-        "W"
-      ]
+      "guideUrl": "https://www.wildriftfire.com/guide/sylas"
     }
   ]
 }

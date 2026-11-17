@@ -47,9 +47,10 @@ def test_patch_73_catalogue_values_match_web_export():
 def test_patch_73_extracted_engine_values_are_current():
     effects = _load("data/item_engine.json")
 
+    # 7.3f: Veteran stacks went 15 -> 20 Health and 30 -> 40 Mana (x10).
     assert effects["rod-of-ages"] == {
-        "hpFlatPassive": 150,
-        "manaFlatPassive": 300,
+        "hpFlatPassive": 200,
+        "manaFlatPassive": 400,
         "apFlatPassive": 40,
     }
     assert effects["knights-vow"] == {}

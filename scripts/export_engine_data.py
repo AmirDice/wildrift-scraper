@@ -505,6 +505,13 @@ def main() -> None:
         "Cho'Gath": {"class": "Tank", "role": "Baron",
                      "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Chogath.png"},
     }
+    # A champion released after the last ladder collection is not in site.json
+    # yet, so the roster would carry no class, role or icon for him (Sylas, 7.3f).
+    # export_new_champions writes exactly those for every such champion.
+    _pending = ROOT / "web-next" / "src" / "data" / "new_champions.json"
+    if _pending.exists():
+        for _c in json.loads(_pending.read_text(encoding="utf-8")).get("champions", []):
+            prerelease_meta.setdefault(_c["name"], {k: _c[k] for k in ("class", "role", "icon") if _c.get(k)})
     # The scraped `mechanics` tags are too blunt to describe a threat: `heal`
     # sits on 109 of 141 champions and `cc` on 134, so a comp of any five reads
     # "everyone sustains, everyone has crowd control" and the threat panel says

@@ -70,7 +70,7 @@ _META: dict[str, tuple[str, int]] = {
     "Kennen": ("Mage", 6), "Lissandra": ("Mage", 6), "Lux": ("Mage", 4),
     "Malzahar": ("Mage", 4), "Mel": ("Mage", 6), "Morgana": ("Mage", 4),
     "Neeko": ("Mage", 6), "Norra": ("Mage", 6), "Orianna": ("Mage", 8),
-    "Ryze": ("Mage", 5), "Swain": ("Mage", 5), "Syndra": ("Mage", 3),
+    "Ryze": ("Mage", 5), "Swain": ("Mage", 5), "Sylas": ("Mage", 8), "Syndra": ("Mage", 3),
     "Taliyah": ("Mage", 5), "Twisted Fate": ("Mage", 6), "Veigar": ("Mage", 4),
     "Vel'Koz": ("Mage", 6), "Vex": ("Mage", 5), "Viktor": ("Mage", 7),
     "Vladimir": ("Mage", 6), "Xerath": ("Mage", 6), "Ziggs": ("Mage", 5),

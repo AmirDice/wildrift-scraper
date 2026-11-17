@@ -83,5 +83,10 @@
     "archetype": "spellcaster",
     "reason": "AP spell damage, area control and ranged poke; WE can empower spells and does not require an attack-speed build.",
     "autoShare": 0.15
+  },
+  "Sylas": {
+    "archetype": "weaver",
+    "reason": "Petricite Burst rewards casting an ability then weaving in an empowered basic attack, creating a natural cast-to-auto damage loop.",
+    "autoShare": 0.5
   }
 }

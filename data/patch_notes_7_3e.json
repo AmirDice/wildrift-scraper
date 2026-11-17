@@ -1,0 +1,70 @@
+{
+ "patch": "7.3e",
+ "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-3e/",
+ "parsedAt": "2026-11-17T06:53:41+00:00",
+ "blades": [
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 0,
+     "title": "",
+     "path": [
+      ""
+     ],
+     "notes": [
+      "The beat goes on! We're halfway through the Soundwave season, and we're keeping the rhythm going with a fresh lineup of Augments for AAA ARAM! From K/DA-inspired attacks and Star Guardian buffs to powerful summons and some unexpected champion swaps, there's plenty of new ways to shake up your matches. Let's dive in!",
+      "Reminder: content will be released throughout the patch."
+     ],
+     "lines": []
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "GAME MODE CHANGES",
+     "path": [
+      "GAME MODE CHANGES"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 2,
+     "title": "AAA ARAM",
+     "path": [
+      "AAA ARAM"
+     ],
+     "notes": [
+      "We're halfway through the Soundwave season, and the beat isn't slowing down! Thanks for joining us on this journey and sharing your experiences with us. This time, we're turning up the volume with a new lineup of Augments, each bringing its own unique rhythm to the battlefield.",
+      "First up, the K/DA series brings new ways to automatically attack enemies during combat, while the Star Guardian series is all about teamwork, offering teamwide buffs and powerful bursts of strength to help you and your allies shine.Prefer to let your summons do the heavy lifting? The Minion series gives your summoned units a significant boost. And here's a fun combo: prisms from the K/DA series also count as summons, so they can benefit from these buffs too!",
+      "We're also introducing Mimicking Sands, Arcane Shadow, and All in Good Fun. Similar to Banana & Microwave, these Augments shake things up with unique mechanics, including swapping champions and mimicking their abilities. Experiment with different combinations and see what surprises you can pull off! With so many new interactions hitting the battlefield, we'll be keeping a close eye on how these Augments perform. If you run into any issues, be sure to let us know so we can investigate and address them. And of course, keep the feedback coming! We can't wait to see what creative combinations you discover. See you on the Rift!"
+     ],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "New Augments",
+     "path": [
+      "AAA ARAM",
+      "New Augments"
+     ],
+     "notes": [],
+     "lines": [
+      "K/DA Series",
+      "Star guardian series",
+      "Minion Series",
+      "Mimicking Sands",
+      "Arcane Shadow",
+      "All in Good Fun"
+     ]
+    }
+   ]
+  }
+ ]
+}

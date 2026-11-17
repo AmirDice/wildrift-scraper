@@ -1938,8 +1938,8 @@
             ],
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 65
+                "stat": "bonusAd",
+                "pct": 120
               }
             ],
             "hits": 1,
@@ -1948,9 +1948,7 @@
         ],
         "steroids": [],
         "defensive": [],
-        "unmodeled": [
-          "AD ratio scales with rank: 65%/85%/105%/125%."
-        ]
+        "unmodeled": []
       },
       "2": {
         "name": "Ardent Blaze",
@@ -2052,7 +2050,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 35
+                "pct": 45
               }
             ],
             "hits": 1,
@@ -2077,7 +2075,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Second shot damage scales to 50% and 65% AD at higher levels; Vigilance triggers on next two attacks after heal/shield/immobilize."
+          "Second shot damage scales to 55% and 65% AD at higher levels; Vigilance triggers on next two attacks after heal/shield/immobilize."
         ]
       }
     },
@@ -9736,7 +9734,7 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 65
+                "pct": 80
               }
             ],
             "hits": 1,
@@ -9756,13 +9754,13 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 11
+                "pct": 9
               }
             ]
           }
         ],
         "unmodeled": [
-          "cooldown resets if target was marked or dies; deals 150% damage to minions; heal percentage scales 11/14/17/20% AD per rank"
+          "cooldown resets if target was marked or dies; deals 150% damage to minions; heal percentage scales 9/11/13/15% AD per rank"
         ]
       },
       "2": {
@@ -9895,13 +9893,13 @@
             "name": "Ionian Fervor On-Hit",
             "type": "magic",
             "base": [
-              25,
-              150
+              10,
+              80
             ],
             "ratios": [
               {
-                "stat": "ad",
-                "pct": 30
+                "stat": "bonusAd",
+                "pct": 20
               }
             ],
             "hits": 1,
@@ -9911,13 +9909,13 @@
         "steroids": [
           {
             "stat": "attackSpeed",
-            "pct": 17,
+            "pct": 25,
             "note": "per stack, up to 4 stacks, scales with level"
           }
         ],
         "defensive": [],
         "unmodeled": [
-          "attack speed stacking mechanic; on-hit only at max stacks; attack speed per stack scales 3-17% based on level; duration 6 seconds, refreshed on hitting champions"
+          "attack speed stacking mechanic; on-hit only at max stacks; attack speed per stack scales 11-25% based on level; duration 6 seconds, refreshed on hitting champions"
         ]
       }
     },
@@ -12883,10 +12881,10 @@
             "name": "Pierce",
             "type": "physical",
             "base": [
-              70,
-              135,
-              200,
-              265
+              30,
+              110,
+              190,
+              270
             ],
             "ratios": [
               {
@@ -21283,14 +21281,14 @@
             "name": "The Equalizer",
             "type": "magic",
             "base": [
-              700,
-              1050,
-              1400
+              800,
+              1200,
+              1600
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 200
+                "pct": 220
               }
             ],
             "hits": 1,
@@ -21315,7 +21313,7 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 20
+                "pct": 25
               },
               {
                 "stat": "targetMaxHp",
@@ -21866,9 +21864,9 @@
       "4": {
         "name": "Stand United",
         "cooldowns": [
+          120,
           110,
-          100,
-          90
+          100
         ],
         "damage": [],
         "steroids": [],
@@ -21876,9 +21874,9 @@
           {
             "kind": "shield",
             "base": [
-              170,
-              340,
-              510
+              160,
+              260,
+              360
             ],
             "ratios": [
               {
@@ -27223,15 +27221,15 @@
             "name": "Siphon Power Blast",
             "type": "magic",
             "base": [
-              55,
+              50,
               70,
-              85,
-              100
+              90,
+              110
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 35
+                "pct": 40
               }
             ],
             "hits": 1,
@@ -27333,15 +27331,15 @@
             "name": "Death Ray Beam",
             "type": "magic",
             "base": [
-              75,
-              120,
-              165,
-              210
+              70,
+              115,
+              160,
+              205
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 30
+                "pct": 40
               }
             ],
             "hits": 1,
@@ -27351,15 +27349,15 @@
             "name": "Death Ray Explosion",
             "type": "magic",
             "base": [
-              30,
-              70,
-              110,
-              150
+              20,
+              60,
+              100,
+              140
             ],
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 60
+                "pct": 75
               }
             ],
             "hits": 1,
@@ -27408,7 +27406,7 @@
             "ratios": [
               {
                 "stat": "ap",
-                "pct": 40
+                "pct": 35
               }
             ],
             "hits": 1,
@@ -29120,9 +29118,9 @@
             "type": "magic",
             "base": [
               70,
-              80,
               90,
-              100
+              110,
+              130
             ],
             "ratios": [
               {
@@ -31246,6 +31244,246 @@
       "resource": "mana",
       "abilitiesCanCrit": false,
       "confidence": "medium"
+    }
+  },
+  "Sylas": {
+    "abilities": {
+      "P": {
+        "name": "Petricite Burst",
+        "cooldowns": [],
+        "damage": [
+          {
+            "name": "Petricite Burst",
+            "type": "magic",
+            "base": [
+              81
+            ],
+            "ratios": [
+              {
+                "stat": "ad",
+                "pct": 130
+              },
+              {
+                "stat": "ap",
+                "pct": 30
+              }
+            ],
+            "hits": 1,
+            "when": "per auto"
+          }
+        ],
+        "steroids": [
+          {
+            "stat": "attackSpeed",
+            "pct": 125,
+            "note": "while he has at least 1 charge"
+          }
+        ],
+        "defensive": [],
+        "unmodeled": [
+          "Secondary shockwave deals 25 (40% AD + 20% AP) magic damage to other nearby enemies",
+          "Deals 100% damage to monsters",
+          "Executes secondary minions below 25 Health",
+          "Only damage against the primary target can critically strike"
+        ]
+      },
+      "1": {
+        "name": "Chain Lash",
+        "cooldowns": [
+          9.0,
+          8.0,
+          7.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Chain Lash",
+            "type": "magic",
+            "base": [
+              40,
+              70,
+              100,
+              130
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 40
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          },
+          {
+            "name": "Chain Lash explosion",
+            "type": "magic",
+            "base": [
+              80,
+              140,
+              200,
+              260
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 80
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Slows by 15% / 20% / 25% / 30% for 1.5 seconds",
+          "Explosion deals 30% damage to minions"
+        ]
+      },
+      "2": {
+        "name": "Kingslayer",
+        "cooldowns": [
+          12.0,
+          10.0,
+          8.0,
+          6.0
+        ],
+        "damage": [
+          {
+            "name": "Kingslayer",
+            "type": "magic",
+            "base": [
+              75,
+              125,
+              175,
+              225
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [
+          {
+            "kind": "heal",
+            "base": [
+              30,
+              60,
+              90,
+              120
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 30
+              },
+              {
+                "stat": "ownBonusHp",
+                "pct": 5
+              }
+            ]
+          },
+          {
+            "kind": "heal",
+            "base": [
+              60,
+              120,
+              180,
+              240
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 60
+              },
+              {
+                "stat": "ownBonusHp",
+                "pct": 10
+              }
+            ],
+            "alt": true
+          }
+        ],
+        "unmodeled": [
+          "Heals only if the target is a champion",
+          "Healing is increased by 1.67% for every 1% of own max HP missing, up to the listed doubled values"
+        ]
+      },
+      "3": {
+        "name": "Abscond / Abduct",
+        "cooldowns": [
+          12.0,
+          11.0,
+          10.0,
+          9.0
+        ],
+        "damage": [
+          {
+            "name": "Abduct",
+            "type": "magic",
+            "base": [
+              80,
+              150,
+              220,
+              290
+            ],
+            "ratios": [
+              {
+                "stat": "ap",
+                "pct": 80
+              }
+            ],
+            "hits": 1,
+            "when": "per cast"
+          }
+        ],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "First cast dashes a short distance",
+          "Recast pulls Sylas to the first enemy hit and stuns them for 0.5 seconds",
+          "On arrival, knocks up the target for 0.5 seconds"
+        ]
+      },
+      "4": {
+        "name": "Hijack",
+        "cooldowns": [
+          80.0,
+          55.0,
+          30.0
+        ],
+        "damage": [],
+        "steroids": [],
+        "defensive": [],
+        "unmodeled": [
+          "Hijacks the target champion's ultimate ability; the stolen ability's effects vary and are not modeled",
+          "Hijacking places a cooldown on the enemy for 200% (modified by Sylas' ability cooldown) of the enemy's ultimate cooldown, minimum 40 seconds",
+          "Converts stolen-ultimate Attack Damage bonuses into Ability Power: every 1% bonus Attack Damage becomes 0.4% bonus Ability Power; every 1% total Attack Damage becomes 0.6% bonus Ability Power"
+        ]
+      }
+    },
+    "combo": [
+      "3",
+      "auto",
+      "1",
+      "auto",
+      "2",
+      "auto",
+      "4",
+      "auto"
+    ],
+    "knowledge": {
+      "source": "llm-knowledge",
+      "asEfficiency": 0.25,
+      "resource": "mana",
+      "abilitiesCanCrit": false,
+      "confidence": "high"
     }
   }
 }

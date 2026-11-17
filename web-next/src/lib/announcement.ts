@@ -18,7 +18,7 @@
  * apart: every number a patch changes directly (ability ratios, cooldowns,
  * item stats) is on this patch, and only the measured win rates are not.
  */
-export const SKIPPED_PATCH = "7.3d";
+export const SKIPPED_PATCH = "7.3f";
 
 /**
  * The patch the China patch-impact views measure. Separate from SKIPPED_PATCH
@@ -26,7 +26,7 @@ export const SKIPPED_PATCH = "7.3d";
  * on 7.3d's first day there are none, so they stay on 7.3b until China's
  * daily data has caught up.
  */
-export const IMPACT_PATCH = "7.3b";
+export const IMPACT_PATCH = "7.3d";
 
 /**
  * The patch whose games the win rates were actually collected from.
@@ -39,8 +39,8 @@ export const IMPACT_PATCH = "7.3b";
  * WINRATE_PATCH stays as the EU value because that is what every existing
  * reader of it meant.
  */
-export const EU_WINRATE_PATCH = "7.3b";
-export const NA_WINRATE_PATCH = "7.3b";
+export const EU_WINRATE_PATCH = "7.3d";
+export const NA_WINRATE_PATCH = "7.3d";
 export const CN_WINRATE_PATCH = "7.3a";
 export const WINRATE_PATCH = EU_WINRATE_PATCH;
 
@@ -65,7 +65,7 @@ export const NOT_RECAPTURED: Record<"EU" | "NA", string[]> = {
 };
 
 /** The patch the next collection and the next round of work is aimed at. */
-export const NEXT_PATCH = "7.3d";
+export const NEXT_PATCH = "7.3f";
 
 /** The announced window for the EU/NA/CN ladder collection. */
 export const COLLECTION_START = "Monday, October 5, 2026";
@@ -99,14 +99,15 @@ export const ANNOUNCEMENT = {
   // -v10: the meta page spotlight (China this week, patch impact, builds
   // across patches). Points at /meta rather than /updates.
   // -v11: the Build Studio is back to normal speed. Points at /build.
-  key: "wtm-announce-build-studio-back-2026-11-v11",
-  href: "/build",
-  lead: "The Build Studio is back",
-  short: `Build generation is back to normal speed. Some builds were taking over a minute because a retry fell back to a slower model; that is fixed, and builds and counter builds now come back in seconds. China's builds, duos and patch ${NEXT_PATCH} item shifts were also refreshed on 1 November.`,
-  cta: "Generate a build",
-  badges: ["Back"],
+  // -v12: patch 7.3f and Sylas. Points at his champion page.
+  key: "wtm-announce-sylas-7-3f-2026-11-v12",
+  href: "/champions/sylas",
+  lead: `Sylas and patch ${SKIPPED_PATCH}`,
+  short: `Sylas is on the site: his abilities, a starter build and China's first numbers on him. Every ability, item and rune number is on patch ${SKIPPED_PATCH}, and China's movers now measure it.`,
+  cta: "See Sylas",
+  badges: ["New"],
   /** Pages the banner points at, so it does not appear on top of itself. */
-  hideOn: ["/build"],
+  hideOn: ["/champions/sylas"],
 } as const;
 
 /**
@@ -119,6 +120,25 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "17 November 2026",
+    title: "Patch 7.3f applied, and Sylas added",
+    body:
+      "Sylas is on the site with his abilities, a starter build from the "
+      + "wildriftfire guide and China's numbers since his release. His ultimate "
+      + "casts the enemy's ultimate, which the damage estimates cannot "
+      + "simulate, so his figures cover his own kit only. For 7.3f, Kalista's "
+      + "Pierce, Shen's Stand United, Kassadin, and Viktor's area damage were "
+      + "cut, while Viktor's single-target spells, Lucian, Rumble, Yasuo, "
+      + "Graves and Akshan went up. Irelia trades base damage for Attack "
+      + "Damage scaling. Luden's Echo, Rod of Ages, Lich Bane, Morellonomicon, "
+      + "Hextech Rocketbelt and Goredrinker are stronger or cheaper, and "
+      + "Liandry's Torment and Eclipse lost damage. Several of our numbers did "
+      + "not match Riot's pre-patch values (Viktor's Siphon Power, Graves' and "
+      + "Yasuo's armor, Lucian's ratios); all of them now carry the 7.3f values. "
+      + "Overlay versions older than 3.2-alpha no longer get builds: update from "
+      + "the Discord.",
+  },
   {
     date: "1 November 2026",
     title: "The Build Studio is back to normal speed",

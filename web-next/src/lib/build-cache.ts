@@ -434,7 +434,11 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Samira, Ashe, Miss Fortune and Singed changed; Fiendhunter Bolts, Divine
   // Sunderer, Essence Reaver, Whispering Circlet, Diadem of Songs and
   // Stormrazor moved. Every cached build predates all of it.
-  return `build:v87:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v88: patch 7.3f. Kalista, Viktor, Shen, Irelia, Graves, Akshan, Lucian,
+  // Rumble, Kassadin and Yasuo changed; Luden's Echo, Rod of Ages, Lich Bane,
+  // Morellonomicon, Hextech Rocketbelt, Liandry's Torment, Eclipse and
+  // Goredrinker moved, and Sylas joined the roster.
+  return `build:v88:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

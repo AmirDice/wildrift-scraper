@@ -990,7 +990,7 @@
     "cost": 2900,
     "stats": {
       "ad": {
-        "value": 65,
+        "value": 60,
         "percent": false
       },
       "abilityHaste": {
@@ -1275,11 +1275,11 @@
     "cost": 3100,
     "stats": {
       "hp": {
-        "value": 350,
+        "value": 400,
         "percent": false
       },
       "ad": {
-        "value": 40,
+        "value": 45,
         "percent": false
       },
       "abilityHaste": {
@@ -1388,7 +1388,7 @@
       }
     },
     "passives": [
-      "Echo: Your next damaging ability or empowered attack deals 75 + 8% [ap] magic damage to the target and up to 5 nearby enemies. For each target fewer than that, the primary target takes an additional 20 + 1.2% [ap] magic damage. (9s Cooldown)"
+      "Echo: Your next damaging ability or empowered attack deals 80 + 9% [ap] magic damage to the target and up to 5 nearby enemies. For each target fewer than that, the primary target takes an additional 22.5 + 1.4% [ap] magic damage. (9s Cooldown)"
     ],
     "tags": [],
     "icon": "/items/ludens-echo.webp"
@@ -1402,7 +1402,7 @@
       "Magic",
       "Support"
     ],
-    "cost": 2650,
+    "cost": 2550,
     "stats": {
       "hp": {
         "value": 300,
@@ -1488,7 +1488,7 @@
         "percent": false
       },
       "ap": {
-        "value": 70,
+        "value": 60,
         "percent": false
       }
     },
@@ -1509,7 +1509,7 @@
     "categories": [
       "Magic"
     ],
-    "cost": 2700,
+    "cost": 2600,
     "stats": {
       "hp": {
         "value": 350,
@@ -1525,8 +1525,8 @@
       }
     },
     "passives": [
-      "Eternity: Restore Mana equal to 15% of the damage taken from champions. Regen Health equal to 20% Mana spent. Capped at 25 Health per cast.",
-      "Veteran: Each stack provides 15 Health, 30 Mana and 4 Ability Power, stacking at a rate of 1 every 35 seconds. Max of 10 stacks, providing 150 Health, 300 Mana, and 40 Ability Power."
+      "Eternity: Restore Mana equal to 20% of the damage taken from champions. Regen Health equal to 20% Mana spent. Capped at 25 Health per cast.",
+      "Veteran: Each stack provides 20 Health, 40 Mana and 4 Ability Power, stacking at a rate of 1 every 35 seconds. Max of 10 stacks, providing 200 Health, 400 Mana, and 40 Ability Power."
     ],
     "tags": [
       "burn",
@@ -1554,12 +1554,12 @@
         "percent": false
       },
       "moveSpeed": {
-        "value": 5,
+        "value": 6,
         "percent": true
       }
     },
     "passives": [
-      "Spellblade: Using an ability causes the next attack used within 10 seconds to deal bonus magic damage equal to 75% base AD [ad] + 45% AP [ap]. (1.5s Cooldown) Damage is reduced vs structures."
+      "Spellblade: Using an ability causes the next attack used within 10 seconds to deal bonus magic damage equal to 75% base AD [ad] + 50% AP [ap]. (1.5s Cooldown) Damage is reduced vs structures."
     ],
     "tags": [
       "mana",
@@ -2032,10 +2032,10 @@
       "Magic",
       "Active"
     ],
-    "cost": 2700,
+    "cost": 2650,
     "stats": {
       "hp": {
-        "value": 250,
+        "value": 300,
         "percent": false
       },
       "ap": {
@@ -2048,7 +2048,7 @@
       }
     },
     "passives": [
-      "Protobelt (Active): Dash forward and unleash a cone of missiles, dealing 100 plus 10% [ap] magic damage. (30s Cooldown) If champions or monsters are hit by more than one missile, missiles after the first will deal only 10% damage."
+      "Protobelt (Active): Dash forward and unleash a cone of missiles, dealing 110 plus 15% [ap] magic damage. (30s Cooldown) If champions or monsters are hit by more than one missile, missiles after the first will deal only 10% damage."
     ],
     "tags": [],
     "icon": "/items/hextech-rocketbelt.webp"
@@ -2920,7 +2920,7 @@
       }
     },
     "passives": [
-      "Soulcast: Every 60 seconds, gains 75 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
+      "Soulcast: Every 60 seconds, gains 60 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
     ],
     "tags": [],
     "icon": "/items/bulwark-of-the-mountain.webp"
@@ -2942,7 +2942,7 @@
     },
     "passives": [
       "Versatile: Gain 14 Attack Damage or 28 Ability Power (Adaptive).",
-      "Soulcast: Every 60 seconds, gains 75 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage, or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
+      "Soulcast: Every 60 seconds, gains 60 gold, 25 Health and 2 Attack Damage, or 4 Ability Power (Adaptive); up to 250 Health and 20 Attack Damage, or 40 Ability Power (Adaptive). Deal 2 more damage to Sight Wards revealed by Sweeping Lens, Control Ward, and Scryer’s Bloom. When out of combat, gain 10% Movement Speed when you move toward your Perfect Partner. If you're more than 2,500 units apart, this bonus increases to 30%."
     ],
     "tags": [],
     "icon": "/items/black-mist-scythe.webp"

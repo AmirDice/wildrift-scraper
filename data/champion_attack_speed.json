@@ -990,7 +990,7 @@
       "source": "appendix"
     }
   },
-  "patch": "7.3d",
+  "patch": "7.3f",
   "measuredBefore7_3": {
     "Lux": {
       "attackSpeedRatio": 0.75,

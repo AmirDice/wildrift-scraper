@@ -1,6 +1,96 @@
 {
   "schemaVersion": 1,
   "champions": {
+    "Kalista": {
+      "totalChanges": 14,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 10,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Viktor": {
+      "totalChanges": 7,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 6,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Shen": {
+      "totalChanges": 15,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Irelia": {
+      "totalChanges": 27,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 22,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Graves": {
+      "totalChanges": 22,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 20,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Akshan": {
+      "totalChanges": 18,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Lucian": {
+      "totalChanges": 22,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 20,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Rumble": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 6,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Kassadin": {
+      "totalChanges": 11,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Yasuo": {
+      "totalChanges": 22,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 20,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
     "Shyvana": {
       "totalChanges": 28,
       "modeOnlyChanges": 6,
@@ -208,15 +298,6 @@
       "lastBalancePatch": "7.3b",
       "lastBalanceAt": "2026-10-14T09:00:00.000Z"
     },
-    "Yasuo": {
-      "totalChanges": 21,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 19,
-      "lastChangedPatch": "7.3b",
-      "lastChangedAt": "2026-10-14T09:00:00.000Z",
-      "lastBalancePatch": "7.3b",
-      "lastBalanceAt": "2026-10-14T09:00:00.000Z"
-    },
     "Smolder": {
       "totalChanges": 6,
       "modeOnlyChanges": 1,
@@ -334,15 +415,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Lucian": {
-      "totalChanges": 21,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 19,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Zeri": {
       "totalChanges": 12,
       "modeOnlyChanges": 3,
@@ -361,28 +433,10 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Akshan": {
-      "totalChanges": 17,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 14,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Corki": {
       "totalChanges": 20,
       "modeOnlyChanges": 4,
       "balanceChanges": 16,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Kalista": {
-      "totalChanges": 13,
-      "modeOnlyChanges": 0,
-      "balanceChanges": 9,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -427,15 +481,6 @@
     "Vayne": {
       "totalChanges": 25,
       "modeOnlyChanges": 6,
-      "balanceChanges": 19,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Graves": {
-      "totalChanges": 21,
-      "modeOnlyChanges": 2,
       "balanceChanges": 19,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
@@ -667,15 +712,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Kassadin": {
-      "totalChanges": 10,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 8,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Poppy": {
       "totalChanges": 4,
       "modeOnlyChanges": 1,
@@ -703,15 +739,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Irelia": {
-      "totalChanges": 26,
-      "modeOnlyChanges": 4,
-      "balanceChanges": 21,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Katarina": {
       "totalChanges": 23,
       "modeOnlyChanges": 6,
@@ -725,15 +752,6 @@
       "totalChanges": 6,
       "modeOnlyChanges": 1,
       "balanceChanges": 5,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Shen": {
-      "totalChanges": 14,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 12,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -1234,28 +1252,10 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Rumble": {
-      "totalChanges": 9,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 5,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Vex": {
       "totalChanges": 11,
       "modeOnlyChanges": 2,
       "balanceChanges": 8,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Viktor": {
-      "totalChanges": 6,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 5,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
