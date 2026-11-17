@@ -620,14 +620,6 @@
       "pickRate": 6.38
     },
     {
-      "slug": "skarner",
-      "name": "Skarner",
-      "oldWr": 53.78,
-      "newWr": 53.73,
-      "delta": -0.05,
-      "pickRate": 2.25
-    },
-    {
       "slug": "mordekaiser",
       "name": "Mordekaiser",
       "oldWr": 51.64,
@@ -1106,6 +1098,14 @@
       "newWr": 45.24,
       "delta": -3.35,
       "pickRate": 1.23
+    },
+    {
+      "slug": "skarner",
+      "name": "Skarner",
+      "oldWr": 53.78,
+      "newWr": 50.24,
+      "delta": -3.54,
+      "pickRate": 1.11
     }
   ],
   "byBracket": {
@@ -3891,14 +3891,6 @@
         "pickRate": 6.38
       },
       {
-        "slug": "skarner",
-        "name": "Skarner",
-        "oldWr": 53.78,
-        "newWr": 53.73,
-        "delta": -0.05,
-        "pickRate": 2.25
-      },
-      {
         "slug": "mordekaiser",
         "name": "Mordekaiser",
         "oldWr": 51.64,
@@ -4377,6 +4369,14 @@
         "newWr": 45.24,
         "delta": -3.35,
         "pickRate": 1.23
+      },
+      {
+        "slug": "skarner",
+        "name": "Skarner",
+        "oldWr": 53.78,
+        "newWr": 50.24,
+        "delta": -3.54,
+        "pickRate": 1.11
       }
     ],
     "4": [
@@ -4459,14 +4459,6 @@
         "newWr": 49.91,
         "delta": 1.83,
         "pickRate": 2.8
-      },
-      {
-        "slug": "skarner",
-        "name": "Skarner",
-        "oldWr": 54.92,
-        "newWr": 56.67,
-        "delta": 1.75,
-        "pickRate": 1.74
       },
       {
         "slug": "sion",
@@ -5459,6 +5451,14 @@
         "newWr": 49.66,
         "delta": -3.05,
         "pickRate": 2.03
+      },
+      {
+        "slug": "skarner",
+        "name": "Skarner",
+        "oldWr": 54.92,
+        "newWr": 51.67,
+        "delta": -3.25,
+        "pickRate": 1.35
       },
       {
         "slug": "zilean",

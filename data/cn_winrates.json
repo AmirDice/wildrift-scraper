@@ -3618,18 +3618,18 @@
           "position": "Jungle"
         },
         "3": {
-          "winRate": 53.73,
-          "pickRate": 2.25,
+          "winRate": 50.24,
+          "pickRate": 1.11,
           "banRate": 0.43,
           "strength": 5,
-          "position": "Jungle"
+          "position": "Baron"
         },
         "4": {
-          "winRate": 56.67,
-          "pickRate": 1.74,
+          "winRate": 51.67,
+          "pickRate": 1.35,
           "banRate": 0.5,
           "strength": 5,
-          "position": "Jungle"
+          "position": "Baron"
         }
       }
     },
