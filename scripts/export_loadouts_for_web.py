@@ -733,6 +733,17 @@ def main() -> None:
         except ValueError:
             captured_at = datetime.min
         key = champion, lane
+        # A capture with no readable rate in any tab is an empty data page
+        # (the app's no-data picture), not a loadout. It must never become
+        # the newest capture: Vayne baron's empty page of 2026-11-09 read as
+        # three blank rows and would have replaced her real baron data. Boots
+        # do not count: that tab carries the app's old July 2026 numbers even
+        # on an otherwise empty page (Vayne's showed Berserker's Greaves).
+        if not any(row.get("winRate") is not None
+                   for name, tab in (payload.get("tabs") or {}).items() if name != "boots"
+                   for row in (tab or {}).get("rows") or []):
+            print(f"skipped {path.parent.name}: no readable rows (empty data page)")
+            continue
         if key not in newest or captured_at > newest[key][0]:
             newest[key] = captured_at, path.parent, payload
 

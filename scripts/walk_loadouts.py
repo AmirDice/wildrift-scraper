@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -101,6 +102,20 @@ NO_DATA_FILE = "_no_data.json"
 RETRIES = 1
 RETRY_WAIT = 5.0
 
+#: The result for a lane whose data page opens EMPTY: the header and the
+#: "最近更新" date, then the app's no-data picture instead of rows. Not a
+#: failure (retrying cannot fill it) and not a capture (there is nothing to
+#: read). On 2026-11-09 Vayne baron at 峡谷之巅 was such a page; it was
+#: captured anyway and the extractor read three blank rows out of the empty
+#: area, which would have replaced her real baron loadout on the site.
+NO_DATA_LANE = "no data in the app"
+#: Results a retry cannot change: captured, or confirmed empty.
+SETTLED = ("ok", NO_DATA_LANE)
+#: Every row's win and pick rate is a TextView like "63.83%"; the empty page
+#: has none. Rows render a moment after the header, so they get this long.
+ROWS_WAIT = 8.0
+_PCT = re.compile(r"^\d{1,3}(?:\.\d+)?%$")
+
 #: What you may type for --bracket, mapped to the label the app shows.
 #: 峡谷之巅 ("top of canyon") is the highest and the default. Note the sample
 #: cost: the higher the bracket the fewer games behind each build row, and
@@ -149,6 +164,22 @@ def _wait_for(client, *sig, timeout: float = 8.0):
         if time.time() >= deadline:
             return None
         time.sleep(0.5)
+
+
+def _has_rows(client, nodes, wait: float = ROWS_WAIT) -> bool:
+    """Whether the open data page shows any rows, polling until `wait` runs out.
+
+    Off-screen rows are in the dump with zero size but full text, so a page
+    with data always carries a percentage somewhere; the empty page never does.
+    """
+    deadline = time.time() + wait
+    while True:
+        if any(_PCT.match(n.label.strip()) for n in (nodes or [])):
+            return True
+        if time.time() >= deadline:
+            return False
+        time.sleep(0.5)
+        nodes = uiauto.dump(client)
 
 
 def _back_to_list(client, depth: int = 3) -> bool:
@@ -387,9 +418,12 @@ def capture_lane(client, champion: str, lane_cn: str, lane_en: str,
     client.tap(*more.center)
 
     # Measured at 7-10s on the device, so this gets its own generous budget.
-    if _wait_for(client, *SIG_DATA, timeout=args.data_wait) is None:
+    data = _wait_for(client, *SIG_DATA, timeout=args.data_wait)
+    if data is None:
         return (f"国服数据 never appeared (waited {args.data_wait:.0f}s)",
                 _back_to_champion(client) or nodes)
+    if not _has_rows(client, data):
+        return NO_DATA_LANE, _back_to_champion(client) or nodes
 
     stamp = time.strftime("%Y%m%d_%H%M")
     out_dir = args.out / f"{champion.lower()}_{lane_en}_{args.bracket.lower()}_{stamp}"
@@ -478,7 +512,9 @@ def capture_one(client, node_label: str, champion: str, args,
         result, nodes = capture_lane(client, champion, lane_cn, lane_en,
                                      lanes_cn, args, nodes)
         out.append((lane_en, result))
-        if result != "ok":
+        if result == NO_DATA_LANE:
+            print(f"      - {result}; nothing saved, older data for this lane is kept")
+        elif result != "ok":
             print(f"      ! {result}")
 
     _back_to_list(client)
@@ -519,6 +555,7 @@ def walk(client, args) -> int:
     cn_map = _cn_names()
     labels = set(cn_map)
     skipped: dict[str, str] = {}
+    empty_lanes: dict[str, str] = {}
     done, complete = _resume_set(args.out, args.bracket)
     if done:
         print(f"resuming: {len(done)} (champion, lane) pairs already captured, "
@@ -608,13 +645,18 @@ def walk(client, args) -> int:
                         if result == "ok":
                             captured += 1
                             done.add((champion, lane_done))
-                    results = [r for r in results if r[1] == "ok"] + attempt_results
-                    if all(result == "ok" for _lane, result in attempt_results):
+                        elif result == NO_DATA_LANE:
+                            done.add((champion, lane_done))
+                            empty_lanes[f"{champion} {lane_done}"] = (
+                                f"data page empty at {args.bracket_cn} "
+                                f"({time.strftime('%Y-%m-%d')})")
+                    results = [r for r in results if r[1] in SETTLED] + attempt_results
+                    if all(result in SETTLED for _lane, result in attempt_results):
                         break
                 # Only what the retry could not fix counts as failed, so the
                 # final tally is the list worth recapturing by hand.
                 for lane_failed, result in attempt_results:
-                    if result != "ok":
+                    if result not in SETTLED:
                         failed += 1
                         failures.append(f"{champion} {lane_failed}: {result}")
                 # Visited means FINISHED, not attempted. A champion whose
@@ -622,7 +664,7 @@ def walk(client, args) -> int:
                 # it appears under, which is a different route to the same
                 # page and may well work -- and an empty result means every
                 # lane was already on disk, which is finished too.
-                if all(result == "ok" for _lane, result in results):
+                if all(result in SETTLED for _lane, result in results):
                     visited.add(champion)
                 if args.limit and captured >= args.limit:
                     print(f"— stopping at --limit {args.limit}")
@@ -636,7 +678,8 @@ def walk(client, args) -> int:
               "in src/ocr.py, then rerun.")
     # The no-data list describes the app, not one run, so a managed run keeps
     # it beside the runs (data/captures/loadouts/_no_data.json).
-    _write_no_data(args.out.parent if getattr(args, "run_managed", False) else args.out, skipped)
+    _write_no_data(args.out.parent if getattr(args, "run_managed", False) else args.out,
+                   skipped, empty_lanes)
     if getattr(args, "run_managed", False):
         # A walk that reached the end with nothing failed finishes the run;
         # anything else leaves it open, so the recapture of what failed lands
@@ -646,6 +689,8 @@ def walk(client, args) -> int:
         print(f"run {args.out.name}: " + ("complete" if failed == 0 else
               f"left open, {failed} to recapture (rerun the same command)"))
     tail = f", {len(skipped)} with no data in the app" if skipped else ""
+    if empty_lanes:
+        tail += f", {len(empty_lanes)} lane(s) empty in the app: {', '.join(sorted(empty_lanes))}"
     print(f"\ndone: {captured} captured, {failed} failed{tail}")
     # Named, not just counted: this is the list to recapture by hand. A
     # champion that failed under one hero-list tab and was then captured
@@ -655,28 +700,39 @@ def walk(client, args) -> int:
     return 0 if failed == 0 else 1
 
 
-def _write_no_data(out_dir: Path, skipped: dict[str, str]) -> None:
-    """Record the champions the app cannot show, merging with earlier runs.
+def _write_no_data(out_dir: Path, skipped: dict[str, str],
+                   empty_lanes: dict[str, str] | None = None) -> None:
+    """Record the champions, and single lanes, the app cannot show, merging
+    with earlier runs.
 
     Written even when this run skipped nothing new, so the file stays an
-    accurate statement of the whole dataset rather than of one pass.
+    accurate statement of the whole dataset rather than of one pass. Empty
+    lanes carry the date they were seen, because a lane empty at the top rank
+    one week can fill the next; every walk re-checks them.
     """
     path = out_dir / NO_DATA_FILE
     known: dict[str, str] = {}
+    lanes: dict[str, str] = {}
     if path.exists():
         try:
-            known = json.loads(path.read_text(encoding="utf-8")).get("champions", {})
+            prior = json.loads(path.read_text(encoding="utf-8"))
+            known = prior.get("champions", {})
+            lanes = prior.get("lanes", {})
         except Exception:  # noqa: BLE001 -- a corrupt file must not end a walk
-            known = {}
+            known, lanes = {}, {}
     known.update(skipped)
-    if not known:
+    lanes.update(empty_lanes or {})
+    if not known and not lanes:
         return
     out_dir.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({
+    body = {
         "note": "Champions with no loadout data because the app does not show "
                 "them. Absence here is deliberate, not a failed capture.",
         "champions": known,
-    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    }
+    if lanes:
+        body["lanes"] = lanes
+    path.write_text(json.dumps(body, ensure_ascii=False, indent=2), encoding="utf-8")
     for champion, reason in sorted(known.items()):
         print(f"  no data: {champion} -- {reason}")
 
