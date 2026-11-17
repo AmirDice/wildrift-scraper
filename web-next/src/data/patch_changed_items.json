@@ -1,4 +1,16 @@
 {
+  "7.3f": [
+    "Black Mist Scythe",
+    "Bulwark of the Mountain",
+    "Eclipse",
+    "Goredrinker",
+    "Hextech Rocketbelt",
+    "Liandry's Torment",
+    "Lich Bane",
+    "Luden's Echo",
+    "Morellonomicon",
+    "Rod of Ages"
+  ],
   "7.3d": [
     "Diadem of Songs",
     "Divine Sunderer",
@@ -467,7 +479,6 @@
     "Bloodthirster"
   ],
   "6.2": [
-    "Guardian",
     "Harmonic Echo",
     "Hullbreaker"
   ],
@@ -553,9 +564,6 @@
   "5.3": [
     "Ixtali Seedjar",
     "Lethal Tempo"
-  ],
-  "5.2d": [
-    "Guardian"
   ],
   "5.2c": [
     "Ardent Censer",
@@ -671,9 +679,6 @@
     "Harmonic Echo",
     "Hextech Flashtraption",
     "Plated Steelcaps"
-  ],
-  "4.3c": [
-    "Guardian"
   ],
   "4.3b": [
     "Hullbreaker"
@@ -953,9 +958,6 @@
   "2.0a": [
     "Guardian",
     "Guardian Angel"
-  ],
-  "2.0": [
-    "Guardian"
   ],
   "1.1": [
     "Abyssal Mask",

@@ -432,6 +432,19 @@ PROVEN_MIN_PICK = 3
 PROVEN_MAX_DROP = -0.5
 
 
+#: Skin lines whose names contain an item or rune name. "Star Guardian" in
+#: 7.3e's AAA ARAM notes matched the rune Guardian, which made an ARAM-only
+#: patch look like a Rift patch: China's 7.3f impact then measured
+#: "7.3e -> 7.3f" instead of 7.3d -> 7.3f. Removed before matching.
+_NOT_ITEM_PHRASES = ("Star Guardian",)
+
+
+def _strip_phrases(text: str) -> str:
+    for phrase in _NOT_ITEM_PHRASES:
+        text = text.replace(phrase, " ")
+    return text
+
+
 def _patch_calendar() -> tuple[list[tuple[str, str]], dict[str, set[str]]]:
     """[(patch, live date)] oldest first, and the item and rune names each
     patch's notes mention (so a core can say an item of it changed)."""
@@ -447,15 +460,17 @@ def _patch_calendar() -> tuple[list[tuple[str, str]], dict[str, set[str]]]:
         # it changes a champion outside a mode, or names an item or rune in a
         # block that is not under GAME MODE CHANGES.
         standard = any(not c.get("modeOnly") for c in entry.get("championChanges") or [])
-        rift_text = json.dumps([b for b in entry.get("textBlocks", [])
-                                if not str(b).lstrip().upper().startswith("GAME MODE CHANGES")],
-                               ensure_ascii=False)
+        rift_text = _strip_phrases(json.dumps(
+            [b for b in entry.get("textBlocks", [])
+             if not str(b).lstrip().upper().startswith("GAME MODE CHANGES")],
+            ensure_ascii=False))
         if not standard and not any(
                 len(name) > 4 and re.search(r"(?<![A-Za-z])" + re.escape(name) + r"(?![A-Za-z])", rift_text)
                 for name in items + runes):
             continue
         calendar.append((entry["patch"], str(entry["publishedAt"])[:10]))
-        text = json.dumps(entry.get("changeLines", []), ensure_ascii=False) + json.dumps(entry.get("textBlocks", []), ensure_ascii=False)
+        text = _strip_phrases(json.dumps(entry.get("changeLines", []), ensure_ascii=False)
+                              + json.dumps(entry.get("textBlocks", []), ensure_ascii=False))
         changed[entry["patch"]] = {
             name for name in items + runes
             if len(name) > 4 and re.search(r"(?<![A-Za-z])" + re.escape(name) + r"(?![A-Za-z])", text)
@@ -716,6 +731,13 @@ def main() -> None:
     spells = load_json(WEB_DATA / "spells.json")
 
     champion_by_name = {champion["name"]: champion["slug"] for champion in site["champions"]}
+    # A champion released after the last ladder collection is not in site.json
+    # yet (Sylas, 7.3f): without this his own loadout pages and every matchup
+    # row against him were dropped as unknown names.
+    pending = WEB_DATA / "new_champions.json"
+    if pending.exists():
+        for champion in load_json(pending).get("champions", []):
+            champion_by_name.setdefault(champion["name"], champion["slug"])
     champion_names = set(champion_by_name)
     item_names = {item["name"] for item in items}
     rune_names = set(runes)

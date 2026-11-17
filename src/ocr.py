@@ -1747,9 +1747,15 @@ _CN_NUMBER = re.compile(r"(\d+(?:[.,]\d+)?)")
 #:           spelling of him at all and every Hwei tile was discarded.
 #:   塔莉娅   the client writes 娅 where the list writes 垭. Same champion,
 #:           different character, and an exact lookup cannot bridge it.
+#:   塞拉斯   Sylas (7.3f, hero 10120). In the map once cn_winrates.json
+#:           carries him, but a checkout with older China data does not, and
+#:           the 2026-11-17 loadout walk skipped him and dropped him from 79
+#:           matchup rows that way. The app titles him 解脱者塞拉斯.
 CN_NAME_OVERRIDES = {
     "慧": "Hwei",
     "塔莉娅": "Taliyah",
+    "塞拉斯": "Sylas",
+    "解脱者塞拉斯": "Sylas",
 }
 
 

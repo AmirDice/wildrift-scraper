@@ -58,3 +58,12 @@ def test_the_export_skips_an_empty_capture_even_with_stale_boots():
     from scripts import export_loadouts_for_web as X
     src = inspect.getsource(X.main)
     assert 'if name != "boots"' in src and "no readable rows" in src
+
+
+def test_star_guardian_is_not_the_guardian_rune():
+    """7.3e (AAA ARAM only) named Star Guardian augments; matching that as
+    the rune Guardian made it a Rift patch and shifted China's patch impact."""
+    from scripts import export_loadouts_for_web as X
+    calendar, changed = X._patch_calendar()
+    assert "7.3e" not in [p for p, _ in calendar]
+    assert "Guardian" not in changed.get("7.3e", set())
