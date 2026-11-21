@@ -98,7 +98,7 @@ export default function RootLayout({
           aria-hidden
           className="fixed inset-0 -z-30 bg-cover bg-center"
           style={{
-            backgroundImage: "url(/hwei2.jpg)",
+            backgroundImage: "url(/sylas2.jpg)",
             // Calmed, not dimmed. Taking the saturation and brightness down a
             // little settles the art behind the content instead of competing
             // with it, without reaching for a heavy scrim, and it costs nothing
