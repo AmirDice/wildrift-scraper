@@ -534,7 +534,7 @@ const tabTours = (ctx: TourContext): Record<Tab, { storageKey: string; steps: To
       {
         target: "ranked-servers",
         title: "Each server's top players",
-        body: "What the top players on EU, NA and China hold for this champion, in the order they buy it. Use it to sanity-check a generated build: when it departs from these, the reasoning should say why.",
+        body: "What the top players on EU and NA hold for this champion, in the order they buy it. Use it to sanity-check a generated build: when it departs from these, the reasoning should say why.",
       },
       {
         target: "ranked-loadouts",

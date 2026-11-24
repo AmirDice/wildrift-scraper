@@ -13,12 +13,9 @@ export type IndexEntry = {
   sc: number | null;
 };
 
-/** The servers we hold per-player boards for.
- *
- *  CN joined on 2026-10-11. It used to be excluded because the only China
- *  data here was Tencent's bracket aggregate, which has no player rows to
- *  index; the in-client leaderboard capture has 3,627 of them. */
-export type ServerKey = "EU" | "NA" | "CN";
+/** The servers we hold per-player boards for. CN was one from 2026-10-11
+ *  until its board was retired on 2026-11-24 (China is no longer collected). */
+export type ServerKey = "EU" | "NA";
 
 export type IndexPlayer = {
   n: string;
@@ -38,7 +35,6 @@ export type IndexPlayer = {
 const SERVERS: { key: ServerKey; index: string; players: string }[] = [
   { key: "EU", index: "/player-index.json", players: "/players" },
   { key: "NA", index: "/player-index-na.json", players: "/players/na" },
-  { key: "CN", index: "/player-index-cn.json", players: "/players/cn" },
 ];
 
 /** Fold case and spaces so "Alpha Rengo", "alpha rengo" and "ALPHARENGO" all

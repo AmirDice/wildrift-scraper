@@ -1,6 +1,5 @@
 import eu from "@/data/ladder_pulse.json";
 import na from "@/data/ladder_pulse_na.json";
-import cn from "@/data/ladder_pulse_cn.json";
 import { LIVE_ITEMS } from "@/lib/items";
 
 export type UsageRow = {
@@ -76,7 +75,7 @@ export function combineUsage(sources: UsageSource[]) {
     spellMeta: [...spells].map(([pair, count]) => ({ pair, count }))
       .sort((a, b) => b.count - a.count || a.pair.localeCompare(b.pair)),
     sources: sources.map((s, i) => ({
-      server: ["EU", "NA", "CN"][i],
+      server: ["EU", "NA"][i],
       buildsFrom: s.buildsFrom ?? s.generatedAt,
     })),
   };
@@ -84,5 +83,5 @@ export function combineUsage(sources: UsageSource[]) {
 
 let cached: ReturnType<typeof combineUsage> | undefined;
 export function globalUsage() {
-  return cached ??= combineUsage([eu, na, cn] as UsageSource[]);
+  return cached ??= combineUsage([eu, na] as UsageSource[]);
 }

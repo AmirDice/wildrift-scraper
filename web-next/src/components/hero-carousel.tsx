@@ -101,7 +101,7 @@ function slides(): Slide[] {
       body:
         "Every champion ranked by the real win rates of its best players, confidence-adjusted so "
         + "hype and lucky streaks never make the cut.",
-      claims: ["EU, NA and China", "Confidence-adjusted", "Updated every patch"],
+      claims: ["EU and NA", "Confidence-adjusted", "Updated every patch"],
       primary: { href: "/tier-list", label: "See what actually wins" },
       secondary: { href: "/meta", label: "Read the meta overview" },
       shot: { src: "/shots/tier.jpg", alt: "The tier list, showing the GOD tier with each champion's win rate" },
@@ -142,7 +142,7 @@ function slides(): Slide[] {
       body:
         "Every champion ranked by the real win rates of its best players, confidence-adjusted so "
         + "hype and lucky streaks never make the cut. It is the evidence the builds are made from.",
-      claims: ["EU, NA and China", "Confidence-adjusted", "Updated every patch"],
+      claims: ["EU and NA", "Confidence-adjusted", "Updated every patch"],
       primary: { href: "/tier-list", label: "See what actually wins" },
       secondary: { href: "/meta", label: "Read the meta overview" },
       shot: { src: "/shots/tier.jpg", alt: "The tier list, showing the GOD tier with each champion's win rate" },

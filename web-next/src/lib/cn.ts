@@ -1,5 +1,5 @@
 import cnData from "@/data/cn.json";
-import { getChampion, getChampions, regionBoard, siteCn, tierClass, TIER_ORDER, type Champion } from "@/lib/data";
+import { getChampion, getChampions, regionBoard, tierClass, TIER_ORDER, type Champion } from "@/lib/data";
 import { getNewChampion } from "@/lib/new-champions";
 
 interface CnEntry {
@@ -33,29 +33,18 @@ export const CN_BRACKETS = [
 
 export type CnBracketKey = (typeof CN_BRACKETS)[number]["key"];
 
-/** The China samples the tier list offers: Tencent's four published
- *  brackets, plus our own top-30 ladder board.
- *
- *  A separate type from CnBracketKey on purpose. That one indexes
- *  @/data/cn.json, and the ladder board is not in that file -- a "ladder"
- *  reaching getCnChampions would quietly return an empty list rather than
- *  fail, which is the kind of bug that ships. */
-export type CnSampleKey = CnBracketKey | "ladder";
+/** The China samples the tier list offers: Tencent's published brackets.
+ *  Our own top-30 China ladder board was a sample here until 2026-11-24, when
+ *  China stopped being collected and the board was retired. */
+export type CnSampleKey = CnBracketKey;
 
-export const CN_SAMPLES = [
-  { key: "ladder", label: "Top 30 ladder", short: "Top 30", kind: "ladder" },
-  ...CN_BRACKETS,
-] as const;
-
-/** The China tab opens on the ladder board. It is the same measurement as
- *  the EU and NA tabs beside it -- the best players on each champion, 30
- *  deep, centred on 50 -- so a reader switching region now compares like
- *  with like by default. Tencent's brackets are one tap away and answer the
- *  other question, which is the whole ladder rather than the top of it. */
-export const CN_TIERLIST_DEFAULT: CnSampleKey = "ladder";
+export const CN_SAMPLES = CN_BRACKETS;
 
 /** Challenger is the default standard-ranked sample. */
 export const CN_DEFAULT_BRACKET: CnBracketKey = "3";
+
+/** The China tab opens on Challenger, the default bracket. */
+export const CN_TIERLIST_DEFAULT: CnSampleKey = CN_DEFAULT_BRACKET;
 
 export const CN_META = {
   source: CN.source,
@@ -66,13 +55,6 @@ export const CN_META = {
   /** The tier list's own China selector: brackets plus the ladder board. */
   samples: CN_SAMPLES,
   tierListDefault: CN_TIERLIST_DEFAULT,
-  /** When our CN ladder board was captured, and the centring it carries.
-   *  Tencent's figures are published raw, the ladder board is centred like
-   *  EU and NA, so the two cannot share one offset. */
-  ladderDate: siteCn.collectedOn,
-  ladderOffset: siteCn.wrOffset ?? 0,
-  ladderChampions: siteCn.nChampions,
-  ladderMovementSince: siteCn.movementSince ?? null,
 };
 
 /** CN win rates cluster near 50% (whole-ladder), so tiers use CN-specific cutoffs. */
@@ -212,17 +194,11 @@ export function getCnRolesByBracket(): Record<CnBracketKey, string[]> {
 
 /** Champions for every China sample the tier list can show. */
 export function getCnChampionsBySample(): Record<CnSampleKey, Champion[]> {
-  return {
-    ladder: regionBoard("CN").champions,
-    ...getCnChampionsByBracket(),
-  };
+  return getCnChampionsByBracket();
 }
 
 export function getCnRolesBySample(): Record<CnSampleKey, string[]> {
-  return {
-    ladder: regionBoard("CN").roles,
-    ...getCnRolesByBracket(),
-  };
+  return getCnRolesByBracket();
 }
 
 const byBracketSlug = new Map<CnBracketKey, Map<string, CnChampion>>();
@@ -286,9 +262,10 @@ const r1 = (n: number) => Math.round(n * 10) / 10;
  *  methodology rather than a European quirk. Dropping it moved 47 of 140
  *  champions across a tier boundary.
  *
- *  WHAT IS IN THIS BLEND SINCE 2026-10-11 IS A DIFFERENT CN DATASET: our own
- *  capture of the top 30 of each champion's in-client leaderboard
- *  (site_cn.json, regionBoard("CN")). Same method as EU and NA, same depth
+ *  From 2026-10-11 to 2026-11-24 this blend held a DIFFERENT CN dataset: our
+ *  own capture of the top 30 of each champion's in-client leaderboard. It was
+ *  retired when China stopped being collected, so Global is EU and NA now.
+ *  While it ran it used the same method as EU and NA, the same depth
  *  -- all three boards are 30 deep and all three centre on 50.0 -- so it is
  *  the same measurement taken on a third server, which is exactly what the
  *  2026-08 removal said was missing. Tencent's bracket data keeps its own
@@ -349,7 +326,7 @@ function blendPoolValues(boards: Champion[]): Record<string, DepthValue> | null 
 }
 
 /** The servers whose boards are averaged, in the order a tooltip names them. */
-const GLOBAL_SERVERS = ["NA", "CN"] as const;
+const GLOBAL_SERVERS = ["NA"] as const;   // with EU; China's board retired 2026-11-24
 
 export function getGlobalChampions(): Champion[] {
   const others = GLOBAL_SERVERS.map(
@@ -367,8 +344,9 @@ export function getGlobalChampions(): Champion[] {
       const row = other.get(champ.slug);
       if (row && Number.isFinite(row.wr)) boards.push(row);
     }
-    // Two is the floor, so a champion missing from one server is still
-    // Global on the strength of the other two rather than disappearing.
+    // Global is EU and NA averaged, so a champion needs both boards. (With
+    // three servers the floor of two let one be missing; China's board was
+    // retired on 2026-11-24.)
     if (boards.length < 2) continue;
     const g = r1(boards.reduce((t, b) => t + b.wr, 0) / boards.length);
     // Movement is the mean of the regional deltas, each measured in centred

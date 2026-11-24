@@ -57,10 +57,10 @@ export default function MetaPage() {
 
       <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">The meta at a glance</h1>
       <p className="mt-2 max-w-2xl text-muted">
-        {`What wins, what gets built and who is rising, from the top-player boards of EU, NA and China across ${h.nChampions} champions.`}
+        {`What wins, what gets built and who is rising, from the top-player boards of EU and NA across ${h.nChampions} champions.`}
       </p>
       <p className="mt-2 max-w-3xl text-xs text-faint">
-        Board captures: {(["EU", "NA", "CN"] as const).map((server) => `${server} ${regionBoard(server).collectedOn ?? "date unavailable"}`).join(" · ")}.
+        Board captures: {(["EU", "NA"] as const).map((server) => `${server} ${regionBoard(server).collectedOn ?? "date unavailable"}`).join(" · ")}.
         {" "}Global figures weight each server equally; they are top-player estimates, not every ranked match.
       </p>
 

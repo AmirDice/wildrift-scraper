@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { site, getChampions, getChampionsNa, getChampionsCn } from "@/lib/data";
+import { site, getChampions, getChampionsNa } from "@/lib/data";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
 import items from "@/data/items.json";
 import runeIcons from "@/data/rune_icons.json";
@@ -84,14 +84,14 @@ function podiumSkinPortraits(slug: string) {
 const UPDATED = leaderboardUpdated();
 
 export const metadata: Metadata = {
-  title: `Wild Rift Leaderboards | Best Players Across EU, NA and CN${UPDATED ? ` (Updated ${UPDATED})` : ""}`,
+  title: `Wild Rift Leaderboards | Best Players Across EU and NA${UPDATED ? ` (Updated ${UPDATED})` : ""}`,
   description:
-    "Wild Rift champion leaderboards with current-season top-three podiums across EU, NA and CN, plus win rate, games played, Champion Score and mastery.",
+    "Wild Rift champion leaderboards with current-season top-three podiums across EU and NA, plus win rate, games played, Champion Score and mastery.",
   alternates: { canonical: "/leaderboard" },
   openGraph: {
-    title: "Wild Rift Leaderboards | Best Players Across EU, NA and CN",
+    title: "Wild Rift Leaderboards | Best Players Across EU and NA",
     description:
-      "Current-season champion podiums and full player tables for Wild Rift EU, NA and CN.",
+      "Current-season champion podiums and full player tables for Wild Rift EU and NA.",
     url: "https://wrtruemeta.com/leaderboard",
   },
 };
@@ -99,7 +99,6 @@ export const metadata: Metadata = {
 export default function LeaderboardPage() {
   const champions = getChampions();
   const championsNa = getChampionsNa();
-  const championsCn = getChampionsCn();
   // slug -> icon path, for the per-player build columns; slim on purpose so
   // the client bundle carries paths, not the whole item catalog
   const itemIcons: Record<string, string> = {};
@@ -129,7 +128,6 @@ export default function LeaderboardPage() {
   // CN's board is its own list for the same reason, and for one more: the
   // four champions whose extraction came back blank are absent from it, and
   // offering them here would open an empty table under a working tab.
-  const slimCn = toSlim(championsCn);
 
   return (
     <div
@@ -170,7 +168,6 @@ export default function LeaderboardPage() {
         <LeaderboardView
           champions={slim}
           championsNa={slimNa}
-          championsCn={slimCn}
           itemIcons={itemIcons}
           runeIcons={runeIcons as Record<string, string>}
           spellIcons={Object.fromEntries(

@@ -1,6 +1,5 @@
 import site from "@/data/site.json";
 import siteNa from "@/data/site_na.json";
-import siteCn from "@/data/site_cn.json";
 import { kvGetJson } from "@/lib/kv";
 
 /**
@@ -32,7 +31,7 @@ import { kvGetJson } from "@/lib/kv";
  * blank out the two regions it does not mention.
  */
 
-export type RegionKey = "EU" | "NA" | "CN";
+export type RegionKey = "EU" | "NA";   // China stopped being collected 2026-11-24
 export type CollectionStatus = "running" | "complete" | "idle";
 
 export interface RegionProgress {
@@ -107,7 +106,6 @@ function baseline(): Record<RegionKey, RegionProgress> {
   return {
     EU: rest("EU", toIso(site.collectedOn), site.nChampions || ROSTER_TOTAL),
     NA: rest("NA", toIso(siteNa.collectedOn), siteNa.nChampions || ROSTER_TOTAL),
-    CN: rest("CN", toIso(siteCn.collectedOn), siteCn.nChampions || ROSTER_TOTAL),
   };
 }
 
@@ -124,7 +122,7 @@ export async function getCollectionState(): Promise<CollectionState> {
     live = {};
   }
 
-  for (const key of ["EU", "NA", "CN"] as RegionKey[]) {
+  for (const key of ["EU", "NA"] as RegionKey[]) {
     const row = live[key];
     if (!row || typeof row !== "object") continue;
     const total = Number(row.total) > 0 ? Number(row.total) : merged[key].total;
@@ -152,6 +150,6 @@ export async function getCollectionState(): Promise<CollectionState> {
     }
   }
 
-  const regions = [merged.EU, merged.NA, merged.CN];
+  const regions = [merged.EU, merged.NA];
   return { regions, active: regions.some((r) => r.status === "running") };
 }

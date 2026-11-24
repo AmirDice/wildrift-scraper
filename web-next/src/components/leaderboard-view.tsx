@@ -53,7 +53,7 @@ type EnrichedPlayer = Row & {
 type EnrichedPayload = { champion: string; slug: string; capturedAt: string; players: EnrichedPlayer[] };
 
 /** The order the tabs are shown in, and the set `?region=` may select. */
-const LEADERBOARD_REGIONS = ["Global", "EU", "NA", "CN"] as const;
+const LEADERBOARD_REGIONS = ["Global", "EU", "NA"] as const;
 
 type SortKey = "r" | "w" | "g" | "s" | "wilson" | "composite" | "tier";
 
@@ -833,10 +833,9 @@ function ExpandedRow({ p, icons, runeIcons, spellIcons }: {
   );
 }
 
-export function LeaderboardView({ champions, championsNa, championsCn, itemIcons, runeIcons, spellIcons }: {
+export function LeaderboardView({ champions, championsNa, itemIcons, runeIcons, spellIcons }: {
   champions: SlimChampion[];
   championsNa: SlimChampion[];
-  championsCn: SlimChampion[];
   itemIcons: Record<string, string>;
   runeIcons: Record<string, string>;
   spellIcons: Record<string, string>;
@@ -848,7 +847,7 @@ export function LeaderboardView({ champions, championsNa, championsCn, itemIcons
   // collection runs, and picking one it has no board for would render an
   // empty table rather than an honest "not collected yet".
   const regionChampions =
-    region === "NA" ? championsNa : region === "CN" ? championsCn : champions;
+    region === "NA" ? championsNa : champions;
   const byName = useMemo(
     () => [...regionChampions].sort((a, b) => a.name.localeCompare(b.name)),
     [regionChampions]
@@ -886,7 +885,7 @@ export function LeaderboardView({ champions, championsNa, championsCn, itemIcons
   useEffect(() => {
     let cancelled = false;
     setData(null);
-    const playersPath = region === "NA" ? "/players-na.json" : region === "CN" ? "/players-cn.json" : region === "Global" ? "/players-global.json" : "/players.json";
+    const playersPath = region === "NA" ? "/players-na.json" : region === "Global" ? "/players-global.json" : "/players.json";
     fetch(playersPath)
       .then((r) => r.json())
       .then((payload) => { if (!cancelled) setData(payload); })
@@ -930,17 +929,12 @@ export function LeaderboardView({ champions, championsNa, championsCn, itemIcons
         ? Promise.all([
             detail(`/players/${slug}.json`, "EU"),
             detail(`/players/na/${slug}.json`, "NA"),
-            detail(`/players/cn/${slug}.json`, "CN"),
-          ]).then(([eu, na, cn]) => {
-            const players = [...(eu ?? []), ...(na ?? []), ...(cn ?? [])];
+          ]).then(([eu, na]) => {
+            const players = [...(eu ?? []), ...(na ?? [])];
             return players.length ? { champion: slug, slug, capturedAt: "", players } : null;
           })
         : fetch(
-            region === "NA"
-              ? `/players/na/${slug}.json`
-              : region === "CN"
-                ? `/players/cn/${slug}.json`
-                : `/players/${slug}.json`,
+            region === "NA" ? `/players/na/${slug}.json` : `/players/${slug}.json`,
           ).then((r) => (r.ok ? r.json() : null));
     load
       .then((payload: EnrichedPayload | null) => {

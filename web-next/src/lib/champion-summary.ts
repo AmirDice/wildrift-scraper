@@ -49,13 +49,13 @@ function standing(slug: string, name: string): string | null {
   let text = `${name} is ${tierLabel(entry.tier)} tier on the Global list at ${pct(entry.wr)}, `
     + `${ordinal(index + 1)} of ${pool.length} champions and ${ordinal(roleIndex + 1)} of ${rolePool.length} ${entry.role} champions.`;
 
-  const regions = (["EU", "NA", "CN"] as const)
+  const regions = (["EU", "NA"] as const)
     .map((region) => ({ region, wr: regionBoard(region).champions.find((c) => c.slug === slug)?.wr }))
-    .filter((row): row is { region: "EU" | "NA" | "CN"; wr: number } => Number.isFinite(row.wr));
+    .filter((row): row is { region: "EU" | "NA"; wr: number } => Number.isFinite(row.wr));
   if (regions.length >= 2) {
     const sorted = [...regions].sort((a, b) => b.wr - a.wr);
     const best = sorted[0], worst = sorted[sorted.length - 1];
-    const label = (region: string) => (region === "CN" ? "China" : region);
+    const label = (region: string) => region;
     text += best.wr - worst.wr >= 1
       ? ` Its top players do best in ${label(best.region)} (${pct(best.wr)}) and worst in ${label(worst.region)} (${pct(worst.wr)}), a gap of ${(best.wr - worst.wr).toFixed(1)} points.`
       : ` Its top players post close results in every region: ${list(sorted.map((row) => `${label(row.region)} ${pct(row.wr)}`))}.`;
@@ -63,10 +63,10 @@ function standing(slug: string, name: string): string | null {
   return text;
 }
 
-/** Where the three servers' top players build the same, and where they split. */
+/** Where the EU and NA top players build the same, and where they split. */
 function builds(name: string): string | null {
   const byServer = buildsByServer(name);
-  const servers = (["eu", "na", "cn"] as const).filter((server) => byServer[server]?.items?.length);
+  const servers = (["eu", "na"] as const).filter((server) => byServer[server]?.items?.length);
   if (!servers.length) return null;
   const sets = servers.map((server) => new Set(byServer[server]!.items));
   const shared = byServer[servers[0]]!.items.filter((slug) => sets.every((set) => set.has(slug)));
@@ -95,7 +95,7 @@ function builds(name: string): string | null {
   }
   const keystones = servers
     .map((server) => ({ server, keystone: byServer[server]!.runes?.keystone }))
-    .filter((row): row is { server: "eu" | "na" | "cn"; keystone: string } => Boolean(row.keystone));
+    .filter((row): row is { server: "eu" | "na"; keystone: string } => Boolean(row.keystone));
   const distinctKeystones = [...new Set(keystones.map((row) => row.keystone))];
   if (distinctKeystones.length === 1 && keystones.length >= 2) {
     parts.push(`${distinctKeystones[0]} is the keystone on every server.`);

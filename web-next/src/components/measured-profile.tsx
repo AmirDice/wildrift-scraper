@@ -2,9 +2,8 @@ import Link from "next/link";
 import { Card } from "@/components/ui";
 import pulseEu from "@/data/ladder_pulse.json";
 import pulseNa from "@/data/ladder_pulse_na.json";
-import pulseCn from "@/data/ladder_pulse_cn.json";
 
-const PULSE = { eu: pulseEu, na: pulseNa, cn: pulseCn } as const;
+const PULSE = { eu: pulseEu, na: pulseNa } as const;
 
 // How the top 50 actually play this champion, measured from their ranked
 // match history during the latest collection. Each bar compares the

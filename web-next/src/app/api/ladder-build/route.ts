@@ -43,7 +43,6 @@ export function GET(request: Request) {
       builds: {
         eu: toServerBuild(builds.eu, item, serverBuildInsights(champion, builds.eu)),
         na: toServerBuild(builds.na, item, serverBuildInsights(champion, builds.na)),
-        cn: toServerBuild(builds.cn, item, serverBuildInsights(champion, builds.cn)),
       },
       collected: {
         eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined,

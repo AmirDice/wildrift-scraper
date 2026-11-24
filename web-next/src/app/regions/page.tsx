@@ -108,9 +108,8 @@ export default function RegionsPage() {
       </div>
 
       <p className="mt-6 text-sm text-muted">
-        EU collected {site.collectedOn}; NA collected {regionBoard("NA").collectedOn}; China
-        collected {regionBoard("CN").collectedOn}, with the bracket figures on this page updated
-        daily from lolm.qq.com. For the combined ranking as tiers, see the{" "}
+        EU collected {site.collectedOn}; NA collected {regionBoard("NA").collectedOn}; China&rsquo;s
+        bracket figures on this page are updated daily from lolm.qq.com. For the combined ranking as tiers, see the{" "}
         <Link href="/tier-list" className="text-accent hover:underline">
           Global tier list
         </Link>

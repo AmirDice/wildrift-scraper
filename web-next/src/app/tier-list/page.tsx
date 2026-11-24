@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/tier-list" },
   openGraph: {
     title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU, NA & China Win Rates`,
-    description: `Every Wild Rift champion ranked for patch ${CURRENT_PATCH} by the real win rates of its best players across EU, NA and China.`,
+    description: `Every Wild Rift champion ranked for patch ${CURRENT_PATCH} by the real win rates of its best players across EU and NA, plus China's official rates.`,
     url: "https://wrtruemeta.com/tier-list",
   },
 };
@@ -44,7 +44,7 @@ export default function TierListPage() {
                 {CURRENT_PATCH && <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-muted">Patch {CURRENT_PATCH}</span>}
               </div>
               <h1 className="mt-3 text-4xl leading-[0.98] tracking-[-0.045em] sm:text-[3.35rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>Wild Rift Tier List</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">Real top-player performance across Global, EU, NA and China. Switch server, role or player depth without leaving the board.</p>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">Real top-player performance across Global, EU and NA, plus Tencent&rsquo;s official China rates. Switch server, role or player depth without leaving the board.</p>
             </div>
             <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15">
               <TierMetric label="Champions" value={champions.length.toString()} />
@@ -73,7 +73,6 @@ export default function TierListPage() {
           roles={site.roles}
           cnChampionsByBracket={getCnChampionsBySample()}
           cnRolesByBracket={getCnRolesBySample()}
-          cnFreshness={freshness(CN_META.ladderDate)}
           cnMeta={CN_META}
           globalChampions={getGlobalChampions()}
           globalRoles={globalRoles()}

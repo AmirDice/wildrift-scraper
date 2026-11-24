@@ -1,7 +1,6 @@
 import siteData from "@/data/site.json";
 import metaOverrides from "@/data/champion_meta_overrides.json";
 import siteDataNa from "@/data/site_na.json";
-import siteDataCn from "@/data/site_cn.json";
 import { getNewChampion, getNewChampions, type NewChampion } from "@/lib/new-champions";
 
 export interface BestPlayer {
@@ -218,17 +217,6 @@ export const tierText: Record<string, string> = {
  *  it say so. */
 export const siteNa = siteDataNa as unknown as Site;
 
-/** China's own board: the top 30 of each champion's in-client leaderboard,
- *  captured the same way EU and NA are and exported by the same pipeline.
- *
- *  NOT the same thing as @/data/cn.json, which is Tencent's published rate
- *  across a whole bracket population and lives behind lib/cn.ts. Both are
- *  real and they answer different questions: this one is "how do China's
- *  best Shen players do", that one is "how does Shen do in China". They are
- *  never averaged together -- see the note above getGlobalChampions for what
- *  happened when they were. */
-export const siteCn = siteDataCn as unknown as Site;
-
 /**
  * Owner corrections to the scraped champion metadata, applied once.
  *
@@ -265,14 +253,12 @@ export function getChampionsNa(): Champion[] {
   return siteNa.champions;
 }
 
-export function getChampionsCn(): Champion[] {
-  return siteCn.champions;
-}
-
 /** Champion rows for a region, plus the metadata a page needs to describe the
  *  sample honestly (collection date, how many champions it covers). */
-export function regionBoard(region: "EU" | "NA" | "CN") {
-  const source = region === "NA" ? siteNa : region === "CN" ? siteCn : site;
+export function regionBoard(region: "EU" | "NA") {
+  // China's top-30 board was retired on 2026-11-24 (no longer collected).
+  // China's own published rates live in lib/cn.ts and are unaffected.
+  const source = region === "NA" ? siteNa : site;
   return {
     champions: source.champions,
     roles: source.roles,

@@ -7,7 +7,7 @@ import { CURRENT_PATCH } from "@/lib/patch";
 export const metadata: Metadata = {
   title: "About WrTrueMeta",
   description:
-    "WrTrueMeta is an independent Wild Rift stats site built from the top players of every champion in EU, NA and China. Who runs it, where the data comes from and how it is kept current.",
+    "WrTrueMeta is an independent Wild Rift stats site built from the top players of every champion in EU and NA. Who runs it, where the data comes from and how it is kept current.",
   alternates: { canonical: "/about" },
 };
 
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
  * cannot drift from the site it describes.
  */
 export default function AboutPage() {
-  const boards = (["EU", "NA", "CN"] as const).map((region) => ({ region, ...regionBoard(region) }));
+  const boards = (["EU", "NA"] as const).map((region) => ({ region, ...regionBoard(region) }));
   const players = boards.reduce((total, board) => total + (board.nPlayers || 0), 0);
   return (
     <Container className="py-12">
@@ -46,7 +46,7 @@ export default function AboutPage() {
           <ul className="mt-2 flex flex-col gap-2 text-sm leading-relaxed text-muted">
             {boards.map((board) => (
               <li key={board.region}>
-                <span className="font-medium text-text">{board.region === "CN" ? "China" : board.region} top players:</span>{" "}
+                <span className="font-medium text-text">{board.region} top players:</span>{" "}
                 {board.nChampions} champions
                 {board.nPlayers ? `, ${board.nPlayers.toLocaleString("en-US")} player records` : ""}
                 {board.collectedOn ? `, collected ${board.collectedOn}` : ""}.

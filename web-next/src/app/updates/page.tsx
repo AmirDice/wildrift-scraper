@@ -4,7 +4,6 @@ import { Container, Card } from "@/components/ui";
 import { NotifyForm } from "@/components/notify-form";
 import {
   CHANGELOG,
-  CN_WINRATE_PATCH,
   COLLECTION_EXPECTED_FINISH,
   COLLECTION_IN_PROGRESS,
   COLLECTION_PENDING_REGIONS,
@@ -17,7 +16,14 @@ import {
 } from "@/lib/announcement";
 import site from "@/data/site.json";
 import siteNa from "@/data/site_na.json";
-import siteCn from "@/data/site_cn.json";
+
+const EU_COLLECTED = (site as { collectedOn?: string }).collectedOn ?? null;
+const NA_COLLECTED = (siteNa as { collectedOn?: string }).collectedOn ?? null;
+const COLLECTED_DATES = EU_COLLECTED && NA_COLLECTED ? ` (EU ${EU_COLLECTED}, NA ${NA_COLLECTED})` : "";
+const NOT_REFRESHED = [
+  NOT_RECAPTURED.EU.length ? `${NOT_RECAPTURED.EU.join(", ")} in EU` : "",
+  NOT_RECAPTURED.NA.length ? `${NOT_RECAPTURED.NA.join(", ")} in NA` : "",
+].filter(Boolean).join(" and ");
 
 export const metadata: Metadata = {
   title: COLLECTION_IN_PROGRESS
@@ -25,13 +31,9 @@ export const metadata: Metadata = {
     : `Site Updates | EU and NA Win Rates on Patch ${EU_WINRATE_PATCH}`,
   description: COLLECTION_IN_PROGRESS
     ? `${COLLECTION_REGIONS} ladder data collection is underway and is expected to finish ${COLLECTION_EXPECTED_FINISH}. Each region publishes as its pass completes.`
-    : `EU and NA win rates were re-collected on patch ${EU_WINRATE_PATCH}, 19 to 22 October. China's board is still ${CN_WINRATE_PATCH}.`,
+    : `EU and NA win rates were re-collected on patch ${EU_WINRATE_PATCH}${COLLECTED_DATES}.`,
   alternates: { canonical: "/updates" },
 };
-
-const EU_COLLECTED = (site as { collectedOn?: string }).collectedOn ?? null;
-const NA_COLLECTED = (siteNa as { collectedOn?: string }).collectedOn ?? null;
-const CN_COLLECTED = (siteCn as { collectedOn?: string }).collectedOn ?? null;
 
 export default function UpdatesPage() {
   return (
@@ -51,10 +53,9 @@ export default function UpdatesPage() {
               {SKIPPED_PATCH} and the word after it, rendering "7.2echanged"
               on the live page. Prose with several interpolations is not worth
               debugging one {" "} at a time. */}
-          {`Every ability, item and rune number on the site is on patch ${SKIPPED_PATCH}. `
-            + `The EU and NA win rates come from boards collected from 19 to 22 October on `
-            + `${EU_WINRATE_PATCH}, and China's board is the ${CN_WINRATE_PATCH} one from 11 October, `
-            + `so a champion ${SKIPPED_PATCH} changed still shows how it performed before the change.`}
+          {`Every ability, item and rune number on the site is on patch ${SKIPPED_PATCH}, `
+            + `and so are the EU and NA win rates: both boards were collected on ${EU_WINRATE_PATCH}${COLLECTED_DATES}.`
+            + (NOT_REFRESHED ? ` ${NOT_REFRESHED} keep the previous collection's numbers until they are re-captured.` : "")}
         </p>
       </div>
 
@@ -75,24 +76,20 @@ export default function UpdatesPage() {
                   item and ability pages calculate from.
                 </p>
               </div>
+              {NOT_REFRESHED && (
               <div className="rounded-xl border border-gold/30 bg-gold/[0.07] px-4 py-3">
-                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-emerald-300">
-                  Still on {CN_WINRATE_PATCH}
+                <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-gold">
+                  Not refreshed this collection
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-muted">
                   {`Win rates, tiers, pick rates and movement change only when a region's `
-                    + `leaderboards are re-scraped. China's board keeps its ${CN_WINRATE_PATCH} `
-                    + `numbers until the next China collection`
-                    + (NOT_RECAPTURED.EU.length || NOT_RECAPTURED.NA.length
-                      ? `, as do these champions, which were not captured cleanly this time: `
-                        + [NOT_RECAPTURED.EU.length ? `${NOT_RECAPTURED.EU.join(", ")} in EU` : "",
-                          NOT_RECAPTURED.NA.length ? `${NOT_RECAPTURED.NA.join(", ")} in NA` : ""].filter(Boolean).join(", and ")
-                      : "")
-                    + `. Player rank badges are blank on the new boards; they could not be read reliably this time.`}
+                    + `leaderboards are re-scraped. ${NOT_REFRESHED} were not captured cleanly this `
+                    + `time and keep the previous collection's numbers.`}
                 </p>
               </div>
+              )}
             </div>
-            <dl className="mt-4 grid gap-3 sm:grid-cols-3">
+            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
                 <dt className="text-[0.65rem] font-semibold uppercase tracking-wide text-faint">
                   Europe, collected
@@ -102,7 +99,7 @@ export default function UpdatesPage() {
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
                   {NOT_RECAPTURED.EU.length
-                    ? `${142 - NOT_RECAPTURED.EU.length} champions on ${EU_WINRATE_PATCH}, ${NOT_RECAPTURED.EU.length} still on ${CN_WINRATE_PATCH}.`
+                    ? `${142 - NOT_RECAPTURED.EU.length} champions on ${EU_WINRATE_PATCH}, ${NOT_RECAPTURED.EU.length} on the previous collection.`
                     : `All 142 champions, played on ${EU_WINRATE_PATCH}.`}
                 </dd>
               </div>
@@ -115,19 +112,8 @@ export default function UpdatesPage() {
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
                   {NOT_RECAPTURED.NA.length
-                    ? `${142 - NOT_RECAPTURED.NA.length} champions on ${NA_WINRATE_PATCH}, ${NOT_RECAPTURED.NA.length} still on ${CN_WINRATE_PATCH}.`
+                    ? `${142 - NOT_RECAPTURED.NA.length} champions on ${NA_WINRATE_PATCH}, ${NOT_RECAPTURED.NA.length} on the previous collection.`
                     : `All 142 champions, played on ${NA_WINRATE_PATCH}.`}
-                </dd>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-                <dt className="text-[0.65rem] font-semibold uppercase tracking-wide text-faint">
-                  China, collected
-                </dt>
-                <dd className="mt-1 text-sm font-semibold text-text">
-                  {CN_COLLECTED ?? "Current dataset"}
-                </dd>
-                <dd className="mt-0.5 text-xs text-muted">
-                  All 142 champions, played on {CN_WINRATE_PATCH}.
                 </dd>
               </div>
             </dl>
@@ -142,7 +128,7 @@ export default function UpdatesPage() {
             <h2 className="text-base font-semibold text-text">Why the collection takes until Wednesday</h2>
             <p className="mt-2.5 text-sm leading-relaxed text-muted">
               A collection is a full scrape of the top of the ladder for every champion across
-              three regions. It runs in sequence so the phone session remains reliable, which is
+              two regions. It runs in sequence so the phone session remains reliable, which is
               why the window runs from {COLLECTION_START} through {COLLECTION_EXPECTED_FINISH}.
               Each region is published as soon as its pass is complete, and the bar under the
               menu shows how far each one has got.

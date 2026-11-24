@@ -1,5 +1,4 @@
 import { site, regionBoard } from "@/lib/data";
-import { CN_META } from "@/lib/cn";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { currentPatchDate } from "@/lib/patch-freshness";
 
@@ -9,8 +8,9 @@ import { currentPatchDate } from "@/lib/patch-freshness";
  *
  * The rule, set by the owner on 2026-10-25: a patch lands on a Tuesday, and
  * the week after it NA is collected on the Monday, EU on the Tuesday and the
- * China ladder on the Wednesday. NA and EU are collected every patch; China
- * every other patch for now. The 7.3b cycle already ran this way (patch on
+ * China ladder on the Wednesday. NA and EU are collected every patch. China's
+ * ladder was every other patch until 2026-11-24, when it stopped being
+ * collected and left this schedule. The 7.3b cycle already ran this way (patch on
  * 14 Oct, NA on the 19th, EU on the 20th, China skipped after collecting
  * 7.3a), so the dates below are computed from the patch, not typed in.
  *
@@ -71,23 +71,12 @@ function schedule(): { patch: string; patchOn: Date | null; rows: Row[] } {
     return { kind: "planned", on: new Date(monday.getTime() + offset * DAY) };
   };
 
-  // China alternates. A ladder collected within three weeks before this
-  // patch went live covered the previous one, so this patch is the skip.
-  // Patches run about two weeks apart; three weeks absorbs a late capture
-  // without mistaking a missed cycle for a planned skip.
-  let cn = statusFor(CN_META.ladderDate, 2);
-  const cnOn = parse(CN_META.ladderDate);
-  if (cn?.kind === "planned" && patchOn && cnOn && patchOn.getTime() - cnOn.getTime() < 21 * DAY) {
-    cn = { kind: "skipped" };
-  }
-
   return {
     patch: CURRENT_PATCH,
     patchOn,
     rows: [
       { region: "NA", when: "Monday", cadence: "Every patch", status: statusFor(regionBoard("NA").collectedOn, 0) },
       { region: "EU", when: "Tuesday", cadence: "Every patch", status: statusFor(site.collectedOn, 1) },
-      { region: "China", when: "Wednesday", cadence: "Every other patch", status: cn },
     ],
   };
 }
@@ -116,7 +105,7 @@ export function CollectionSchedule({ className = "" }: { className?: string }) {
           {patch && patchOn ? <> Patch {patch} went live {fmt(patchOn)}.</> : null}
         </p>
       </div>
-      <ol className="mt-3 grid gap-2 sm:grid-cols-3">
+      <ol className="mt-3 grid gap-2 sm:grid-cols-2">
         {rows.map((row) => (
           <li key={row.region} className="flex items-center justify-between gap-3 rounded-xl bg-white/[0.035] px-3 py-2.5 sm:flex-col sm:items-stretch sm:gap-1.5">
             <div className="min-w-0">
@@ -133,7 +122,7 @@ export function CollectionSchedule({ className = "" }: { className?: string }) {
         ))}
       </ol>
       <p className="mt-3 text-[0.65rem] leading-relaxed text-faint">
-        China&rsquo;s official win rates update every day and are not on this schedule. It covers the China ladder: top players, their builds and win rates.
+        China&rsquo;s official win rates update every day and are not on this schedule.
       </p>
     </section>
   );

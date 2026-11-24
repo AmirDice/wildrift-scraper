@@ -274,10 +274,10 @@ def _global_scored_frame() -> pd.DataFrame:
     Two is the floor: one server is not a cross-server anything, and the
     regional view already covers it.
     """
+    # China's top-30 board was retired on 2026-11-24: Global is EU and NA.
     paths = {
         "EU": REGION_FILES["eu"]["csv"],
         "NA": REGION_FILES["na"]["csv"],
-        "CN": REGION_FILES["cn"]["csv"],
     }
     combined = _combined_frame(paths)
     if combined.empty:
@@ -292,10 +292,9 @@ def _combined_frame(paths: dict[str, Path] | None = None) -> pd.DataFrame:
     a cross-server anything.
     """
     if paths is None:
-        paths = {
+        paths = {   # China retired 2026-11-24
             "EU": REGION_FILES["eu"]["csv"],
             "NA": REGION_FILES["na"]["csv"],
-            "CN": REGION_FILES["cn"]["csv"],
         }
     frames = []
     for server, path in paths.items():

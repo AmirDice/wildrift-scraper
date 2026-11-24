@@ -65,7 +65,7 @@ function horizontalSplash(source: string): string {
   return source.replace("/cdn/img/champion/loading/", "/cdn/img/champion/splash/");
 }
 
-function loadAnalyticsPlayers(slug: string, server: "eu" | "na" | "cn" = "eu"): AnalyticsPlayer[] {
+function loadAnalyticsPlayers(slug: string, server: "eu" | "na" = "eu"): AnalyticsPlayer[] {
   try {
     const file = path.join(process.cwd(), "public", "players", ...(server === "eu" ? [] : [server]), `${slug}.json`);
     const parsed = JSON.parse(readFileSync(file, "utf8")) as { players?: AnalyticsPlayer[] };
@@ -136,11 +136,10 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const history = getChampionHistory(champion.name);
   const naBoard = regionBoard("NA");
   const na = naBoard.champions.find((c) => c.slug === champion.slug);
-  // The region comparison below is three LADDER boards now. It used to put
-  // Tencent's whole-ladder China rate beside EU's and NA's top-30 numbers,
-  // which is three bars that look comparable and are not. Tencent's figure
-  // is still on the page -- the bracket curve underneath is built from it.
-  const cnLadder = regionBoard("CN").champions.find((c) => c.slug === champion.slug);
+  // The region comparison below is the EU and NA ladder boards. China's
+  // top-30 board was retired on 2026-11-24; Tencent's whole-ladder China
+  // rate is still on the page, in the bracket curve underneath, and is never
+  // set beside top-player numbers as if comparable.
   // What each server's top 50 actually hold. Per server on purpose: see
   // components/server-builds.tsx for why China is empty and stays empty.
   const serverBuilds = buildsByServer(champion.name);
@@ -167,17 +166,15 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   // player cards always describe the same board (see components/region-scope).
   const euPlayers = loadAnalyticsPlayers(champion.slug, "eu");
   const naPlayers = loadAnalyticsPlayers(champion.slug, "na");
-  const cnPlayers = loadAnalyticsPlayers(champion.slug, "cn");
   const views: RegionView[] = [
     // Global ranks the three boards' players together by Champion Score, so
     // its leaderboard bands describe one top-90 rather than three top-30s.
-    { key: "global", board: headline, players: [...euPlayers, ...naPlayers, ...cnPlayers]
+    { key: "global", board: headline, players: [...euPlayers, ...naPlayers]
         .sort((a, b) => (b.s ?? 0) - (a.s ?? 0) || b.w - a.w)
         .map((player, index) => ({ ...player, r: index + 1 })),
       podium: champion.globalBestPlayerPodium ?? champion.bestPlayerPodium ?? null },
     { key: "eu", board: Number.isFinite(champion.wr) ? champion : undefined, players: euPlayers, podium: champion.bestPlayerPodium ?? null },
     { key: "na", board: na && Number.isFinite(na.wr) ? na : undefined, players: naPlayers, podium: na?.bestPlayerPodium ?? null },
-    { key: "cn", board: cnLadder && Number.isFinite(cnLadder.wr) ? cnLadder : undefined, players: cnPlayers, podium: cnLadder?.bestPlayerPodium ?? null },
   ];
   const regionAvailable = Object.fromEntries(views.map((view) => [view.key, Boolean(view.board)])) as Record<Region, boolean>;
   const heroStats = (board: Champion) => [
@@ -198,7 +195,6 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const regionBars = [
     { label: "EU", value: Number.isFinite(champion.wr) ? champion.wr : null },
     { label: "NA", value: na && Number.isFinite(na.wr) ? na.wr : null },
-    { label: "CN", value: cnLadder && Number.isFinite(cnLadder.wr) ? cnLadder.wr : null },
   ];
 
   // Put the fastest, most copyable answer directly below the hero. The
@@ -216,8 +212,6 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               serverBuildInsights(champion.name, serverBuilds.eu)),
             na: toServerBuild(serverBuilds.na, catalogueItem,
               serverBuildInsights(champion.name, serverBuilds.na)),
-            cn: toServerBuild(serverBuilds.cn, catalogueItem,
-              serverBuildInsights(champion.name, serverBuilds.cn)),
           }}
           gaps={SERVER_GAP}
           collected={{ eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
@@ -281,7 +275,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           {skew.legendary && <p className="mt-3 text-center text-sm text-muted">CN Legendary solo-queue benchmark: <span className="font-semibold text-gold">{skew.legendary.wr.toFixed(1)}%</span></p>}
         </Card>
       )}
-      {(["eu", "na", "cn"] as const).map((server) => (
+      {(["eu", "na"] as const).map((server) => (
         <ForRegion key={server} region={server}><MeasuredProfile slug={champion.slug} region={server} /></ForRegion>
       ))}
       {views.map(({ key, podium }) => {
@@ -290,7 +284,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
         return (
         <ForRegion key={key} region={key}>
       <Card className="p-5 sm:p-6">
-        {/* The selected view's winner: the global ranking (EU, NA and China
+        {/* The selected view's winner: the global ranking (EU and NA
             boards together) or one server's own, the same ranking as the
             top-3 podium below. */}
         <h2 className="text-lg font-semibold">Best {champion.name} player {best ? where : `in ${REGION_LONG[key]}`}</h2>
@@ -304,7 +298,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-gold">Top 3 this season</p>
               <h2 className="mt-1 text-lg font-semibold">The best {champion.name} players {podium.scope === "global" ? "globally" : `in ${podium.server ?? "this region"}`}</h2>
             </div>
-            <span className="text-xs text-faint">{podium.scope === "global" ? "Global · EU + NA + CN" : `${podium.server ?? "Regional"} sample`}</span>
+            <span className="text-xs text-faint">{podium.scope === "global" ? "Global · EU + NA" : `${podium.server ?? "Regional"} sample`}</span>
           </div>
           <div className="mt-4 grid gap-2 sm:grid-cols-3">
             {podium.players.slice(0, 3).map((player, index) => (

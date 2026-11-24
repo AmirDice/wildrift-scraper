@@ -18,7 +18,6 @@ const SERIES: { key: Region; label: string; tone: string }[] = [
   { key: "global", label: "Global", tone: "text-accent" },
   { key: "eu", label: "EU", tone: "text-sky-300" },
   { key: "na", label: "NA", tone: "text-rose-300" },
-  { key: "cn", label: "CN", tone: "text-gold" },
 ];
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -30,9 +29,11 @@ export function WinRateHistory({ champion, history }: { champion: string; histor
   const region = useRegionScope()?.region ?? "global";
   const [hover, setHover] = useState<{ key: string; point: Point } | null>(null);
 
-  const ladder: Record<Region, Point[]> = { global: history.global, eu: history.eu, na: history.na, cn: history.cn };
+  const ladder: Record<Region, Point[]> = { global: history.global, eu: history.eu, na: history.na };
   const primary = ladder[region];
-  const daily = region === "cn" ? history.daily : [];
+  // China (and its Tencent daily line) left this chart with the China
+  // top-30 board on 2026-11-24.
+  const daily: Point[] = [];
 
   const frame = useMemo(() => {
     const all = [...history.global, ...history.eu, ...history.na, ...history.cn, ...daily];
@@ -80,7 +81,7 @@ export function WinRateHistory({ champion, history }: { champion: string; histor
         <div>
           <h2 className="text-sm font-semibold sm:text-base">{champion} win rate over time</h2>
           <p className="mt-0.5 text-xs text-faint">
-            {`${REGION_LONG[region]} top-player boards, one point per collection${region === "cn" && daily.length ? ", plus Tencent's daily rate over every ranked game in China" : ""}.`}
+            {`${REGION_LONG[region]} top-player boards, one point per collection.`}
           </p>
         </div>
         <div className="text-right">

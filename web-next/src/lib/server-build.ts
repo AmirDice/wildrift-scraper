@@ -12,10 +12,10 @@
  * components/server-builds.tsx.
  */
 
-export const BUILD_SERVERS = ["eu", "na", "cn"] as const;
+export const BUILD_SERVERS = ["eu", "na"] as const;   // China retired 2026-11-24
 export type BuildServer = (typeof BUILD_SERVERS)[number];
 
-export const SERVER_LABEL: Record<BuildServer, string> = { eu: "EU", na: "NA", cn: "China" };
+export const SERVER_LABEL: Record<BuildServer, string> = { eu: "EU", na: "NA" };
 
 /**
  * Why a server has nothing to show, in its own words.
@@ -32,7 +32,6 @@ export const SERVER_LABEL: Record<BuildServer, string> = { eu: "EU", na: "NA", c
 export const SERVER_GAP: Record<BuildServer, string> = {
   eu: "No ladder record for this champion yet.",
   na: "NA win rates are collected; NA builds are not, yet. They arrive with the next NA collection.",
-  cn: "No China ladder record for this champion yet.",
 };
 
 /** Level-15 profile for a ladder build. These are deterministic engine

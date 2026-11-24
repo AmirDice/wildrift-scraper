@@ -1,8 +1,9 @@
 "use client";
 
 export const REGIONS = ["EU", "NA", "CN"] as const;
-/** "Global" is not a server; it averages the regional boards that have the
- *  champion, which is EU + NA + CN since 2026-10-11. */
+/** "Global" is not a server; it averages the EU and NA boards. "CN" is
+ *  Tencent's published China rates (China's own top-30 board was retired
+ *  on 2026-11-24). */
 export type Region = (typeof REGIONS)[number] | "Global";
 
 /** Regions/views we currently have data for. NA joined 2026-08-08; its

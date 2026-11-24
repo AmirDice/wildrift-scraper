@@ -3,7 +3,7 @@ import path from "node:path";
 import { ImageResponse } from "next/og";
 import sharp from "sharp";
 import { getChampions, regionBoard, TIER_ORDER, tierLabel, type Champion } from "@/lib/data";
-import { getGlobalChampions } from "@/lib/cn";
+import { CN_DEFAULT_BRACKET, getCnChampionsBySample, getGlobalChampions } from "@/lib/cn";
 import { CURRENT_PATCH } from "@/lib/patch";
 
 /**
@@ -103,15 +103,14 @@ export async function GET(request: Request) {
   const roleParam = url.searchParams.get("role") ?? "";
   const role = ROLES.find((r) => r === roleParam) ?? null;
 
-  // The card has to show what the page shows, so China means our own
-  // board here too -- a share image ranking Tencent's brackets under a
-  // heading the page no longer uses would be wrong in the one place
-  // nobody can click through to check.
+  // The card has to show what the page shows. China's tab is Tencent's
+  // published brackets since our top-30 China board was retired
+  // (2026-11-24), so the card uses its default, Challenger.
   const champions: Champion[] =
     region === "Global" ? getGlobalChampions()
     : region === "EU" ? getChampions()
     : region === "NA" ? regionBoard("NA").champions
-    : regionBoard("CN").champions;
+    : getCnChampionsBySample()[CN_DEFAULT_BRACKET];
 
   // Same bucketing as the page: role boards re-tier within the role.
   const pool = role ? champions.filter((c) => c.role === role) : champions;
@@ -133,10 +132,12 @@ export async function GET(request: Request) {
   ]);
   const iconBySlug = new Map(shownChamps.map((c, i) => [c.slug, icons[i]]));
 
-  const regionLabel = region === "Global" ? "Global · EU + NA + CN"
-    : region === "CN" ? "China · Top 30 ladder"
+  const regionLabel = region === "Global" ? "Global · EU + NA"
+    : region === "CN" ? "China · Challenger (Tencent)"
     : region;
-  const basis = "Confidence-adjusted win rates of each champion's top players";
+  const basis = region === "CN"
+    ? "Tencent's published China win rates, Challenger bracket"
+    : "Confidence-adjusted win rates of each champion's top players";
 
   return new ImageResponse(
     (

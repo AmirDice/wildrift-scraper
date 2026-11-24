@@ -39,9 +39,8 @@ export const IMPACT_PATCH = "7.3d";
  * WINRATE_PATCH stays as the EU value because that is what every existing
  * reader of it meant.
  */
-export const EU_WINRATE_PATCH = "7.3d";
-export const NA_WINRATE_PATCH = "7.3d";
-export const CN_WINRATE_PATCH = "7.3a";
+export const EU_WINRATE_PATCH = "7.3f";
+export const NA_WINRATE_PATCH = "7.3f";
 export const WINRATE_PATCH = EU_WINRATE_PATCH;
 
 /** Regions whose boards this run has already published. */
@@ -59,9 +58,10 @@ export const COLLECTION_PENDING_REGIONS = "";
  * older. Empty a list once its champions are recaptured.
  */
 export const NOT_RECAPTURED: Record<"EU" | "NA", string[]> = {
-  // Emptied 2026-10-23: all eight were recaptured.
-  EU: [],
-  NA: [],
+  // 2026-11-24: Vel'Koz's EU session read no win rates and Rell's NA session
+  // stopped at rank 8; both keep their previous collection's numbers.
+  EU: ["Vel'Koz"],
+  NA: ["Rell"],
 };
 
 /** The patch the next collection and the next round of work is aimed at. */
@@ -70,7 +70,7 @@ export const NEXT_PATCH = "7.3f";
 /** The announced window for the EU/NA/CN ladder collection. */
 export const COLLECTION_START = "Monday, October 5, 2026";
 export const COLLECTION_EXPECTED_FINISH = "Wednesday, October 7, 2026";
-export const COLLECTION_REGIONS = "EU, NA and CN";
+export const COLLECTION_REGIONS = "EU and NA";   // China stopped 2026-11-24
 /**
  * Is the run underway?
  *

@@ -60,7 +60,7 @@ const TIER_LIST_TOUR: TourStep[] = [
   {
     target: "tl-regions",
     title: "Four boards, one list",
-    body: "EU, NA and China are each champion's top 30 players on that region's leaderboard. Global, the default, averages all three. The China tab also has Tencent's own bracket data, Diamond+ to Legendary, as a separate picker.",
+    body: "EU and NA are each champion's top 30 players on that region's leaderboard. Global, the default, averages the two. The China tab is Tencent's own published bracket data, Diamond+ to Legendary.",
   },
   {
     target: "tl-updated",
@@ -93,7 +93,6 @@ export function TierListView({
   naUpdated,
   euFreshness = null,
   naFreshness = null,
-  cnFreshness = null,
   cnChampionsByBracket,
   cnRolesByBracket,
   cnMeta,
@@ -113,7 +112,6 @@ export function TierListView({
   naFreshness?: Freshness | null;
   /** The CN LADDER board's staleness. Tencent's brackets are daily and have
    *  none by definition; our own China capture ages exactly like EU's. */
-  cnFreshness?: Freshness | null;
   cnChampionsByBracket: Record<CnSampleKey, Champion[]>;
   cnRolesByBracket: Record<CnSampleKey, string[]>;
   cnMeta: {
@@ -181,12 +179,9 @@ export function TierListView({
   const [showRaw, setShowRaw] = useState(false);
 
   const isChina = region === "CN";
-  // Our own CN board behaves like EU and NA in every respect -- centred win
-  // rates, pool depths, a collection date, a staleness warning -- so it is
-  // NOT what the isCN branches below are about. Those are all about
-  // Tencent's bracket aggregates, which is what this now says.
-  const isCnLadder = isChina && cnBracket === "ladder";
-  const isCN = isChina && !isCnLadder;
+  // The China tab is Tencent's published brackets. Our own top-30 China
+  // board was a sample here until it was retired on 2026-11-24.
+  const isCN = isChina;
   const isGlobal = region === "Global";
   const isNA = region === "NA";
   const activeCnChampions = cnChampionsByBracket[cnBracket];
@@ -205,7 +200,6 @@ export function TierListView({
   // patch cycle. Global reports the STALER of its two halves, because a
   // blend is only as current as the oldest board in it.
   const activeFreshness = isCN ? null
-    : isCnLadder ? cnFreshness ?? null
     : isNA ? naFreshness
     : isGlobal
       ? [euFreshness, naFreshness].filter((f): f is Freshness => Boolean(f?.stale))
@@ -219,7 +213,6 @@ export function TierListView({
   const offsetFor = (c: Champion): number => {
     if (isCN) return 0;                       // Tencent publishes raw already
     if (depthActive) return c.pools?.[poolDepth]?.wrOffset ?? 0;
-    if (isCnLadder) return cnMeta.ladderOffset ?? 0;
     if (isGlobal) return ((site.wrOffset ?? 0) + (siteNa.wrOffset ?? 0)) / 2;
     return (isNA ? siteNa.wrOffset : site.wrOffset) ?? 0;
   };
@@ -240,7 +233,6 @@ export function TierListView({
   // Tencent's bracket lines). Phrased without possessives so the parser
   // reads "China" as the region.
   const viewPhrase = isCN ? ` in China, ${activeCnBracket.label} bracket`
-    : isCnLadder ? " in China, ladder board"
     : isGlobal ? ""
     : ` in ${region}`;
   const rowQuestion = (t: string) =>
@@ -346,16 +338,6 @@ export function TierListView({
                 Wild Rift China server tier list
                 {CURRENT_PATCH && <span className="text-muted"> · Patch {CURRENT_PATCH}</span>}
               </h2>
-              {isCnLadder ? (
-                <p className="mt-1 text-sm text-muted">
-                  The{" "}
-                  <span className="text-text">top 30 players on each champion&rsquo;s
-                  in-client leaderboard</span>, captured{" "}
-                  {cnMeta.ladderDate ?? "recently"} the same way the EU and NA boards
-                  are, so the three tabs measure the same thing. Switch to a bracket
-                  below for Tencent&rsquo;s published whole-ladder rates instead.
-                </p>
-              ) : (
               <p className="mt-1 text-sm text-muted">
                 Official China server win rates from{" "}
                 <span className="text-text">{activeCnBracket.label}</span>
@@ -367,7 +349,6 @@ export function TierListView({
                 . Source: lolm.qq.com. China usually plays the patch ahead of the West, so this list is the
                 earliest read on where the meta is going.
               </p>
-              )}
               <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="China skill bracket">
                 {cnSamples.map((option) => (
                   <button
@@ -607,13 +588,6 @@ export function TierListView({
                 rates centre on 50%, so tiers use a China-specific scale. GOD 53.5%+ · S 52–53.5% ·
                 A 50.8–52% · B 49.5–50.8% · C 48–49.5% · L under 48%.
               </p>
-            ) : isCnLadder ? (
-              <p>
-                <span className="font-medium text-text">CN ladder cutoffs</span>: percentile bands
-                inside this board, the same way EU and NA are banded. Every champion here is
-                carried by the 30 best players on it, so the pool sits high and the win rate is
-                centred to make 50% the average champion.
-              </p>
             ) : isGlobal ? (
               <p>
                 <span className="font-medium text-text">Global cutoffs</span>: the average of the
@@ -652,7 +626,6 @@ export function TierListView({
               <span className="font-semibold text-bad">&#9660;</span> badge means the champion{" "}
               <span className="font-medium text-text">changed tier</span> since{" "}
               {isCN ? "the previous China scrape"
-                : isCnLadder ? cnMeta.ladderMovementSince ?? "the previous China collection"
                 : isGlobal ? `the previous EU (${site.movementSince ?? "collection"}) and NA (${siteNa.movementSince ?? "collection"}) collections`
                 : (isNA ? siteNa.movementSince : site.movementSince) ?? "the previous collection"}
               {role === "All roles" ? "" : ` (within ${role})`}. The small{" "}

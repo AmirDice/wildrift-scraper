@@ -27,9 +27,9 @@ function newest(values: (string | null | undefined)[]): string | null {
   return fmt(new Date(Math.max(...dates.map((d) => d.getTime()))));
 }
 
-/** The leaderboards: EU and NA boards, China's ladder board. */
+/** The leaderboards: the EU and NA boards (China's was retired 2026-11-24). */
 export function leaderboardUpdated(): string | null {
-  return newest([regionBoard("EU").collectedOn, regionBoard("NA").collectedOn, regionBoard("CN").collectedOn]);
+  return newest([regionBoard("EU").collectedOn, regionBoard("NA").collectedOn]);
 }
 
 /** The tier list and home page: the boards plus China's daily official rates. */

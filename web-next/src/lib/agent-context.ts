@@ -59,6 +59,9 @@ const SLOT: Record<string, string> = { "1": "Q", "2": "W", "3": "E", "4": "R", a
 const ROLES = ["Baron", "Jungle", "Mid", "Dragon", "Support"] as const;
 type Role = (typeof ROLES)[number];
 type Region = "EU" | "NA" | "CN";
+/** Regions with a top-player board. China's was retired on 2026-11-24; China
+ *  questions are answered from Tencent's published brackets instead. */
+type BoardRegion = "EU" | "NA";
 
 const STAT_NAME: Record<string, string> = {
   hp: "Health", armor: "Armor", mr: "Magic Resist", ad: "Attack Damage", ap: "Ability Power",
@@ -255,7 +258,7 @@ function pageName(pathname: string): string {
   return "WRTrueMeta";
 }
 
-function regionRow(region: Region, slug: string) {
+function regionRow(region: BoardRegion, slug: string) {
   const board = regionBoard(region);
   const champion = board.champions.find((entry) => entry.slug === slug);
   if (!champion || !Number.isFinite(champion.wr)) return null;
@@ -268,7 +271,7 @@ function regionRow(region: Region, slug: string) {
   };
 }
 
-function commonPlayerDepth(region: Region): number | null {
+function commonPlayerDepth(region: BoardRegion): number | null {
   const counts = new Map<number, number>();
   for (const champion of regionBoard(region).champions) {
     if (!champion.nPlayers || champion.nPlayers < 1) continue;
@@ -335,7 +338,7 @@ function beginnerRecommendations(role?: Role | null) {
 function regionalContrasts() {
   return getChampions()
     .map((champion) => {
-      const rows = (["EU", "NA", "CN"] as const).map((region) => regionRow(region, champion.slug)).filter(Boolean);
+      const rows = (["EU", "NA"] as const).map((region) => regionRow(region, champion.slug)).filter(Boolean);
       if (rows.length < 3) return null;
       const good = rows.filter((row) => row!.winRate >= 50);
       const bad = rows.filter((row) => row!.winRate < 50);
@@ -375,7 +378,7 @@ function latestPatch() {
 }
 
 function siteContext() {
-  const regions = (["EU", "NA", "CN"] as const).map((region) => {
+  const regions = (["EU", "NA"] as const).map((region) => {
     const board = regionBoard(region);
     return {
       region,
@@ -488,7 +491,7 @@ function championContext(champion: Champion) {
     global: global && Number.isFinite(global.wr)
       ? { tier: tierLabel(global.tier), winRate: global.wr, movement: global.wrDelta ?? null }
       : null,
-    regions: (["EU", "NA", "CN"] as const).map((region) => regionRow(region, champion.slug)).filter(Boolean),
+    regions: (["EU", "NA"] as const).map((region) => regionRow(region, champion.slug)).filter(Boolean),
     skillPriority: details?.skillPriority ?? [],
     abilities: (details?.abilities ?? []).map((ability) => ({
       key: ability.key,
@@ -541,7 +544,7 @@ function compactChampion(champion: Champion) {
     class: champion.class,
     difficulty: champion.difficulty,
     global: global && Number.isFinite(global.wr) ? { tier: tierLabel(global.tier), winRate: global.wr } : null,
-    regions: (["EU", "NA", "CN"] as const).map((region) => regionRow(region, champion.slug)).filter(Boolean),
+    regions: (["EU", "NA"] as const).map((region) => regionRow(region, champion.slug)).filter(Boolean),
     strongInto: matchups.strong.slice(0, 4).map((entry) => entry.champion.name),
     weakInto: matchups.weak.slice(0, 4).map((entry) => entry.champion.name),
     mostBuiltEU: builds.eu ? builds.eu.items.map(itemName) : null,
@@ -847,21 +850,24 @@ function deterministicChampionAnswer(question: string, context: NonNullable<Agen
 /** Which tier-list view a question is about. */
 function tierView(q: string) {
   const region = regionFromQuestion(q);
-  const bracket = /\b(diamond|master|challenger|legendary)\b/.exec(q)?.[1] ?? null;
+  // China has no top-player board any more, so a China question without a
+  // bracket reads Tencent's Challenger bracket, the tier list's default.
+  const bracket = /\b(diamond|master|challenger|legendary)\b/.exec(q)?.[1]
+    ?? (region === "CN" ? "challenger" : null);
   const tencent = region === "CN" && Boolean(bracket);
   // Tencent's brackets have no role tiers: tierRole equals tier there.
   const role = tencent ? null : roleFromQuestion(q);
   const scope = tencent
     ? `China's ${{ diamond: "Diamond+", master: "Master+", challenger: "Challenger", legendary: "Legendary" }[bracket!]} bracket`
     : region
-      ? `${region === "CN" ? "China" : region}'s top 30 board`
+      ? `${region}'s top 30 board`
       : "the Global list";
   return { region, role, tencent, scope: role ? `${scope}, among ${role} champions` : scope };
 }
 
 /** The champions a view ranks, best first, each with the tier it shows there. */
 function tierPool(view: ReturnType<typeof tierView>) {
-  const source = view.region && !view.tencent ? regionBoard(view.region).champions : getGlobalChampions();
+  const source = view.region && view.region !== "CN" && !view.tencent ? regionBoard(view.region).champions : getGlobalChampions();
   return source
     .filter((c) => !c.statsPending && Number.isFinite(c.wr))
     .filter((c) => !view.role || c.role === view.role)
@@ -878,7 +884,7 @@ function bandRule(tier: string, view: ReturnType<typeof tierView>): string {
       ? `${label} is everything under ${CN_LINE.C}% in this bracket's whole-ladder win rate.`
       : `${label} starts at ${CN_LINE[tier]}%${up ? ` and runs to just under ${CN_LINE[up]}%` : ""}, on the whole bracket's win rate.`;
   }
-  if (view.region && !view.role) {
+  if (view.region && view.region !== "CN" && !view.role) {
     const offset = regionBoard(view.region).wrOffset;
     const shown = (raw: number) => (raw + offset).toFixed(1);
     const up = TIER_UP[tier];
@@ -935,7 +941,7 @@ function championTierAnswer(q: string, champion: Champion): AgentAnswer | null {
   const above = index === 0 ? "the top of the list" : `with ${Math.round((index / pool.length) * 100)}% of the list above`;
   const up = TIER_UP[entry.tier];
   let gap = "";
-  if (up && view.region && !view.role) {
+  if (up && view.region && view.region !== "CN" && !view.role) {
     const nextLine = RAW_LINE[up] + regionBoard(view.region).wrOffset;
     gap = ` ${tierLabel(up)} starts at ${nextLine.toFixed(1)}%, ${(nextLine - entry.wr).toFixed(1)} points higher.`;
   } else if (up) {
@@ -985,8 +991,8 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
   if (/why.*top\s*30.*top\s*50|top\s*30.*instead.*top\s*50|top\s*30.*top\s*50/.test(q)) {
     return {
       source: "data",
-      answer: "WRTrueMeta uses the top 30 players per champion and region as a deliberate trade between signal and coverage. It keeps the sample on the strongest ladder players while keeping EU, NA and CN collection fast enough to refresh consistently. Top 50 would add twenty more players per champion in each region, lengthen every collection and bring in a broader, noisier sample. Ranks 31 to 50 are not invalid; top 30 is simply the benchmark the tier list uses.",
-      evidence: [context.site.top30Methodology, "EU, NA and CN are collected as separate regional samples"],
+      answer: "WRTrueMeta uses the top 30 players per champion and region as a deliberate trade between signal and coverage. It keeps the sample on the strongest ladder players while keeping EU and NA collection fast enough to refresh consistently. Top 50 would add twenty more players per champion in each region, lengthen every collection and bring in a broader, noisier sample. Ranks 31 to 50 are not invalid; top 30 is simply the benchmark the tier list uses.",
+      evidence: [context.site.top30Methodology, "EU and NA are collected as separate regional samples"],
       actions: [action("Read methodology", "/methodology"), action("Compare tier list", "/tier-list")],
       followUps: ["How is the player pool counted?", "Why do regions have different results?"],
     };
@@ -997,7 +1003,7 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
     );
     return {
       source: "data",
-      answer: `It is 30 players per champion, per region, not 30 shared across all three regions.\n\n${rows.join("\n")}\n\nSo a champion on the EU, NA and CN boards can contribute up to ${context.site.globalMaximumPlayersPerChampion ?? 90} player records to the Global view. Global averages the regional win rates; it does not merge every record into one 90-player list.`,
+      answer: `It is 30 players per champion, per region, not 30 shared across both regions.\n\n${rows.join("\n")}\n\nSo a champion on the EU and NA boards can contribute up to ${context.site.globalMaximumPlayersPerChampion ?? 60} player records to the Global view. Global averages the regional win rates; it does not merge every record into one 60-player list.`,
       evidence: rows,
       actions: [action("Open tier list", "/tier-list"), action("Read methodology", "/methodology")],
       followUps: ["Why do regions have different results?", "What data is available in the tier list?"],
@@ -1016,7 +1022,7 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
   if (/\b(what|which).*data.*tier list|tier list.*(contain|include|show|available)\b/.test(q)) {
     return {
       source: "data",
-      answer: `The tier list includes ${context.site.tierListData.join(", ")}. You can switch between Global, EU, NA and CN, then filter by role and player depth.`,
+      answer: `The tier list includes ${context.site.tierListData.join(", ")}. You can switch between Global, EU and NA, plus a China tab with Tencent's official rates, then filter by role and player depth.`,
       evidence: context.site.tierListData,
       actions: [action("Open tier list", "/tier-list"), action("Read methodology", "/methodology")],
       followUps: ["What does GOD tier mean?", "Is the player pool 30 per region?"],
@@ -1025,9 +1031,9 @@ export function resolveAgentAnswer(question: string, context: AgentPageContext):
   if (/why.*regions?.*(different|differ)|regions?.*(different|differ).*why|regional.*difference/.test(q)) {
     return {
       source: "data",
-      answer: "Each region is measured from its own top 30 champion-leaderboard players, so EU, NA and CN are three independent samples. Their results can differ because the player populations, builds, matchups and regional metas differ, plus ordinary sample variance.\n\nThe data shows the size of a gap, but on its own it cannot prove which of those causes produced a particular champion's gap. The Global view reduces reliance on one server by averaging the regional win rates.",
+      answer: "Each region is measured from its own top 30 champion-leaderboard players, so EU and NA are two independent samples. Their results can differ because the player populations, builds, matchups and regional metas differ, plus ordinary sample variance.\n\nThe data shows the size of a gap, but on its own it cannot prove which of those causes produced a particular champion's gap. The Global view reduces reliance on one server by averaging the regional win rates.",
       evidence: [
-        "EU, NA and CN use separate top 30 samples per champion",
+        "EU and NA use separate top 30 samples per champion",
         context.site.globalCalculation,
       ],
       actions: [action("Compare region results", "/tier-list"), action("Read methodology", "/methodology")],
