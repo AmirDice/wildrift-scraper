@@ -164,12 +164,20 @@ def ladder_missing(run: Path, n: int) -> list[str]:
     return sorted(roster_names() - ladder_completed(run, n))
 
 
-def run_for_ladder(region: str, n: int, new_run: bool = False) -> Path:
-    """The run a leaderboard capture of this region writes into."""
+def run_for_ladder(region: str, n: int, new_run: bool = False, recapture: bool = False) -> Path:
+    """The run a leaderboard capture of this region writes into.
+
+    recapture (an --only capture) always joins the current run, even a
+    finished one: redoing Veigar after the run reached every champion is a
+    correction to that collection, not the start of the next. Treating it as
+    a new run archived the whole EU collection on 2026-11-24."""
     kind = _check(region)
     run = current_run(kind)
     if run is None:
         return _new_run(kind)
+    if recapture and not new_run:
+        print(f"[runs] recapture joins the current {kind} run {run.name}")
+        return run
     missing = ladder_missing(run, n)
     if new_run:
         if missing:

@@ -19,6 +19,8 @@ import siteNa from "@/data/site_na.json";
 
 const EU_COLLECTED = (site as { collectedOn?: string }).collectedOn ?? null;
 const NA_COLLECTED = (siteNa as { collectedOn?: string }).collectedOn ?? null;
+const EU_COUNT = (site as { champions: unknown[] }).champions.length;
+const NA_COUNT = (siteNa as { champions: unknown[] }).champions.length;
 const COLLECTED_DATES = EU_COLLECTED && NA_COLLECTED ? ` (EU ${EU_COLLECTED}, NA ${NA_COLLECTED})` : "";
 const NOT_REFRESHED = [
   NOT_RECAPTURED.EU.length ? `${NOT_RECAPTURED.EU.join(", ")} in EU` : "",
@@ -99,8 +101,8 @@ export default function UpdatesPage() {
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
                   {NOT_RECAPTURED.EU.length
-                    ? `${142 - NOT_RECAPTURED.EU.length} champions on ${EU_WINRATE_PATCH}, ${NOT_RECAPTURED.EU.length} on the previous collection.`
-                    : `All 142 champions, played on ${EU_WINRATE_PATCH}.`}
+                    ? `${EU_COUNT - NOT_RECAPTURED.EU.length} champions on ${EU_WINRATE_PATCH}, ${NOT_RECAPTURED.EU.length} on the previous collection.`
+                    : `All ${EU_COUNT} champions, played on ${EU_WINRATE_PATCH}.`}
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
@@ -112,8 +114,8 @@ export default function UpdatesPage() {
                 </dd>
                 <dd className="mt-0.5 text-xs text-muted">
                   {NOT_RECAPTURED.NA.length
-                    ? `${142 - NOT_RECAPTURED.NA.length} champions on ${NA_WINRATE_PATCH}, ${NOT_RECAPTURED.NA.length} on the previous collection.`
-                    : `All 142 champions, played on ${NA_WINRATE_PATCH}.`}
+                    ? `${NA_COUNT - NOT_RECAPTURED.NA.length} champions on ${NA_WINRATE_PATCH}, ${NOT_RECAPTURED.NA.length} on the previous collection.`
+                    : `All ${NA_COUNT} champions, played on ${NA_WINRATE_PATCH}.`}
                 </dd>
               </div>
             </dl>

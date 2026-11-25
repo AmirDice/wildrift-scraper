@@ -681,12 +681,6 @@
       "tierRole": "C",
       "role": "Baron"
     },
-    "rell": {
-      "wr": 55.8,
-      "tier": "Ass",
-      "tierRole": "B",
-      "role": "Support"
-    },
     "jhin": {
       "wr": 55.8,
       "tier": "Ass",
@@ -744,7 +738,7 @@
     "blitzcrank": {
       "wr": 55.3,
       "tier": "Ass",
-      "tierRole": "C",
+      "tierRole": "B",
       "role": "Support"
     },
     "kayle": {
@@ -752,6 +746,12 @@
       "tier": "Ass",
       "tierRole": "C",
       "role": "Baron"
+    },
+    "rell": {
+      "wr": 55.3,
+      "tier": "Ass",
+      "tierRole": "C",
+      "role": "Support"
     },
     "brand": {
       "wr": 55.2,

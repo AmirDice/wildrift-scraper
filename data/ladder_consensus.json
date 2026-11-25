@@ -53895,55 +53895,55 @@
    {
     "slug": "rabadons-deathcap",
     "name": "Rabadon's Deathcap",
-    "count": 28,
+    "count": 29,
     "of": 30,
-    "slot": 2.75
-   },
-   {
-    "slug": "infinity-orb",
-    "name": "Infinity Orb",
-    "count": 25,
-    "of": 30,
-    "slot": 4.24
+    "slot": 2.72
    },
    {
     "slug": "spellslingers-shoes",
     "name": "Spellslinger's Shoes",
-    "count": 25,
+    "count": 27,
     "of": 30,
-    "slot": 4.4
+    "slot": 4.33
+   },
+   {
+    "slug": "infinity-orb",
+    "name": "Infinity Orb",
+    "count": 26,
+    "of": 30,
+    "slot": 4.19
    },
    {
     "slug": "banshees-veil",
     "name": "Banshee's Veil",
-    "count": 22,
+    "count": 23,
     "of": 30,
-    "slot": 4.64
+    "slot": 4.7
    },
    {
     "slug": "ludens-echo",
     "name": "Luden's Echo",
-    "count": 22,
+    "count": 23,
     "of": 30,
-    "slot": 1.32
+    "slot": 1.3
    },
    {
     "slug": "void-staff",
     "name": "Void Staff",
-    "count": 19,
+    "count": 21,
     "of": 30,
-    "slot": 3.53
-   },
-   {
-    "slug": "malignance",
-    "name": "Malignance",
-    "count": 5,
-    "of": 30
+    "slot": 3.52
    },
    {
     "slug": "cryptbloom",
     "name": "Cryptbloom",
     "count": 5,
+    "of": 30
+   },
+   {
+    "slug": "malignance",
+    "name": "Malignance",
+    "count": 4,
     "of": 30
    },
    {
@@ -53961,19 +53961,25 @@
    {
     "slug": "oceanids-trident",
     "name": "Oceanid's Trident",
-    "count": 4,
+    "count": 3,
     "of": 30
    },
    {
     "slug": "boots-of-mana",
     "name": "Boots of Mana",
-    "count": 3,
+    "count": 2,
+    "of": 30
+   },
+   {
+    "slug": "riftmaker",
+    "name": "Riftmaker",
+    "count": 2,
     "of": 30
    },
    {
     "slug": "crimson-lucidity",
     "name": "Crimson Lucidity",
-    "count": 2,
+    "count": 1,
     "of": 30
    },
    {
@@ -53995,50 +54001,14 @@
     "of": 30
    },
    {
-    "slug": "morellonomicon",
-    "name": "Morellonomicon",
-    "count": 1,
-    "of": 30
-   },
-   {
     "slug": "lich-bane",
     "name": "Lich Bane",
     "count": 1,
     "of": 30
    },
    {
-    "slug": "bulwark-of-the-mountain",
-    "name": "Bulwark of the Mountain",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "slug": "imperial-mandate",
-    "name": "Imperial Mandate",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "slug": "knights-vow",
-    "name": "Knight's Vow",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "slug": "redemption",
-    "name": "Salvation",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "slug": "rylais-crystal-scepter",
-    "name": "Rylai's Crystal Scepter",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "slug": "riftmaker",
-    "name": "Riftmaker",
+    "slug": "morellonomicon",
+    "name": "Morellonomicon",
     "count": 1,
     "of": 30
    }
@@ -54055,7 +54025,7 @@
   "keystones": [
    {
     "name": "Electrocute",
-    "count": 26,
+    "count": 27,
     "of": 30
    },
    {
@@ -54072,11 +54042,6 @@
     "name": "Arcane Comet",
     "count": 1,
     "of": 30
-   },
-   {
-    "name": "Ice Overlord",
-    "count": 1,
-    "of": 30
    }
   ],
   "runePages": [
@@ -54089,7 +54054,7 @@
      "Gathering Storm"
     ],
     "flex": "Bone Plating",
-    "count": 9,
+    "count": 13,
     "of": 30
    },
    {
@@ -54101,7 +54066,7 @@
      "Nimbus Cloak"
     ],
     "flex": "Bone Plating",
-    "count": 3,
+    "count": 2,
     "of": 30
    },
    {
@@ -54154,11 +54119,47 @@
    },
    {
     "keystone": "Electrocute",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Cut Down",
+     "Legend: Bloodline"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Electrocute",
     "primaryTree": "Sorcery",
     "minors": [
      "Axiom Arcanist",
      "Transcendence",
      "Nimbus Cloak"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Nimbus Cloak"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Gathering Storm"
     ],
     "flex": "Legend: Haste",
     "count": 1,
@@ -54177,26 +54178,14 @@
     "of": 30
    },
    {
-    "keystone": "Dark Harvest",
+    "keystone": "Electrocute",
     "primaryTree": "Sorcery",
     "minors": [
      "Axiom Arcanist",
      "Transcendence",
      "Nimbus Cloak"
     ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Precision",
-    "minors": [
-     "Battle Zeal",
-     "Cut Down",
-     "Legend: Bloodline"
-    ],
-    "flex": "Bone Plating",
+    "flex": "Overgrowth",
     "count": 1,
     "of": 30
    },
@@ -54213,78 +54202,6 @@
     "of": 30
    },
    {
-    "keystone": "Arcane Comet",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Gathering Storm"
-    ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Nimbus Cloak"
-    ],
-    "flex": "Bone Plating",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Ice Overlord",
-    "primaryTree": "Resolve",
-    "minors": [
-     "Courage of the Colossus",
-     "Nullifying Orb",
-     "Perseverance"
-    ],
-    "flex": "Manaflow Band",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Precision",
-    "minors": [
-     "Battle Zeal",
-     "Cut Down",
-     "Legend: Bloodline"
-    ],
-    "flex": "Manaflow Band",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Precision",
-    "minors": [
-     "Battle Zeal",
-     "Cut Down",
-     "Legend: Haste"
-    ],
-    "flex": "Bone Plating",
-    "count": 1,
-    "of": 30
-   },
-   {
     "keystone": "Electrocute",
     "primaryTree": "Sorcery",
     "minors": [
@@ -54295,22 +54212,34 @@
     "flex": "Last Stand",
     "count": 1,
     "of": 30
+   },
+   {
+    "keystone": "Electrocute",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Hextech Flashtraption",
+     "Transcendence",
+     "Nimbus Cloak"
+    ],
+    "flex": "Triumph",
+    "count": 1,
+    "of": 30
    }
   ],
   "spells": [
    {
     "pair": "Barrier + Flash",
-    "count": 12,
-    "of": 30
-   },
-   {
-    "pair": "Flash + Ghost",
-    "count": 5,
+    "count": 14,
     "of": 30
    },
    {
     "pair": "Flash + Ignite",
-    "count": 5,
+    "count": 6,
+    "of": 30
+   },
+   {
+    "pair": "Flash + Ghost",
+    "count": 4,
     "of": 30
    },
    {
@@ -54319,17 +54248,12 @@
     "of": 30
    },
    {
-    "pair": "Exhaust + Flash",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "pair": "Cleanse + Flash",
+    "pair": "? + Flash",
     "count": 1,
     "of": 30
    },
    {
-    "pair": "Flash + Teleport",
+    "pair": "Exhaust + Flash",
     "count": 1,
     "of": 30
    }
@@ -54337,22 +54261,22 @@
   "minors": [
    {
     "name": "Transcendence",
-    "count": 23,
+    "count": 26,
     "of": 30
    },
    {
     "name": "Axiom Arcanist",
-    "count": 20,
-    "of": 30
-   },
-   {
-    "name": "Bone Plating",
-    "count": 16,
+    "count": 23,
     "of": 30
    },
    {
     "name": "Gathering Storm",
-    "count": 15,
+    "count": 19,
+    "of": 30
+   },
+   {
+    "name": "Bone Plating",
+    "count": 17,
     "of": 30
    },
    {
@@ -54362,22 +54286,7 @@
    },
    {
     "name": "Legend: Haste",
-    "count": 8,
-    "of": 30
-   },
-   {
-    "name": "Cut Down",
-    "count": 5,
-    "of": 30
-   },
-   {
-    "name": "Battle Zeal",
-    "count": 5,
-    "of": 30
-   },
-   {
-    "name": "Manaflow Band",
-    "count": 4,
+    "count": 6,
     "of": 30
    },
    {
@@ -54386,12 +54295,22 @@
     "of": 30
    },
    {
-    "name": "Nullifying Orb",
+    "name": "Cut Down",
     "count": 3,
     "of": 30
    },
    {
-    "name": "Legend: Bloodline",
+    "name": "Battle Zeal",
+    "count": 3,
+    "of": 30
+   },
+   {
+    "name": "Manaflow Band",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "name": "Nullifying Orb",
     "count": 2,
     "of": 30
    },
@@ -54411,22 +54330,616 @@
     "of": 30
    },
    {
+    "name": "Legend: Bloodline",
+    "count": 1,
+    "of": 30
+   },
+   {
     "name": "Coup de Grace",
     "count": 1,
     "of": 30
    },
    {
-    "name": "Courage of the Colossus",
+    "name": "Overgrowth",
     "count": 1,
     "of": 30
    },
    {
-    "name": "Perseverance",
+    "name": "Triumph",
     "count": 1,
+    "of": 30
+   }
+  ]
+ },
+ "Vel'Koz": {
+  "items": [
+   {
+    "slug": "rabadons-deathcap",
+    "name": "Rabadon's Deathcap",
+    "count": 29,
+    "of": 30,
+    "slot": 4.17
+   },
+   {
+    "slug": "spellslingers-shoes",
+    "name": "Spellslinger's Shoes",
+    "count": 23,
+    "of": 30,
+    "slot": 3.04
+   },
+   {
+    "slug": "infinity-orb",
+    "name": "Infinity Orb",
+    "count": 21,
+    "of": 30,
+    "slot": 3.33
+   },
+   {
+    "slug": "ludens-echo",
+    "name": "Luden's Echo",
+    "count": 14,
+    "of": 30,
+    "slot": 1.57
+   },
+   {
+    "slug": "blackfire-torch",
+    "name": "Blackfire Torch",
+    "count": 11,
+    "of": 30,
+    "slot": 2.45
+   },
+   {
+    "slug": "void-staff",
+    "name": "Void Staff",
+    "count": 10,
+    "of": 30,
+    "slot": 5.0
+   },
+   {
+    "slug": "liandrys-torment",
+    "name": "Liandry's Torment",
+    "count": 10,
+    "of": 30
+   },
+   {
+    "slug": "banshees-veil",
+    "name": "Banshee's Veil",
+    "count": 8,
+    "of": 30
+   },
+   {
+    "slug": "zhonyas-hourglass",
+    "name": "Zhonya's Hourglass",
+    "count": 8,
+    "of": 30
+   },
+   {
+    "slug": "oceanids-trident",
+    "name": "Oceanid's Trident",
+    "count": 7,
+    "of": 30
+   },
+   {
+    "slug": "boots-of-mana",
+    "name": "Boots of Mana",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "slug": "malignance",
+    "name": "Malignance",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "slug": "horizon-focus",
+    "name": "Horizon Focus",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "slug": "bloodletters-curse",
+    "name": "Bloodletter's Curse",
+    "count": 4,
+    "of": 30
+   },
+   {
+    "slug": "morellonomicon",
+    "name": "Morellonomicon",
+    "count": 4,
+    "of": 30
+   },
+   {
+    "slug": "stormsurge",
+    "name": "Stormsurge",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "slug": "black-mist-scythe",
+    "name": "Black Mist Scythe",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "slug": "cryptbloom",
+    "name": "Cryptbloom",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "slug": "archangels-staff",
+    "name": "Archangel's Staff",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "slug": "crimson-lucidity",
+    "name": "Crimson Lucidity",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "slug": "seekers-armguard",
+    "name": "Seeker's Armguard",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "slug": "cosmic-drive",
+    "name": "Cosmic Drive",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "slug": "rylais-crystal-scepter",
+    "name": "Rylai's Crystal Scepter",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "slug": "titanic-hydra",
+    "name": "Titanic Hydra",
+    "count": 1,
+    "of": 30
+   }
+  ],
+  "order": [
+   "ludens-echo",
+   "spellslingers-shoes",
+   "blackfire-torch",
+   "infinity-orb",
+   "rabadons-deathcap",
+   "void-staff"
+  ],
+  "orderFrom": "same",
+  "keystones": [
+   {
+    "name": "Dark Harvest",
+    "count": 11,
+    "of": 30
+   },
+   {
+    "name": "Electrocute",
+    "count": 7,
+    "of": 30
+   },
+   {
+    "name": "Arcane Comet",
+    "count": 7,
+    "of": 30
+   },
+   {
+    "name": "First Strike",
+    "count": 5,
+    "of": 30
+   }
+  ],
+  "runePages": [
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Scorch"
+    ],
+    "flex": "Legend: Haste",
+    "count": 3,
+    "of": 30
+   },
+   {
+    "keystone": "First Strike",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Scorch"
+    ],
+    "flex": "Legend: Haste",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Chain Assault",
+     "Zombie Ward"
+    ],
+    "flex": "Coup de Grace",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Electrocute",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Gathering Storm"
+    ],
+    "flex": "Legend: Haste",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "First Strike",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Chain Assault",
+     "Eyeball Collector"
+    ],
+    "flex": "Transcendence",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "keystone": "Electrocute",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Tyrant",
+     "Zombie Ward"
+    ],
+    "flex": "Coup de Grace",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Electrocute",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Scorch"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Tyrant",
+     "Zombie Ward"
+    ],
+    "flex": "Scorch",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Tyrant",
+     "Relentless Hunter"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Electrocute",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Tyrant",
+     "Eyeball Collector"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Manaflow Band",
+     "Transcendence",
+     "Gathering Storm"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Gathering Storm"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Gathering Storm"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Electrocute",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Chain Assault",
+     "Eyeball Collector"
+    ],
+    "flex": "Transcendence",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Electrocute",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Cut Down",
+     "Legend: Haste"
+    ],
+    "flex": "Ixtali Seedjar",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Chain Assault",
+     "Eyeball Collector"
+    ],
+    "flex": "Nimbus Cloak",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Manaflow Band",
+     "Transcendence",
+     "Gathering Storm"
+    ],
+    "flex": "Cheap Shot",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Tyrant",
+     "Zombie Ward"
+    ],
+    "flex": "Manaflow Band",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Dark Harvest",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Tyrant",
+     "Eyeball Collector"
+    ],
+    "flex": "Coup de Grace",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Scorch"
+    ],
+    "flex": "Legend: Haste",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Domination",
+    "minors": [
+     "Cheap Shot",
+     "Chain Assault",
+     "Eyeball Collector"
+    ],
+    "flex": "Scorch",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Precision",
+    "minors": [
+     "Battle Zeal",
+     "Coup de Grace",
+     "Legend: Haste"
+    ],
+    "flex": "Bone Plating",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "First Strike",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Scorch"
+    ],
+    "flex": "Eyeball Collector",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "keystone": "Arcane Comet",
+    "primaryTree": "Sorcery",
+    "minors": [
+     "Axiom Arcanist",
+     "Transcendence",
+     "Gathering Storm"
+    ],
+    "flex": "Cheap Shot",
+    "count": 1,
+    "of": 30
+   }
+  ],
+  "spells": [
+   {
+    "pair": "Barrier + Flash",
+    "count": 20,
+    "of": 30
+   },
+   {
+    "pair": "Flash + Heal",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "pair": "Flash + Ignite",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "pair": "Flash + Teleport",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "pair": "Flash + Ghost",
+    "count": 1,
+    "of": 30
+   }
+  ],
+  "minors": [
+   {
+    "name": "Transcendence",
+    "count": 18,
+    "of": 30
+   },
+   {
+    "name": "Legend: Haste",
+    "count": 15,
+    "of": 30
+   },
+   {
+    "name": "Cheap Shot",
+    "count": 15,
+    "of": 30
+   },
+   {
+    "name": "Axiom Arcanist",
+    "count": 13,
     "of": 30
    },
    {
     "name": "Scorch",
+    "count": 10,
+    "of": 30
+   },
+   {
+    "name": "Eyeball Collector",
+    "count": 8,
+    "of": 30
+   },
+   {
+    "name": "Chain Assault",
+    "count": 7,
+    "of": 30
+   },
+   {
+    "name": "Gathering Storm",
+    "count": 7,
+    "of": 30
+   },
+   {
+    "name": "Tyrant",
+    "count": 6,
+    "of": 30
+   },
+   {
+    "name": "Zombie Ward",
+    "count": 5,
+    "of": 30
+   },
+   {
+    "name": "Coup de Grace",
+    "count": 5,
+    "of": 30
+   },
+   {
+    "name": "Manaflow Band",
+    "count": 3,
+    "of": 30
+   },
+   {
+    "name": "Bone Plating",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "name": "Battle Zeal",
+    "count": 2,
+    "of": 30
+   },
+   {
+    "name": "Relentless Hunter",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "name": "Cut Down",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "name": "Ixtali Seedjar",
+    "count": 1,
+    "of": 30
+   },
+   {
+    "name": "Nimbus Cloak",
     "count": 1,
     "of": 30
    }
@@ -63071,542 +63584,6 @@
    },
    {
     "name": "Cut Down",
-    "count": 1,
-    "of": 30
-   }
-  ]
- },
- "Vel'Koz": {
-  "items": [
-   {
-    "slug": "rabadons-deathcap",
-    "name": "Rabadon's Deathcap",
-    "count": 30,
-    "of": 30,
-    "slot": 4.53
-   },
-   {
-    "slug": "spellslingers-shoes",
-    "name": "Spellslinger's Shoes",
-    "count": 20,
-    "of": 30,
-    "slot": 3.65
-   },
-   {
-    "slug": "blackfire-torch",
-    "name": "Blackfire Torch",
-    "count": 15,
-    "of": 30,
-    "slot": 2.0
-   },
-   {
-    "slug": "infinity-orb",
-    "name": "Infinity Orb",
-    "count": 15,
-    "of": 30,
-    "slot": 2.93
-   },
-   {
-    "slug": "liandrys-torment",
-    "name": "Liandry's Torment",
-    "count": 13,
-    "of": 30,
-    "slot": 3.08
-   },
-   {
-    "slug": "void-staff",
-    "name": "Void Staff",
-    "count": 12,
-    "of": 30,
-    "slot": 5.0
-   },
-   {
-    "slug": "boots-of-mana",
-    "name": "Boots of Mana",
-    "count": 10,
-    "of": 30
-   },
-   {
-    "slug": "ludens-echo",
-    "name": "Luden's Echo",
-    "count": 10,
-    "of": 30
-   },
-   {
-    "slug": "horizon-focus",
-    "name": "Horizon Focus",
-    "count": 9,
-    "of": 30
-   },
-   {
-    "slug": "zhonyas-hourglass",
-    "name": "Zhonya's Hourglass",
-    "count": 8,
-    "of": 30
-   },
-   {
-    "slug": "banshees-veil",
-    "name": "Banshee's Veil",
-    "count": 7,
-    "of": 30
-   },
-   {
-    "slug": "bloodletters-curse",
-    "name": "Bloodletter's Curse",
-    "count": 7,
-    "of": 30
-   },
-   {
-    "slug": "oceanids-trident",
-    "name": "Oceanid's Trident",
-    "count": 7,
-    "of": 30
-   },
-   {
-    "slug": "malignance",
-    "name": "Malignance",
-    "count": 6,
-    "of": 30
-   },
-   {
-    "slug": "black-mist-scythe",
-    "name": "Black Mist Scythe",
-    "count": 3,
-    "of": 30
-   },
-   {
-    "slug": "cryptbloom",
-    "name": "Cryptbloom",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "slug": "stormsurge",
-    "name": "Stormsurge",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "slug": "cosmic-drive",
-    "name": "Cosmic Drive",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "slug": "morellonomicon",
-    "name": "Morellonomicon",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "slug": "riftmaker",
-    "name": "Riftmaker",
-    "count": 1,
-    "of": 30
-   }
-  ],
-  "order": [
-   "blackfire-torch",
-   "infinity-orb",
-   "liandrys-torment",
-   "spellslingers-shoes",
-   "rabadons-deathcap",
-   "void-staff"
-  ],
-  "orderFrom": "same",
-  "keystones": [
-   {
-    "name": "Dark Harvest",
-    "count": 12,
-    "of": 30
-   },
-   {
-    "name": "Arcane Comet",
-    "count": 9,
-    "of": 30
-   },
-   {
-    "name": "Electrocute",
-    "count": 5,
-    "of": 30
-   },
-   {
-    "name": "First Strike",
-    "count": 4,
-    "of": 30
-   }
-  ],
-  "runePages": [
-   {
-    "keystone": "Arcane Comet",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Legend: Haste",
-    "count": 4,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Gathering Storm"
-    ],
-    "flex": "Legend: Haste",
-    "count": 3,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Chain Assault",
-     "Zombie Ward"
-    ],
-    "flex": "Coup de Grace",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Chain Assault",
-     "Eyeball Collector"
-    ],
-    "flex": "Transcendence",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Legend: Haste",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "keystone": "Arcane Comet",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Manaflow Band",
-     "Transcendence",
-     "Gathering Storm"
-    ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Tyrant",
-     "Zombie Ward"
-    ],
-    "flex": "Coup de Grace",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Tyrant",
-     "Relentless Hunter"
-    ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Arcane Comet",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Tyrant",
-     "Zombie Ward"
-    ],
-    "flex": "Manaflow Band",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Arcane Comet",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Chain Assault",
-     "Eyeball Collector"
-    ],
-    "flex": "Nimbus Cloak",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Precision",
-    "minors": [
-     "Battle Zeal",
-     "Coup de Grace",
-     "Legend: Haste"
-    ],
-    "flex": "Transcendence",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Gathering Storm"
-    ],
-    "flex": "Tyrant",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Arcane Comet",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Absolute Focus",
-     "Scorch"
-    ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "First Strike",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Absolute Focus",
-     "Gathering Storm"
-    ],
-    "flex": "Battle Zeal",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Electrocute",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Bone Plating",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Arcane Comet",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Manaflow Band",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Cheap Shot",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Tyrant",
-     "Eyeball Collector"
-    ],
-    "flex": "Coup de Grace",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "First Strike",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Legend: Haste",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "Dark Harvest",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Chain Assault",
-     "Eyeball Collector"
-    ],
-    "flex": "Coup de Grace",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "First Strike",
-    "primaryTree": "Domination",
-    "minors": [
-     "Cheap Shot",
-     "Tyrant",
-     "Eyeball Collector"
-    ],
-    "flex": "Transcendence",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "keystone": "First Strike",
-    "primaryTree": "Sorcery",
-    "minors": [
-     "Axiom Arcanist",
-     "Transcendence",
-     "Scorch"
-    ],
-    "flex": "Eyeball Collector",
-    "count": 1,
-    "of": 30
-   }
-  ],
-  "spells": [
-   {
-    "pair": "Barrier + Flash",
-    "count": 21,
-    "of": 30
-   },
-   {
-    "pair": "Flash + Heal",
-    "count": 5,
-    "of": 30
-   },
-   {
-    "pair": "Exhaust + Flash",
-    "count": 3,
-    "of": 30
-   },
-   {
-    "pair": "Flash + Ghost",
-    "count": 1,
-    "of": 30
-   }
-  ],
-  "minors": [
-   {
-    "name": "Transcendence",
-    "count": 20,
-    "of": 30
-   },
-   {
-    "name": "Axiom Arcanist",
-    "count": 16,
-    "of": 30
-   },
-   {
-    "name": "Legend: Haste",
-    "count": 15,
-    "of": 30
-   },
-   {
-    "name": "Cheap Shot",
-    "count": 12,
-    "of": 30
-   },
-   {
-    "name": "Scorch",
-    "count": 12,
-    "of": 30
-   },
-   {
-    "name": "Eyeball Collector",
-    "count": 7,
-    "of": 30
-   },
-   {
-    "name": "Gathering Storm",
-    "count": 6,
-    "of": 30
-   },
-   {
-    "name": "Chain Assault",
-    "count": 6,
-    "of": 30
-   },
-   {
-    "name": "Coup de Grace",
-    "count": 6,
-    "of": 30
-   },
-   {
-    "name": "Tyrant",
-    "count": 6,
-    "of": 30
-   },
-   {
-    "name": "Zombie Ward",
-    "count": 4,
-    "of": 30
-   },
-   {
-    "name": "Manaflow Band",
-    "count": 3,
-    "of": 30
-   },
-   {
-    "name": "Battle Zeal",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "name": "Absolute Focus",
-    "count": 2,
-    "of": 30
-   },
-   {
-    "name": "Relentless Hunter",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "name": "Nimbus Cloak",
-    "count": 1,
-    "of": 30
-   },
-   {
-    "name": "Bone Plating",
     "count": 1,
     "of": 30
    }

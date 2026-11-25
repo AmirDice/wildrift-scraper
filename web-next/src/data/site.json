@@ -1,5 +1,5 @@
 {
-  "collectedOn": "November 21, 2026",
+  "collectedOn": "November 24, 2026",
   "movementSince": "2026-11-04",
   "roles": [
     "Baron",
@@ -9,7 +9,7 @@
     "Support"
   ],
   "nChampions": 143,
-  "nPlayers": 4234,
+  "nPlayers": 4233,
   "wrOffset": -7.7,
   "bestPlayerScoringVersion": "best-player-v1",
   "bestPlayerScope": "regional",
@@ -62,7 +62,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "2512",
@@ -194,8 +194,8 @@
       },
       "pools": {
         "25": {
-          "wr": 57.6,
-          "wrOffset": -7.8,
+          "wr": 57.5,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -212,8 +212,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 54.6,
-          "wrOffset": -9.2,
+          "wr": 54.7,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -273,7 +273,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Mecha7tty",
@@ -405,8 +405,8 @@
       },
       "pools": {
         "25": {
-          "wr": 56.8,
-          "wrOffset": -7.8,
+          "wr": 56.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -423,8 +423,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 60.5,
-          "wrOffset": -9.2,
+          "wr": 60.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -484,7 +484,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "DY步惊云lolm",
@@ -616,8 +616,8 @@
       },
       "pools": {
         "25": {
-          "wr": 55.8,
-          "wrOffset": -7.8,
+          "wr": 55.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -634,8 +634,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 54.7,
-          "wrOffset": -9.2,
+          "wr": 54.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -693,7 +693,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "tiktoksmitediff",
@@ -825,8 +825,8 @@
       },
       "pools": {
         "25": {
-          "wr": 55.6,
-          "wrOffset": -7.8,
+          "wr": 55.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -843,8 +843,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 52.4,
-          "wrOffset": -9.2,
+          "wr": 52.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -902,7 +902,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "nocap",
@@ -1034,8 +1034,8 @@
       },
       "pools": {
         "25": {
-          "wr": 55.2,
-          "wrOffset": -7.8,
+          "wr": 55.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -1052,8 +1052,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 57.2,
-          "wrOffset": -9.2,
+          "wr": 57.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -1111,7 +1111,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "岱培嘉薇TuTo0o921",
@@ -1243,8 +1243,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.8,
-          "wrOffset": -7.8,
+          "wr": 54.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -1261,8 +1261,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 56.4,
-          "wrOffset": -9.2,
+          "wr": 56.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -1322,7 +1322,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "2512",
@@ -1454,8 +1454,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.7,
-          "wrOffset": -7.8,
+          "wr": 54.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -1472,8 +1472,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 59.4,
-          "wrOffset": -9.2,
+          "wr": 59.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -1531,7 +1531,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Pz ZZang",
@@ -1663,8 +1663,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.2,
-          "wrOffset": -7.8,
+          "wr": 54.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -1681,8 +1681,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 51.6,
-          "wrOffset": -9.2,
+          "wr": 51.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -1742,7 +1742,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "FARKEDMEZ",
@@ -1874,8 +1874,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.1,
-          "wrOffset": -7.8,
+          "wr": 54.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -1892,8 +1892,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 52.1,
-          "wrOffset": -9.2,
+          "wr": 52.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -1951,7 +1951,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Pierre",
@@ -2083,8 +2083,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.6,
-          "wrOffset": -7.8,
+          "wr": 54.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -2101,8 +2101,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 58.2,
-          "wrOffset": -9.2,
+          "wr": 58.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -2160,7 +2160,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Nicole",
@@ -2292,8 +2292,8 @@
       },
       "pools": {
         "25": {
-          "wr": 53.8,
-          "wrOffset": -7.8,
+          "wr": 53.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -2310,8 +2310,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 57.5,
-          "wrOffset": -9.2,
+          "wr": 57.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -2369,7 +2369,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "washed1",
@@ -2501,8 +2501,8 @@
       },
       "pools": {
         "25": {
-          "wr": 53.7,
-          "wrOffset": -7.8,
+          "wr": 53.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -2519,8 +2519,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 52.2,
-          "wrOffset": -9.2,
+          "wr": 52.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -2578,7 +2578,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "FlameT",
@@ -2710,8 +2710,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.1,
-          "wrOffset": -7.8,
+          "wr": 54.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -2728,8 +2728,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 55.6,
-          "wrOffset": -9.2,
+          "wr": 55.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -2789,7 +2789,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "BATTLECATS",
@@ -2921,8 +2921,8 @@
       },
       "pools": {
         "25": {
-          "wr": 53.8,
-          "wrOffset": -7.8,
+          "wr": 53.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -2939,8 +2939,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 56.5,
-          "wrOffset": -9.2,
+          "wr": 56.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -3001,7 +3001,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "XslonX",
@@ -3133,8 +3133,8 @@
       },
       "pools": {
         "25": {
-          "wr": 53.1,
-          "wrOffset": -7.8,
+          "wr": 53.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -3151,8 +3151,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.4,
-          "wrOffset": -9.2,
+          "wr": 51.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -3212,7 +3212,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Yusuke",
@@ -3344,8 +3344,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.9,
-          "wrOffset": -7.8,
+          "wr": 54.8,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "S",
           "tierCss": "tier-s",
@@ -3362,8 +3362,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 57.5,
-          "wrOffset": -9.2,
+          "wr": 57.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -3423,7 +3423,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "AmUnconscious",
@@ -3555,8 +3555,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.5,
-          "wrOffset": -7.8,
+          "wr": 52.4,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "A",
           "tierCss": "tier-a",
@@ -3573,8 +3573,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 50.1,
-          "wrOffset": -9.2,
+          "wr": 50.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -3634,7 +3634,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "ChuckBass",
@@ -3766,8 +3766,8 @@
       },
       "pools": {
         "25": {
-          "wr": 53.1,
-          "wrOffset": -7.8,
+          "wr": 53.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -3784,8 +3784,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 50.9,
-          "wrOffset": -9.2,
+          "wr": 51.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -3843,7 +3843,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "BratSummer",
@@ -3975,8 +3975,8 @@
       },
       "pools": {
         "25": {
-          "wr": 53.3,
-          "wrOffset": -7.8,
+          "wr": 53.2,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -3993,8 +3993,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 56.0,
-          "wrOffset": -9.2,
+          "wr": 56.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -4054,7 +4054,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "MACHABAY",
@@ -4186,8 +4186,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.9,
-          "wrOffset": -7.8,
+          "wr": 54.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -4204,8 +4204,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 51.7,
-          "wrOffset": -9.2,
+          "wr": 51.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -4265,7 +4265,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "勇士普罗",
@@ -4397,8 +4397,8 @@
       },
       "pools": {
         "25": {
-          "wr": 54.0,
-          "wrOffset": -7.8,
+          "wr": 53.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "S",
           "tierCss": "tier-s",
@@ -4415,8 +4415,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 56.2,
-          "wrOffset": -9.2,
+          "wr": 56.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -4474,7 +4474,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "2B力儿",
@@ -4606,8 +4606,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.7,
-          "wrOffset": -7.8,
+          "wr": 52.6,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "A",
           "tierCss": "tier-a",
@@ -4624,8 +4624,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 48.6,
-          "wrOffset": -9.2,
+          "wr": 48.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -4685,7 +4685,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "BDMkronypilo",
@@ -4817,8 +4817,8 @@
       },
       "pools": {
         "25": {
-          "wr": 53.0,
-          "wrOffset": -7.8,
+          "wr": 52.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -4835,8 +4835,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 52.8,
-          "wrOffset": -9.2,
+          "wr": 52.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -4894,7 +4894,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Milkyway",
@@ -5026,8 +5026,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.2,
-          "wrOffset": -7.8,
+          "wr": 52.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -5044,8 +5044,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 52.8,
-          "wrOffset": -9.2,
+          "wr": 52.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -5105,7 +5105,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "bek",
@@ -5237,8 +5237,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.9,
-          "wrOffset": -7.8,
+          "wr": 51.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -5255,8 +5255,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 56.4,
-          "wrOffset": -9.2,
+          "wr": 56.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -5314,7 +5314,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "3CamplntoTherapy",
@@ -5446,8 +5446,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.5,
-          "wrOffset": -7.8,
+          "wr": 52.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -5464,8 +5464,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.5,
-          "wrOffset": -9.2,
+          "wr": 49.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -5525,7 +5525,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "代培加威LuvXingyu",
@@ -5657,8 +5657,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.8,
-          "wrOffset": -7.8,
+          "wr": 52.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -5675,8 +5675,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.3,
-          "wrOffset": -9.2,
+          "wr": 49.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -5734,7 +5734,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Mihailo",
@@ -5866,8 +5866,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.8,
-          "wrOffset": -7.8,
+          "wr": 52.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -5884,8 +5884,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 56.4,
-          "wrOffset": -9.2,
+          "wr": 56.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -5943,7 +5943,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Gogul theMogger",
@@ -6075,8 +6075,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.4,
-          "wrOffset": -7.8,
+          "wr": 52.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -6093,8 +6093,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 49.4,
-          "wrOffset": -9.2,
+          "wr": 49.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -6154,7 +6154,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "TheFinal Gleam",
@@ -6286,8 +6286,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.4,
-          "wrOffset": -7.8,
+          "wr": 52.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -6304,8 +6304,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 51.4,
-          "wrOffset": -9.2,
+          "wr": 51.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -6365,7 +6365,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Kuromi",
@@ -6497,8 +6497,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.5,
-          "wrOffset": -7.8,
+          "wr": 51.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -6515,8 +6515,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 55.9,
-          "wrOffset": -9.2,
+          "wr": 56.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -6576,7 +6576,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "千次夏天我拥有梦中那洁白翅",
@@ -6708,8 +6708,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.5,
-          "wrOffset": -7.8,
+          "wr": 52.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -6726,8 +6726,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 57.0,
-          "wrOffset": -9.2,
+          "wr": 57.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -6787,7 +6787,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "SupGod666",
@@ -6919,8 +6919,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.7,
-          "wrOffset": -7.8,
+          "wr": 51.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -6937,8 +6937,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 49.2,
-          "wrOffset": -9.2,
+          "wr": 49.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -6996,7 +6996,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "坚不可摧",
@@ -7128,8 +7128,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.2,
-          "wrOffset": -7.8,
+          "wr": 51.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -7146,8 +7146,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 54.8,
-          "wrOffset": -9.2,
+          "wr": 54.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -7205,7 +7205,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Parlamento",
@@ -7337,8 +7337,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.5,
-          "wrOffset": -7.8,
+          "wr": 51.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -7355,8 +7355,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 51.3,
-          "wrOffset": -9.2,
+          "wr": 51.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -7416,7 +7416,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "shakelaka",
@@ -7548,8 +7548,8 @@
       },
       "pools": {
         "25": {
-          "wr": 52.0,
-          "wrOffset": -7.8,
+          "wr": 51.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -7566,8 +7566,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 55.6,
-          "wrOffset": -9.2,
+          "wr": 55.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -7628,7 +7628,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "雨蝶",
@@ -7760,8 +7760,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.9,
-          "wrOffset": -7.8,
+          "wr": 51.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -7778,8 +7778,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 53.1,
-          "wrOffset": -9.2,
+          "wr": 53.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -7837,7 +7837,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "4Rudeus4",
@@ -7969,8 +7969,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.3,
-          "wrOffset": -7.8,
+          "wr": 51.2,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -7987,8 +7987,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 56.8,
-          "wrOffset": -9.2,
+          "wr": 56.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -8048,7 +8048,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "wkk",
@@ -8180,8 +8180,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.6,
-          "wrOffset": -7.8,
+          "wr": 51.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -8198,8 +8198,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 51.1,
-          "wrOffset": -9.2,
+          "wr": 51.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -8259,7 +8259,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "慎念一",
@@ -8391,8 +8391,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.8,
-          "wrOffset": -7.8,
+          "wr": 50.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -8409,8 +8409,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.3,
-          "wrOffset": -9.2,
+          "wr": 51.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -8470,7 +8470,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "LittleEmmi",
@@ -8602,8 +8602,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.9,
-          "wrOffset": -7.8,
+          "wr": 51.8,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "A",
           "tierCss": "tier-a",
@@ -8620,8 +8620,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 53.3,
-          "wrOffset": -9.2,
+          "wr": 53.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -8679,7 +8679,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "JEY",
@@ -8811,8 +8811,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.7,
-          "wrOffset": -7.8,
+          "wr": 51.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -8829,8 +8829,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 50.7,
-          "wrOffset": -9.2,
+          "wr": 50.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -8888,7 +8888,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "dirty sanchez",
@@ -9020,8 +9020,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.3,
-          "wrOffset": -7.8,
+          "wr": 51.2,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "A",
           "tierCss": "tier-a",
@@ -9038,8 +9038,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 47.7,
-          "wrOffset": -9.2,
+          "wr": 47.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -9097,7 +9097,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Pierre",
@@ -9229,8 +9229,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.1,
-          "wrOffset": -7.8,
+          "wr": 51.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -9247,8 +9247,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 49.6,
-          "wrOffset": -9.2,
+          "wr": 49.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -9309,7 +9309,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Bal10",
@@ -9441,8 +9441,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.5,
-          "wrOffset": -7.8,
+          "wr": 50.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -9459,8 +9459,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 52.8,
-          "wrOffset": -9.2,
+          "wr": 52.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -9520,7 +9520,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "LETMEFARM",
@@ -9652,8 +9652,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.3,
-          "wrOffset": -7.8,
+          "wr": 51.2,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -9670,8 +9670,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 49.5,
-          "wrOffset": -9.2,
+          "wr": 49.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -9729,7 +9729,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Killer Bunny",
@@ -9861,8 +9861,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.2,
-          "wrOffset": -7.8,
+          "wr": 51.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -9879,8 +9879,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 47.3,
-          "wrOffset": -9.2,
+          "wr": 47.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -9940,7 +9940,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Remove Remakes",
@@ -10072,8 +10072,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.7,
-          "wrOffset": -7.8,
+          "wr": 50.6,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -10090,8 +10090,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.6,
-          "wrOffset": -9.2,
+          "wr": 51.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -10151,7 +10151,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "胆小鬼",
@@ -10283,8 +10283,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.0,
-          "wrOffset": -7.8,
+          "wr": 50.9,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -10301,8 +10301,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 53.5,
-          "wrOffset": -9.2,
+          "wr": 53.6,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "S",
           "tierCss": "tier-s",
@@ -10362,7 +10362,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "培加威LuvXingyu",
@@ -10494,8 +10494,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.7,
-          "wrOffset": -7.8,
+          "wr": 51.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -10512,8 +10512,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 48.8,
-          "wrOffset": -9.2,
+          "wr": 48.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -10574,7 +10574,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Teddyosovegano",
@@ -10706,8 +10706,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.2,
-          "wrOffset": -7.8,
+          "wr": 50.1,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -10724,8 +10724,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 50.9,
-          "wrOffset": -9.2,
+          "wr": 51.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -10785,7 +10785,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "spicy",
@@ -10917,8 +10917,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.6,
-          "wrOffset": -7.8,
+          "wr": 50.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -10935,8 +10935,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 46.0,
-          "wrOffset": -9.2,
+          "wr": 46.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -10996,7 +10996,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Zhangjiayao",
@@ -11128,8 +11128,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.2,
-          "wrOffset": -7.8,
+          "wr": 51.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "A",
           "tierCss": "tier-a",
@@ -11146,8 +11146,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.5,
-          "wrOffset": -9.2,
+          "wr": 51.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -11208,7 +11208,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Onko",
@@ -11340,8 +11340,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.2,
-          "wrOffset": -7.8,
+          "wr": 51.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -11358,8 +11358,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 53.5,
-          "wrOffset": -9.2,
+          "wr": 53.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -11419,7 +11419,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Cao",
@@ -11551,8 +11551,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.8,
-          "wrOffset": -7.8,
+          "wr": 50.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -11569,8 +11569,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 53.0,
-          "wrOffset": -9.2,
+          "wr": 53.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -11630,7 +11630,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "OBED1ENC3",
@@ -11762,8 +11762,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.9,
-          "wrOffset": -7.8,
+          "wr": 50.8,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -11780,8 +11780,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 52.7,
-          "wrOffset": -9.2,
+          "wr": 52.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -11839,7 +11839,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Voilak",
@@ -11971,8 +11971,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.5,
-          "wrOffset": -7.8,
+          "wr": 50.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -11989,8 +11989,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.0,
-          "wrOffset": -9.2,
+          "wr": 49.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -12048,7 +12048,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "KOOTEN2000",
@@ -12180,8 +12180,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.1,
-          "wrOffset": -7.8,
+          "wr": 50.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -12198,8 +12198,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 50.5,
-          "wrOffset": -9.2,
+          "wr": 50.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -12259,7 +12259,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "givemeakiss",
@@ -12391,8 +12391,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.2,
-          "wrOffset": -7.8,
+          "wr": 50.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -12409,8 +12409,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 50.1,
-          "wrOffset": -9.2,
+          "wr": 50.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -12468,7 +12468,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Luvsic",
@@ -12600,8 +12600,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.2,
-          "wrOffset": -7.8,
+          "wr": 51.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -12618,8 +12618,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 52.4,
-          "wrOffset": -9.2,
+          "wr": 52.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -12679,7 +12679,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "OMNIPOTENCE",
@@ -12811,8 +12811,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.5,
-          "wrOffset": -7.8,
+          "wr": 50.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -12829,8 +12829,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 51.7,
-          "wrOffset": -9.2,
+          "wr": 51.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -12890,7 +12890,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Heaven",
@@ -13022,8 +13022,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.4,
-          "wrOffset": -7.8,
+          "wr": 50.3,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -13040,8 +13040,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 52.2,
-          "wrOffset": -9.2,
+          "wr": 52.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -13101,7 +13101,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Bounty",
@@ -13233,8 +13233,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.5,
-          "wrOffset": -7.8,
+          "wr": 50.4,
+          "wrOffset": -7.9,
           "nPlayers": 23,
           "tier": "B",
           "tierCss": "tier-b",
@@ -13251,8 +13251,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.8,
-          "wrOffset": -9.2,
+          "wr": 51.9,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "A",
           "tierCss": "tier-a",
@@ -13312,7 +13312,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "lulie",
@@ -13444,8 +13444,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.2,
-          "wrOffset": -7.8,
+          "wr": 50.1,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -13462,8 +13462,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 52.1,
-          "wrOffset": -9.2,
+          "wr": 52.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -13521,7 +13521,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Pandaz",
@@ -13653,8 +13653,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.3,
-          "wrOffset": -7.8,
+          "wr": 50.2,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -13671,8 +13671,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 46.4,
-          "wrOffset": -9.2,
+          "wr": 46.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -13730,7 +13730,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "anonymous",
@@ -13862,8 +13862,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.8,
-          "wrOffset": -7.8,
+          "wr": 50.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -13880,8 +13880,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 47.5,
-          "wrOffset": -9.2,
+          "wr": 47.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -13942,7 +13942,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Kalista",
@@ -14074,8 +14074,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.7,
-          "wrOffset": -7.8,
+          "wr": 49.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -14092,8 +14092,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 48.0,
-          "wrOffset": -9.2,
+          "wr": 48.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -14153,7 +14153,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "JERRY",
@@ -14285,8 +14285,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.7,
-          "wrOffset": -7.8,
+          "wr": 50.6,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -14303,8 +14303,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 50.0,
-          "wrOffset": -9.2,
+          "wr": 50.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -14365,7 +14365,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Fossy",
@@ -14497,8 +14497,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.3,
-          "wrOffset": -7.8,
+          "wr": 50.2,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -14515,8 +14515,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.0,
-          "wrOffset": -9.2,
+          "wr": 51.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -14574,7 +14574,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "All Dogs",
@@ -14706,8 +14706,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.8,
-          "wrOffset": -7.8,
+          "wr": 50.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -14724,8 +14724,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 54.3,
-          "wrOffset": -9.2,
+          "wr": 54.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -14785,7 +14785,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "22cm",
@@ -14917,8 +14917,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.8,
-          "wrOffset": -7.8,
+          "wr": 49.7,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -14935,8 +14935,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.5,
-          "wrOffset": -9.2,
+          "wr": 49.6,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "B",
           "tierCss": "tier-b",
@@ -14994,7 +14994,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "bath陳奕迅",
@@ -15126,8 +15126,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.0,
-          "wrOffset": -7.8,
+          "wr": 49.9,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -15144,8 +15144,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 47.3,
-          "wrOffset": -9.2,
+          "wr": 47.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -15206,7 +15206,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "LR Oreoismycat",
@@ -15338,8 +15338,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.8,
-          "wrOffset": -7.8,
+          "wr": 49.7,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -15356,8 +15356,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 52.1,
-          "wrOffset": -9.2,
+          "wr": 52.2,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "S",
           "tierCss": "tier-s",
@@ -15417,7 +15417,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "LacestsBaby",
@@ -15549,8 +15549,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.0,
-          "wrOffset": -7.8,
+          "wr": 49.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -15567,8 +15567,8 @@
           "tierRoleCss": "tier-god"
         },
         "5": {
-          "wr": 55.6,
-          "wrOffset": -9.2,
+          "wr": 55.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -15628,7 +15628,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Rita",
@@ -15760,8 +15760,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.6,
-          "wrOffset": -7.8,
+          "wr": 49.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -15778,8 +15778,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.7,
-          "wrOffset": -9.2,
+          "wr": 51.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -15837,7 +15837,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "RedLY",
@@ -15969,8 +15969,8 @@
       },
       "pools": {
         "25": {
-          "wr": 51.1,
-          "wrOffset": -7.8,
+          "wr": 51.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -15987,8 +15987,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 51.0,
-          "wrOffset": -9.2,
+          "wr": 51.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -16046,7 +16046,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "2512",
@@ -16178,8 +16178,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.5,
-          "wrOffset": -7.8,
+          "wr": 49.4,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -16196,8 +16196,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 51.1,
-          "wrOffset": -9.2,
+          "wr": 51.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -16257,7 +16257,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "jinzosp property",
@@ -16389,8 +16389,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.2,
-          "wrOffset": -7.8,
+          "wr": 49.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -16407,8 +16407,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.4,
-          "wrOffset": -9.2,
+          "wr": 49.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -16466,7 +16466,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Statikk",
@@ -16598,8 +16598,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.8,
-          "wrOffset": -7.8,
+          "wr": 49.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -16616,8 +16616,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.4,
-          "wrOffset": -9.2,
+          "wr": 49.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -16677,7 +16677,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "From Behind",
@@ -16809,8 +16809,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.7,
-          "wrOffset": -7.8,
+          "wr": 49.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -16827,8 +16827,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 50.6,
-          "wrOffset": -9.2,
+          "wr": 50.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -16888,7 +16888,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Carlos1410",
@@ -17020,8 +17020,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.4,
-          "wrOffset": -7.8,
+          "wr": 50.3,
+          "wrOffset": -7.9,
           "nPlayers": 22,
           "tier": "B",
           "tierCss": "tier-b",
@@ -17038,8 +17038,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.5,
-          "wrOffset": -9.2,
+          "wr": 51.6,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "A",
           "tierCss": "tier-a",
@@ -17099,7 +17099,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Carrie Fisher",
@@ -17231,8 +17231,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.9,
-          "wrOffset": -7.8,
+          "wr": 49.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -17249,8 +17249,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 52.4,
-          "wrOffset": -9.2,
+          "wr": 52.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -17310,7 +17310,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Bounty",
@@ -17442,8 +17442,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.1,
-          "wrOffset": -7.8,
+          "wr": 49.0,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "C",
           "tierCss": "tier-c",
@@ -17460,8 +17460,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 45.5,
-          "wrOffset": -9.2,
+          "wr": 45.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -17519,7 +17519,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "TheFreak",
@@ -17651,8 +17651,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.8,
-          "wrOffset": -7.8,
+          "wr": 48.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -17669,8 +17669,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 47.8,
-          "wrOffset": -9.2,
+          "wr": 47.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -17730,7 +17730,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "MLVDrTesto",
@@ -17862,8 +17862,8 @@
       },
       "pools": {
         "25": {
-          "wr": 50.0,
-          "wrOffset": -7.8,
+          "wr": 49.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -17880,8 +17880,8 @@
           "tierRoleCss": "tier-s"
         },
         "5": {
-          "wr": 49.8,
-          "wrOffset": -9.2,
+          "wr": 49.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -17942,7 +17942,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "TTMoyuU侍凯南",
@@ -18074,8 +18074,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.7,
-          "wrOffset": -7.8,
+          "wr": 49.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -18092,8 +18092,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 53.1,
-          "wrOffset": -9.2,
+          "wr": 53.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -18153,7 +18153,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "cxmxllxPedro",
@@ -18285,8 +18285,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.2,
-          "wrOffset": -7.8,
+          "wr": 49.1,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "B",
           "tierCss": "tier-b",
@@ -18303,8 +18303,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 48.1,
-          "wrOffset": -9.2,
+          "wr": 48.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -18364,7 +18364,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Lacteurvedette",
@@ -18496,8 +18496,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.2,
-          "wrOffset": -7.8,
+          "wr": 48.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -18514,8 +18514,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 46.9,
-          "wrOffset": -9.2,
+          "wr": 47.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -18575,7 +18575,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "ifarted",
@@ -18707,8 +18707,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.9,
-          "wrOffset": -7.8,
+          "wr": 48.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -18725,8 +18725,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 48.9,
-          "wrOffset": -9.2,
+          "wr": 49.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -18786,7 +18786,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "DieWithASmile",
@@ -18918,8 +18918,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.0,
-          "wrOffset": -7.8,
+          "wr": 48.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -18936,8 +18936,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.7,
-          "wrOffset": -9.2,
+          "wr": 49.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -18995,7 +18995,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "EREBOS",
@@ -19127,8 +19127,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.1,
-          "wrOffset": -7.8,
+          "wr": 49.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -19145,8 +19145,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 48.3,
-          "wrOffset": -9.2,
+          "wr": 48.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -19204,7 +19204,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Godofgrace",
@@ -19336,8 +19336,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.5,
-          "wrOffset": -7.8,
+          "wr": 49.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -19354,8 +19354,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 51.7,
-          "wrOffset": -9.2,
+          "wr": 51.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -19416,7 +19416,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "MaffTheStar",
@@ -19548,8 +19548,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.6,
-          "wrOffset": -7.8,
+          "wr": 48.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -19566,8 +19566,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 44.0,
-          "wrOffset": -9.2,
+          "wr": 44.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -19627,7 +19627,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Bal10",
@@ -19759,8 +19759,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.8,
-          "wrOffset": -7.8,
+          "wr": 48.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -19777,8 +19777,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.1,
-          "wrOffset": -9.2,
+          "wr": 49.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -19838,7 +19838,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "BeKa",
@@ -19970,8 +19970,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.9,
-          "wrOffset": -7.8,
+          "wr": 49.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "B",
           "tierCss": "tier-b",
@@ -19988,8 +19988,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 47.9,
-          "wrOffset": -9.2,
+          "wr": 48.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -20049,7 +20049,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Snowpack",
@@ -20181,8 +20181,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.9,
-          "wrOffset": -7.8,
+          "wr": 48.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -20199,8 +20199,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 49.5,
-          "wrOffset": -9.2,
+          "wr": 49.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -20260,7 +20260,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "坚不可摧",
@@ -20392,8 +20392,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.3,
-          "wrOffset": -7.8,
+          "wr": 48.2,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -20410,8 +20410,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 48.3,
-          "wrOffset": -9.2,
+          "wr": 48.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -20469,7 +20469,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "SHINI",
@@ -20601,8 +20601,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.3,
-          "wrOffset": -7.8,
+          "wr": 48.2,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "C",
           "tierCss": "tier-c",
@@ -20619,8 +20619,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 46.8,
-          "wrOffset": -9.2,
+          "wr": 46.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -20678,7 +20678,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "FARKEDMEZ",
@@ -20810,8 +20810,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.2,
-          "wrOffset": -7.8,
+          "wr": 49.1,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -20828,8 +20828,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 48.3,
-          "wrOffset": -9.2,
+          "wr": 48.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -20889,7 +20889,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Hellsing",
@@ -21021,8 +21021,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.0,
-          "wrOffset": -7.8,
+          "wr": 47.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -21039,8 +21039,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 44.0,
-          "wrOffset": -9.2,
+          "wr": 44.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -21098,7 +21098,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Sunless",
@@ -21230,8 +21230,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.0,
-          "wrOffset": -7.8,
+          "wr": 48.9,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "C",
           "tierCss": "tier-c",
@@ -21248,8 +21248,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 47.6,
-          "wrOffset": -9.2,
+          "wr": 47.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -21309,7 +21309,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Purplekuish",
@@ -21441,8 +21441,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.6,
-          "wrOffset": -7.8,
+          "wr": 48.5,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "C",
           "tierCss": "tier-c",
@@ -21459,8 +21459,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 45.8,
-          "wrOffset": -9.2,
+          "wr": 45.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -21520,7 +21520,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "oldxanny",
@@ -21652,8 +21652,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.5,
-          "wrOffset": -7.8,
+          "wr": 48.4,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "C",
           "tierCss": "tier-c",
@@ -21670,8 +21670,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 48.2,
-          "wrOffset": -9.2,
+          "wr": 48.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -21731,7 +21731,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Popcorn",
@@ -21863,8 +21863,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.4,
-          "wrOffset": -7.8,
+          "wr": 48.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -21881,8 +21881,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 47.8,
-          "wrOffset": -9.2,
+          "wr": 47.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -21942,7 +21942,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "LOUISVUITTON",
@@ -22074,8 +22074,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.2,
-          "wrOffset": -7.8,
+          "wr": 48.1,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "C",
           "tierCss": "tier-c",
@@ -22092,8 +22092,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 47.4,
-          "wrOffset": -9.2,
+          "wr": 47.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -22153,7 +22153,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "SUTI汉字",
@@ -22285,8 +22285,8 @@
       },
       "pools": {
         "25": {
-          "wr": 49.0,
-          "wrOffset": -7.8,
+          "wr": 48.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -22303,8 +22303,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 45.9,
-          "wrOffset": -9.2,
+          "wr": 46.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -22362,7 +22362,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "posypaka",
@@ -22494,8 +22494,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.3,
-          "wrOffset": -7.8,
+          "wr": 48.2,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "C",
           "tierCss": "tier-c",
@@ -22512,8 +22512,8 @@
           "tierRoleCss": "tier-a"
         },
         "5": {
-          "wr": 54.6,
-          "wrOffset": -9.2,
+          "wr": 54.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "GOD",
           "tierCss": "tier-god",
@@ -22573,7 +22573,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "OUROBOROS",
@@ -22705,8 +22705,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.1,
-          "wrOffset": -7.8,
+          "wr": 48.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -22723,8 +22723,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 45.2,
-          "wrOffset": -9.2,
+          "wr": 45.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -22782,7 +22782,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "ChiefDemon",
@@ -22914,8 +22914,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.1,
-          "wrOffset": -7.8,
+          "wr": 47.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -22932,8 +22932,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 48.2,
-          "wrOffset": -9.2,
+          "wr": 48.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -22993,7 +22993,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Ermac",
@@ -23125,8 +23125,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.7,
-          "wrOffset": -7.8,
+          "wr": 48.6,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -23143,8 +23143,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 44.7,
-          "wrOffset": -9.2,
+          "wr": 44.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -23202,7 +23202,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Callisto Regulus",
@@ -23334,8 +23334,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.5,
-          "wrOffset": -7.8,
+          "wr": 47.4,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -23352,8 +23352,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 53.6,
-          "wrOffset": -9.2,
+          "wr": 53.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "S",
           "tierCss": "tier-s",
@@ -23413,7 +23413,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Co DocVurong",
@@ -23545,8 +23545,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.4,
-          "wrOffset": -7.8,
+          "wr": 47.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -23563,8 +23563,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 45.5,
-          "wrOffset": -9.2,
+          "wr": 45.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -23624,7 +23624,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Cracstail",
@@ -23756,8 +23756,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.1,
-          "wrOffset": -7.8,
+          "wr": 47.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -23774,8 +23774,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 48.6,
-          "wrOffset": -9.2,
+          "wr": 48.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -23833,7 +23833,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "LCFR",
@@ -23965,8 +23965,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.0,
-          "wrOffset": -7.8,
+          "wr": 47.9,
+          "wrOffset": -7.9,
           "nPlayers": 23,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -23983,8 +23983,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 45.7,
-          "wrOffset": -9.2,
+          "wr": 45.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -24042,7 +24042,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "prodavam bagaj",
@@ -24133,49 +24133,49 @@
             }
           },
           {
-            "player": "ORDDramax",
-            "server": "EU",
-            "championRank": 1,
-            "tier": "Sovereign",
-            "championScore": 17613,
-            "games": 209,
-            "winRate": 56.0,
-            "confidenceWr": 49.2,
-            "score": 84.4,
+            "player": "Martini",
+            "server": "NA",
+            "championRank": 3,
+            "tier": "Challenger",
+            "championScore": 13844,
+            "games": 189,
+            "winRate": 58.2,
+            "confidenceWr": 51.1,
+            "score": 85.3,
             "scoreCoverage": 1.0,
             "components": {
-              "performance": 65.5,
-              "ladder": 100.0,
-              "board": 100.0,
-              "mastery": 100.0,
-              "games": 97.4
+              "performance": 76.3,
+              "ladder": 95.0,
+              "board": 93.1,
+              "mastery": 86.2,
+              "games": 95.6
             }
           },
           {
-            "player": "JOrdd4nn",
+            "player": "Bilou",
             "server": "NA",
-            "championRank": 8,
-            "tier": "Grandmaster",
-            "championScore": 11885,
-            "games": 156,
-            "winRate": 60.3,
-            "confidenceWr": 52.4,
-            "score": 83.3,
+            "championRank": 13,
+            "tier": "Challenger",
+            "championScore": 13006,
+            "games": 70,
+            "winRate": 67.1,
+            "confidenceWr": 55.5,
+            "score": 84.6,
             "scoreCoverage": 1.0,
             "components": {
-              "performance": 84.5,
-              "ladder": 90.0,
-              "board": 75.9,
-              "mastery": 75.0,
-              "games": 92.1
+              "performance": 94.9,
+              "ladder": 95.0,
+              "board": 58.6,
+              "mastery": 72.4,
+              "games": 77.6
             }
           }
         ]
       },
       "pools": {
         "25": {
-          "wr": 48.4,
-          "wrOffset": -7.8,
+          "wr": 48.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "C",
           "tierCss": "tier-c",
@@ -24192,8 +24192,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 46.4,
-          "wrOffset": -9.2,
+          "wr": 46.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -24253,7 +24253,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Milkyway",
@@ -24385,8 +24385,8 @@
       },
       "pools": {
         "25": {
-          "wr": 48.1,
-          "wrOffset": -7.8,
+          "wr": 48.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -24403,8 +24403,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 45.9,
-          "wrOffset": -9.2,
+          "wr": 46.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -24464,7 +24464,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Floks",
@@ -24596,8 +24596,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.5,
-          "wrOffset": -7.8,
+          "wr": 47.4,
+          "wrOffset": -7.9,
           "nPlayers": 23,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -24614,8 +24614,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 45.5,
-          "wrOffset": -9.2,
+          "wr": 45.6,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -24676,7 +24676,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Il Re Si Sveglia",
@@ -24808,13 +24808,13 @@
       },
       "pools": {
         "25": {
-          "wr": 47.1,
-          "wrOffset": -7.8,
+          "wr": 47.0,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "Ass",
           "tierCss": "tier-ass",
-          "tierRole": "B",
-          "tierRoleCss": "tier-b"
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
         },
         "10": {
           "wr": 45.0,
@@ -24826,8 +24826,8 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 44.9,
-          "wrOffset": -9.2,
+          "wr": 45.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -24885,7 +24885,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "mimixink",
@@ -25017,8 +25017,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.4,
-          "wrOffset": -7.8,
+          "wr": 47.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -25035,8 +25035,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 48.4,
-          "wrOffset": -9.2,
+          "wr": 48.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -25096,7 +25096,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Folonfo",
@@ -25228,8 +25228,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.3,
-          "wrOffset": -7.8,
+          "wr": 47.2,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -25246,8 +25246,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 46.9,
-          "wrOffset": -9.2,
+          "wr": 47.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -25308,7 +25308,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "McFister",
@@ -25440,8 +25440,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.8,
-          "wrOffset": -7.8,
+          "wr": 46.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -25458,8 +25458,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 49.3,
-          "wrOffset": -9.2,
+          "wr": 49.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -25519,7 +25519,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "MisterMac",
@@ -25651,8 +25651,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.7,
-          "wrOffset": -7.8,
+          "wr": 47.6,
+          "wrOffset": -7.9,
           "nPlayers": 23,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -25669,8 +25669,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 47.5,
-          "wrOffset": -9.2,
+          "wr": 47.6,
+          "wrOffset": -9.1,
           "nPlayers": 4,
           "tier": "C",
           "tierCss": "tier-c",
@@ -25730,7 +25730,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "OWL",
@@ -25862,8 +25862,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.8,
-          "wrOffset": -7.8,
+          "wr": 47.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -25880,8 +25880,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 50.9,
-          "wrOffset": -9.2,
+          "wr": 51.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "A",
           "tierCss": "tier-a",
@@ -25939,7 +25939,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "ur favblonde",
@@ -26071,8 +26071,8 @@
       },
       "pools": {
         "25": {
-          "wr": 47.1,
-          "wrOffset": -7.8,
+          "wr": 47.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -26089,8 +26089,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 48.2,
-          "wrOffset": -9.2,
+          "wr": 48.3,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "B",
           "tierCss": "tier-b",
@@ -26105,215 +26105,6 @@
       "tierRoleMoved": "down"
     },
     {
-      "name": "Vel'Koz",
-      "slug": "velkoz",
-      "role": "Mid",
-      "class": "Mage",
-      "difficulty": 6,
-      "difficultyLabel": "Moderate",
-      "isHard": false,
-      "wr": 46.6,
-      "meanWr": 47.8,
-      "maxWr": 61.1,
-      "winrateStd": 0.0,
-      "medianGames": 104,
-      "totalGames": 3721,
-      "nPlayers": 30,
-      "medianMastery": 11196,
-      "maxScore": 14370,
-      "otpScore": 29.1,
-      "otpScoreSkew": 10.2,
-      "specialisationShare": 29.1,
-      "heavyOtpShare": 26.5,
-      "contestedGap": -57,
-      "playerTags": [],
-      "isOtp": false,
-      "topPlayer": "FactionTheRiways",
-      "tier": "Ass",
-      "tierCss": "tier-ass",
-      "tierRole": "C",
-      "tierRoleCss": "tier-c",
-      "skillSpread": 6.5,
-      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10129.png",
-      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Velkoz_0.jpg",
-      "bestPlayer": {
-        "player": "FactionTheRiways",
-        "rank": 1,
-        "confidence_wr": 51.7,
-        "server": "EU",
-        "best_score": 98.1,
-        "scoring_version": "best-player-v1"
-      },
-      "bestPlayerPodium": {
-        "scoringVersion": "best-player-v1",
-        "scope": "regional",
-        "server": "EU",
-        "capturedAt": "November 21, 2026",
-        "players": [
-          {
-            "player": "FactionTheRiways",
-            "server": "EU",
-            "championRank": 1,
-            "tier": "Challenger",
-            "championScore": 13937,
-            "games": 140,
-            "winRate": 60.0,
-            "confidenceWr": 51.7,
-            "score": 98.1,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 100.0,
-              "ladder": 95.0,
-              "board": 100.0,
-              "mastery": 96.6,
-              "games": 88.0
-            }
-          },
-          {
-            "player": "红装",
-            "server": "EU",
-            "championRank": 5,
-            "tier": "Sovereign",
-            "championScore": 13132,
-            "games": 90,
-            "winRate": 61.1,
-            "confidenceWr": 50.8,
-            "score": 93.0,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 96.6,
-              "ladder": 100.0,
-              "board": 86.2,
-              "mastery": 82.8,
-              "games": 80.2
-            }
-          },
-          {
-            "player": "Senpai Notice Me",
-            "server": "EU",
-            "championRank": 10,
-            "tier": "Challenger",
-            "championScore": 12390,
-            "games": 166,
-            "winRate": 57.2,
-            "confidenceWr": 49.6,
-            "score": 84.6,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 89.7,
-              "ladder": 95.0,
-              "board": 69.0,
-              "mastery": 69.0,
-              "games": 91.0
-            }
-          }
-        ]
-      },
-      "globalBestPlayerPodium": {
-        "scoringVersion": "best-player-v1",
-        "scope": "global",
-        "server": null,
-        "servers": [
-          "EU",
-          "NA"
-        ],
-        "capturedAt": "November 24, 2026",
-        "players": [
-          {
-            "player": "FactionTheRiways",
-            "server": "EU",
-            "championRank": 1,
-            "tier": "Challenger",
-            "championScore": 13937,
-            "games": 140,
-            "winRate": 60.0,
-            "confidenceWr": 51.7,
-            "score": 94.1,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 90.9,
-              "ladder": 95.0,
-              "board": 100.0,
-              "mastery": 96.6,
-              "games": 89.9
-            }
-          },
-          {
-            "player": "calyx",
-            "server": "NA",
-            "championRank": 3,
-            "tier": "Sovereign",
-            "championScore": 13772,
-            "games": 77,
-            "winRate": 63.6,
-            "confidenceWr": 52.5,
-            "score": 93.5,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 92.7,
-              "ladder": 100.0,
-              "board": 93.1,
-              "mastery": 92.3,
-              "games": 79.1
-            }
-          },
-          {
-            "player": "红装",
-            "server": "EU",
-            "championRank": 5,
-            "tier": "Sovereign",
-            "championScore": 13132,
-            "games": 90,
-            "winRate": 61.1,
-            "confidenceWr": 50.8,
-            "score": 88.1,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 85.5,
-              "ladder": 100.0,
-              "board": 86.2,
-              "mastery": 82.8,
-              "games": 81.9
-            }
-          }
-        ]
-      },
-      "pools": {
-        "25": {
-          "wr": 46.5,
-          "wrOffset": -7.8,
-          "nPlayers": 25,
-          "tier": "Ass",
-          "tierCss": "tier-ass",
-          "tierRole": "C",
-          "tierRoleCss": "tier-c"
-        },
-        "10": {
-          "wr": 45.6,
-          "wrOffset": -8.5,
-          "nPlayers": 10,
-          "tier": "Ass",
-          "tierCss": "tier-ass",
-          "tierRole": "C",
-          "tierRoleCss": "tier-c"
-        },
-        "5": {
-          "wr": 44.5,
-          "wrOffset": -9.2,
-          "nPlayers": 5,
-          "tier": "Ass",
-          "tierCss": "tier-ass",
-          "tierRole": "C",
-          "tierRoleCss": "tier-c"
-        }
-      },
-      "wrDelta": 0.1,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
-    },
-    {
       "name": "Veigar",
       "slug": "veigar",
       "role": "Mid",
@@ -26321,17 +26112,17 @@
       "difficulty": 4,
       "difficultyLabel": "Moderate",
       "isHard": false,
-      "wr": 46.6,
-      "meanWr": 47.4,
-      "maxWr": 65.9,
-      "winrateStd": 1.58,
-      "medianGames": 140,
-      "totalGames": 4763,
+      "wr": 47.0,
+      "meanWr": 47.7,
+      "maxWr": 69.4,
+      "winrateStd": 2.07,
+      "medianGames": 146,
+      "totalGames": 5074,
       "nPlayers": 30,
-      "medianMastery": 12838,
+      "medianMastery": 12891,
       "maxScore": 16044,
       "otpScore": 32.7,
-      "otpScoreSkew": 9.4,
+      "otpScoreSkew": 9.0,
       "specialisationShare": 32.7,
       "heavyOtpShare": 29.2,
       "contestedGap": -30,
@@ -26344,78 +26135,78 @@
       "tierCss": "tier-ass",
       "tierRole": "C",
       "tierRoleCss": "tier-c",
-      "skillSpread": 6.2,
+      "skillSpread": 6.3,
       "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10122.png",
       "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Veigar_0.jpg",
       "bestPlayer": {
-        "player": "KOISenén",
-        "rank": 10,
-        "confidence_wr": 55.5,
+        "player": "KOiSenen",
+        "rank": 7,
+        "confidence_wr": 55.0,
         "server": "EU",
-        "best_score": 86.4,
+        "best_score": 90.2,
         "scoring_version": "best-player-v1"
       },
       "bestPlayerPodium": {
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
-            "player": "KOISenén",
+            "player": "KOiSenen",
             "server": "EU",
-            "championRank": 10,
+            "championRank": 7,
             "tier": "Challenger",
-            "championScore": 12383,
-            "games": 88,
-            "winRate": 65.9,
-            "confidenceWr": 55.5,
-            "score": 86.4,
+            "championScore": 13454,
+            "games": 97,
+            "winRate": 64.9,
+            "confidenceWr": 55.0,
+            "score": 90.2,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 96.7,
+              "ladder": 95.0,
+              "board": 79.3,
+              "mastery": 80.0,
+              "games": 77.6
+            }
+          },
+          {
+            "player": "SkenkHut42",
+            "server": "EU",
+            "championRank": 6,
+            "tier": "Challenger",
+            "championScore": 13481,
+            "games": 154,
+            "winRate": 57.8,
+            "confidenceWr": 49.9,
+            "score": 85.7,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 83.3,
+              "ladder": 95.0,
+              "board": 82.8,
+              "mastery": 83.3,
+              "games": 85.4
+            }
+          },
+          {
+            "player": "与你昨夜的梦",
+            "server": "EU",
+            "championRank": 15,
+            "tier": "Challenger",
+            "championScore": 13274,
+            "games": 108,
+            "winRate": 69.4,
+            "confidenceWr": 60.2,
+            "score": 85.3,
             "scoreCoverage": 1.0,
             "components": {
               "performance": 100.0,
               "ladder": 95.0,
-              "board": 69.0,
-              "mastery": 48.3,
-              "games": 76.3
-            }
-          },
-          {
-            "player": "eahea",
-            "server": "EU",
-            "championRank": 6,
-            "tier": "Sovereign",
-            "championScore": 13481,
-            "games": 227,
-            "winRate": 55.5,
-            "confidenceWr": 49.0,
-            "score": 83.9,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 75.9,
-              "ladder": 100.0,
-              "board": 82.8,
-              "mastery": 86.2,
-              "games": 92.3
-            }
-          },
-          {
-            "player": "DarkNife",
-            "server": "EU",
-            "championRank": 5,
-            "tier": "Grandmaster",
-            "championScore": 13475,
-            "games": 154,
-            "winRate": 57.1,
-            "confidenceWr": 49.2,
-            "score": 83.5,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 79.3,
-              "ladder": 90.0,
-              "board": 86.2,
-              "mastery": 82.8,
-              "games": 85.8
+              "board": 51.7,
+              "mastery": 70.0,
+              "games": 79.4
             }
           }
         ]
@@ -26442,7 +26233,7 @@
             "score": 95.1,
             "scoreCoverage": 1.0,
             "components": {
-              "performance": 91.4,
+              "performance": 91.5,
               "ladder": 100.0,
               "board": 96.6,
               "mastery": 100.0,
@@ -26450,41 +26241,41 @@
             }
           },
           {
-            "player": "carloneytor161",
-            "server": "NA",
-            "championRank": 4,
-            "tier": "Sovereign",
-            "championScore": 13481,
-            "games": 151,
-            "winRate": 57.6,
-            "confidenceWr": 49.6,
-            "score": 85.7,
+            "player": "KOiSenen",
+            "server": "EU",
+            "championRank": 7,
+            "tier": "Challenger",
+            "championScore": 13454,
+            "games": 97,
+            "winRate": 64.9,
+            "confidenceWr": 55.0,
+            "score": 90.2,
             "scoreCoverage": 1.0,
             "components": {
-              "performance": 77.6,
-              "ladder": 100.0,
-              "board": 89.7,
-              "mastery": 86.2,
-              "games": 85.3
+              "performance": 96.6,
+              "ladder": 95.0,
+              "board": 79.3,
+              "mastery": 80.0,
+              "games": 77.9
             }
           },
           {
-            "player": "KOISenén",
+            "player": "与你昨夜的梦",
             "server": "EU",
-            "championRank": 10,
+            "championRank": 15,
             "tier": "Challenger",
-            "championScore": 12383,
-            "games": 88,
-            "winRate": 65.9,
-            "confidenceWr": 55.5,
-            "score": 85.7,
+            "championScore": 13274,
+            "games": 108,
+            "winRate": 69.4,
+            "confidenceWr": 60.2,
+            "score": 85.3,
             "scoreCoverage": 1.0,
             "components": {
-              "performance": 98.3,
+              "performance": 100.0,
               "ladder": 95.0,
-              "board": 69.0,
-              "mastery": 48.3,
-              "games": 76.2
+              "board": 51.7,
+              "mastery": 70.0,
+              "games": 79.7
             }
           }
         ]
@@ -26492,25 +26283,25 @@
       "pools": {
         "25": {
           "wr": 47.0,
-          "wrOffset": -7.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
-          "tier": "Ass",
-          "tierCss": "tier-ass",
-          "tierRole": "C",
-          "tierRoleCss": "tier-c"
-        },
-        "10": {
-          "wr": 46.4,
-          "wrOffset": -8.5,
-          "nPlayers": 10,
           "tier": "Ass",
           "tierCss": "tier-ass",
           "tierRole": "B",
           "tierRoleCss": "tier-b"
         },
+        "10": {
+          "wr": 47.8,
+          "wrOffset": -8.5,
+          "nPlayers": 10,
+          "tier": "C",
+          "tierCss": "tier-c",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
         "5": {
-          "wr": 44.5,
-          "wrOffset": -9.2,
+          "wr": 44.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -26518,7 +26309,216 @@
           "tierRoleCss": "tier-c"
         }
       },
-      "wrDelta": 0.3,
+      "wrDelta": 0.7,
+      "prevTier": null,
+      "tierMoved": null,
+      "prevTierRole": null,
+      "tierRoleMoved": null
+    },
+    {
+      "name": "Vel'Koz",
+      "slug": "velkoz",
+      "role": "Mid",
+      "class": "Mage",
+      "difficulty": 6,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 46.7,
+      "meanWr": 47.3,
+      "maxWr": 62.3,
+      "winrateStd": 0.0,
+      "medianGames": 140,
+      "totalGames": 4434,
+      "nPlayers": 29,
+      "medianMastery": 12735,
+      "maxScore": 16429,
+      "otpScore": 29.1,
+      "otpScoreSkew": 5.5,
+      "specialisationShare": 29.1,
+      "heavyOtpShare": 26.5,
+      "contestedGap": -57,
+      "playerTags": [],
+      "isOtp": false,
+      "topPlayer": "Nerowist",
+      "tier": "Ass",
+      "tierCss": "tier-ass",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 4.8,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10129.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Velkoz_0.jpg",
+      "bestPlayer": {
+        "player": "红装",
+        "rank": 2,
+        "confidence_wr": 49.8,
+        "server": "EU",
+        "best_score": 92.5,
+        "scoring_version": "best-player-v1"
+      },
+      "bestPlayerPodium": {
+        "scoringVersion": "best-player-v1",
+        "scope": "regional",
+        "server": "EU",
+        "capturedAt": "November 24, 2026",
+        "players": [
+          {
+            "player": "红装",
+            "server": "EU",
+            "championRank": 2,
+            "tier": "Challenger",
+            "championScore": 14573,
+            "games": 119,
+            "winRate": 58.8,
+            "confidenceWr": 49.8,
+            "score": 92.5,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 89.7,
+              "ladder": 95.0,
+              "board": 96.6,
+              "mastery": 96.6,
+              "games": 83.8
+            }
+          },
+          {
+            "player": "FactionTheRiways",
+            "server": "EU",
+            "championRank": 8,
+            "tier": "Grandmaster",
+            "championScore": 14285,
+            "games": 188,
+            "winRate": 59.6,
+            "confidenceWr": 52.4,
+            "score": 91.7,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 100.0,
+              "ladder": 90.0,
+              "board": 75.9,
+              "mastery": 89.7,
+              "games": 91.7
+            }
+          },
+          {
+            "player": "AkiiLii",
+            "server": "EU",
+            "championRank": 3,
+            "tier": "Sovereign",
+            "championScore": 14527,
+            "games": 61,
+            "winRate": 62.3,
+            "confidenceWr": 49.7,
+            "score": 90.3,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 86.2,
+              "ladder": 100.0,
+              "board": 93.1,
+              "mastery": 93.1,
+              "games": 72.2
+            }
+          }
+        ]
+      },
+      "globalBestPlayerPodium": {
+        "scoringVersion": "best-player-v1",
+        "scope": "global",
+        "server": null,
+        "servers": [
+          "EU",
+          "NA"
+        ],
+        "capturedAt": "November 24, 2026",
+        "players": [
+          {
+            "player": "calyx",
+            "server": "NA",
+            "championRank": 3,
+            "tier": "Sovereign",
+            "championScore": 13772,
+            "games": 77,
+            "winRate": 63.6,
+            "confidenceWr": 52.5,
+            "score": 93.5,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 92.7,
+              "ladder": 100.0,
+              "board": 93.1,
+              "mastery": 92.3,
+              "games": 77.8
+            }
+          },
+          {
+            "player": "红装",
+            "server": "EU",
+            "championRank": 2,
+            "tier": "Challenger",
+            "championScore": 14573,
+            "games": 119,
+            "winRate": 58.8,
+            "confidenceWr": 49.8,
+            "score": 88.2,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 80.0,
+              "ladder": 95.0,
+              "board": 96.6,
+              "mastery": 96.6,
+              "games": 85.5
+            }
+          },
+          {
+            "player": "FactionTheRiways",
+            "server": "EU",
+            "championRank": 8,
+            "tier": "Grandmaster",
+            "championScore": 14285,
+            "games": 188,
+            "winRate": 59.6,
+            "confidenceWr": 52.4,
+            "score": 87.7,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 90.9,
+              "ladder": 90.0,
+              "board": 75.9,
+              "mastery": 89.7,
+              "games": 93.6
+            }
+          }
+        ]
+      },
+      "pools": {
+        "25": {
+          "wr": 46.8,
+          "wrOffset": -7.9,
+          "nPlayers": 25,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "10": {
+          "wr": 46.1,
+          "wrOffset": -8.5,
+          "nPlayers": 10,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 43.8,
+          "wrOffset": -9.1,
+          "nPlayers": 5,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "Ass",
+          "tierRoleCss": "tier-ass"
+        }
+      },
+      "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -26568,7 +26568,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Challenger Fizz",
@@ -26700,8 +26700,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.6,
-          "wrOffset": -7.8,
+          "wr": 46.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -26718,8 +26718,8 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 46.0,
-          "wrOffset": -9.2,
+          "wr": 46.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -26780,7 +26780,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "StayHard",
@@ -26912,8 +26912,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.1,
-          "wrOffset": -7.8,
+          "wr": 46.0,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -26930,8 +26930,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 43.7,
-          "wrOffset": -9.2,
+          "wr": 43.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -26991,7 +26991,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "天魔神使",
@@ -27123,8 +27123,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.5,
-          "wrOffset": -7.8,
+          "wr": 46.4,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27141,8 +27141,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 45.5,
-          "wrOffset": -9.2,
+          "wr": 45.6,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27200,7 +27200,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "禁欲继父",
@@ -27332,8 +27332,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.9,
-          "wrOffset": -7.8,
+          "wr": 45.8,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27350,8 +27350,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 43.9,
-          "wrOffset": -9.2,
+          "wr": 44.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27412,7 +27412,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Eren1210",
@@ -27544,8 +27544,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.5,
-          "wrOffset": -7.8,
+          "wr": 46.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27562,8 +27562,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 44.8,
-          "wrOffset": -9.2,
+          "wr": 44.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27623,7 +27623,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "IMOUT2",
@@ -27755,8 +27755,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.8,
-          "wrOffset": -7.8,
+          "wr": 45.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27773,8 +27773,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 46.6,
-          "wrOffset": -9.2,
+          "wr": 46.7,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27832,7 +27832,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "50eXeLaNS",
@@ -27964,8 +27964,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.9,
-          "wrOffset": -7.8,
+          "wr": 45.8,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -27982,8 +27982,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 42.7,
-          "wrOffset": -9.2,
+          "wr": 42.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28043,7 +28043,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "HeyYunah",
@@ -28175,8 +28175,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.0,
-          "wrOffset": -7.8,
+          "wr": 45.9,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28193,8 +28193,8 @@
           "tierRoleCss": "tier-b"
         },
         "5": {
-          "wr": 46.1,
-          "wrOffset": -9.2,
+          "wr": 46.2,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28255,7 +28255,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "FuwaBuenaOnda",
@@ -28387,8 +28387,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.1,
-          "wrOffset": -7.8,
+          "wr": 46.0,
+          "wrOffset": -7.9,
           "nPlayers": 23,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28405,8 +28405,8 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 45.4,
-          "wrOffset": -9.2,
+          "wr": 45.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28466,7 +28466,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "YBDKRAKEN",
@@ -28598,8 +28598,8 @@
       },
       "pools": {
         "25": {
-          "wr": 46.0,
-          "wrOffset": -7.8,
+          "wr": 45.9,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28616,8 +28616,8 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 42.0,
-          "wrOffset": -9.2,
+          "wr": 42.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28678,7 +28678,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "69Savage",
@@ -28810,8 +28810,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.4,
-          "wrOffset": -7.8,
+          "wr": 45.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28828,8 +28828,8 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 43.4,
-          "wrOffset": -9.2,
+          "wr": 43.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -28889,7 +28889,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "keepitReal",
@@ -29021,8 +29021,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.6,
-          "wrOffset": -7.8,
+          "wr": 45.5,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29039,8 +29039,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 46.9,
-          "wrOffset": -9.2,
+          "wr": 47.0,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "C",
           "tierCss": "tier-c",
@@ -29098,7 +29098,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "说名字太长就会有笨蛋跟着",
@@ -29230,8 +29230,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.8,
-          "wrOffset": -7.8,
+          "wr": 45.7,
+          "wrOffset": -7.9,
           "nPlayers": 24,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29248,8 +29248,8 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 43.0,
-          "wrOffset": -9.2,
+          "wr": 43.1,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29309,7 +29309,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "MESSIWAIN",
@@ -29441,8 +29441,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.8,
-          "wrOffset": -7.8,
+          "wr": 45.7,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29459,8 +29459,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 46.7,
-          "wrOffset": -9.2,
+          "wr": 46.8,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29520,7 +29520,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "MrRuhiO",
@@ -29652,8 +29652,8 @@
       },
       "pools": {
         "25": {
-          "wr": 44.4,
-          "wrOffset": -7.8,
+          "wr": 44.3,
+          "wrOffset": -7.9,
           "nPlayers": 23,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29670,8 +29670,8 @@
           "tierRoleCss": "tier-c"
         },
         "5": {
-          "wr": 44.3,
-          "wrOffset": -9.2,
+          "wr": 44.4,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29731,7 +29731,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "Shadda",
@@ -29863,8 +29863,8 @@
       },
       "pools": {
         "25": {
-          "wr": 45.4,
-          "wrOffset": -7.8,
+          "wr": 45.3,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -29881,13 +29881,13 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 43.8,
-          "wrOffset": -9.2,
+          "wr": 43.9,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
-          "tierRole": "Ass",
-          "tierRoleCss": "tier-ass"
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
         }
       },
       "wrDelta": 0.7,
@@ -29943,7 +29943,7 @@
         "scoringVersion": "best-player-v1",
         "scope": "regional",
         "server": "EU",
-        "capturedAt": "November 21, 2026",
+        "capturedAt": "November 24, 2026",
         "players": [
           {
             "player": "NOXIANKING",
@@ -30075,8 +30075,8 @@
       },
       "pools": {
         "25": {
-          "wr": 43.5,
-          "wrOffset": -7.8,
+          "wr": 43.4,
+          "wrOffset": -7.9,
           "nPlayers": 25,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -30093,8 +30093,8 @@
           "tierRoleCss": "tier-ass"
         },
         "5": {
-          "wr": 42.4,
-          "wrOffset": -9.2,
+          "wr": 42.5,
+          "wrOffset": -9.1,
           "nPlayers": 5,
           "tier": "Ass",
           "tierCss": "tier-ass",
@@ -30374,8 +30374,8 @@
         "Veigar",
         "Ziggs"
       ],
-      "avgWr": 52.9,
-      "bestRank": 3,
+      "avgWr": 53.1,
+      "bestRank": 2,
       "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10127.png"
     },
     {
@@ -30504,11 +30504,11 @@
     },
     {
       "player": "Vayne13",
-      "champion": "Vayne",
-      "slug": "vayne",
-      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10010.png",
+      "champion": "Yunara",
+      "slug": "yunara",
+      "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Yunara.png",
       "score": 22230,
-      "wr": 66.9
+      "wr": 64.4
     },
     {
       "player": "Shaco",
@@ -30527,20 +30527,20 @@
       "wr": 58.1
     },
     {
-      "player": "Gogul theMogger",
-      "champion": "Ahri",
-      "slug": "ahri",
-      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10038.png",
-      "score": 21950,
-      "wr": 66.7
-    },
-    {
       "player": "emcuoixinhlam",
       "champion": "Hwei",
       "slug": "hwei",
       "icon": "https://ddragon.leagueoflegends.com/cdn/16.11.1/img/champion/Hwei.png",
       "score": 21950,
       "wr": 61.0
+    },
+    {
+      "player": "Gogul theMogger",
+      "champion": "Ahri",
+      "slug": "ahri",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10038.png",
+      "score": 21950,
+      "wr": 66.7
     }
   ],
   "globalTopMastery": [
@@ -30581,21 +30581,21 @@
       "server": "EU"
     },
     {
-      "player": "Vayne13",
-      "champion": "Vayne",
-      "slug": "vayne",
-      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10010.png",
-      "score": 22230,
-      "wr": 66.9,
-      "server": "EU"
-    },
-    {
       "player": "Shaco",
       "champion": "Karma",
       "slug": "karma",
       "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10007.png",
       "score": 22230,
       "wr": 54.4,
+      "server": "EU"
+    },
+    {
+      "player": "Vayne13",
+      "champion": "Vayne",
+      "slug": "vayne",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10010.png",
+      "score": 22230,
+      "wr": 66.9,
       "server": "EU"
     },
     {

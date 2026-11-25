@@ -58,10 +58,9 @@ export const COLLECTION_PENDING_REGIONS = "";
  * older. Empty a list once its champions are recaptured.
  */
 export const NOT_RECAPTURED: Record<"EU" | "NA", string[]> = {
-  // 2026-11-24: Vel'Koz's EU session read no win rates and Rell's NA session
-  // stopped at rank 8; both keep their previous collection's numbers.
-  EU: ["Vel'Koz"],
-  NA: ["Rell"],
+  // Vel'Koz (EU) and Rell (NA) were recaptured on 2026-11-24.
+  EU: [],
+  NA: [],
 };
 
 /** The patch the next collection and the next round of work is aimed at. */

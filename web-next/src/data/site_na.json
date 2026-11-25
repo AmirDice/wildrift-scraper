@@ -9,7 +9,7 @@
     "Support"
   ],
   "nChampions": 143,
-  "nPlayers": 4245,
+  "nPlayers": 4244,
   "wrOffset": -7.8,
   "bestPlayerScoringVersion": "best-player-v1",
   "bestPlayerScope": "regional",
@@ -16106,147 +16106,6 @@
       "tierRoleMoved": "down"
     },
     {
-      "name": "Rell",
-      "slug": "rell",
-      "role": "Support",
-      "class": "Tank",
-      "difficulty": 5,
-      "difficultyLabel": "Moderate",
-      "isHard": false,
-      "wr": 48.0,
-      "meanWr": 47.6,
-      "maxWr": 68.6,
-      "winrateStd": 2.39,
-      "medianGames": 91,
-      "totalGames": 3548,
-      "nPlayers": 30,
-      "medianMastery": 10736,
-      "maxScore": 15552,
-      "otpScore": 25.0,
-      "otpScoreSkew": 49.4,
-      "specialisationShare": 25.0,
-      "heavyOtpShare": 4.2,
-      "contestedGap": -35,
-      "playerTags": [],
-      "isOtp": false,
-      "topPlayer": "Hanz",
-      "tier": "Ass",
-      "tierCss": "tier-ass",
-      "tierRole": "B",
-      "tierRoleCss": "tier-b",
-      "skillSpread": 10.0,
-      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10116.png",
-      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rell_0.jpg",
-      "bestPlayer": {
-        "player": "JOrdd4nn",
-        "rank": 8,
-        "confidence_wr": 52.4,
-        "server": "NA",
-        "best_score": 83.9,
-        "scoring_version": "best-player-v1"
-      },
-      "bestPlayerPodium": {
-        "scoringVersion": "best-player-v1",
-        "scope": "regional",
-        "server": "NA",
-        "capturedAt": "November 24, 2026",
-        "players": [
-          {
-            "player": "JOrdd4nn",
-            "server": "NA",
-            "championRank": 8,
-            "tier": "Grandmaster",
-            "championScore": 11885,
-            "games": 156,
-            "winRate": 60.3,
-            "confidenceWr": 52.4,
-            "score": 83.9,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 85.7,
-              "ladder": 90.0,
-              "board": 75.9,
-              "mastery": 75.0,
-              "games": 92.2
-            }
-          },
-          {
-            "player": "LE Lirrito",
-            "server": "NA",
-            "championRank": 2,
-            "tier": "Challenger",
-            "championScore": 15107,
-            "games": 163,
-            "winRate": 57.1,
-            "confidenceWr": 49.4,
-            "score": 83.1,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 67.9,
-              "ladder": 95.0,
-              "board": 96.6,
-              "mastery": 96.4,
-              "games": 93.0
-            }
-          },
-          {
-            "player": "WhereisJinx",
-            "server": "NA",
-            "championRank": 4,
-            "tier": "Challenger",
-            "championScore": 13519,
-            "games": 212,
-            "winRate": 55.7,
-            "confidenceWr": 48.9,
-            "score": 79.3,
-            "scoreCoverage": 1.0,
-            "components": {
-              "performance": 64.3,
-              "ladder": 95.0,
-              "board": 89.7,
-              "mastery": 85.7,
-              "games": 97.8
-            }
-          }
-        ]
-      },
-      "globalBestPlayerPodium": null,
-      "pools": {
-        "25": {
-          "wr": 47.9,
-          "wrOffset": -8.0,
-          "nPlayers": 25,
-          "tier": "Ass",
-          "tierCss": "tier-ass",
-          "tierRole": "B",
-          "tierRoleCss": "tier-b"
-        },
-        "10": {
-          "wr": 46.3,
-          "wrOffset": -8.7,
-          "nPlayers": 10,
-          "tier": "Ass",
-          "tierCss": "tier-ass",
-          "tierRole": "C",
-          "tierRoleCss": "tier-c"
-        },
-        "5": {
-          "wr": 45.1,
-          "wrOffset": -9.2,
-          "nPlayers": 5,
-          "tier": "Ass",
-          "tierCss": "tier-ass",
-          "tierRole": "C",
-          "tierRoleCss": "tier-c"
-        }
-      },
-      "wrDelta": 0.4,
-      "prevTier": null,
-      "tierMoved": null,
-      "prevTierRole": "C",
-      "tierRoleMoved": "up"
-    },
-    {
       "name": "Jhin",
       "slug": "jhin",
       "role": "Dragon",
@@ -17556,8 +17415,8 @@
       "topPlayer": "Blitzcrank",
       "tier": "Ass",
       "tierCss": "tier-ass",
-      "tierRole": "C",
-      "tierRoleCss": "tier-c",
+      "tierRole": "B",
+      "tierRoleCss": "tier-b",
       "skillSpread": 6.6,
       "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10033.png",
       "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Blitzcrank_0.jpg",
@@ -17667,8 +17526,8 @@
       "wrDelta": 0.2,
       "prevTier": null,
       "tierMoved": null,
-      "prevTierRole": null,
-      "tierRoleMoved": null
+      "prevTierRole": "C",
+      "tierRoleMoved": "up"
     },
     {
       "name": "Kayle",
@@ -17808,6 +17667,147 @@
         }
       },
       "wrDelta": 0.4,
+      "prevTier": null,
+      "tierMoved": null,
+      "prevTierRole": null,
+      "tierRoleMoved": null
+    },
+    {
+      "name": "Rell",
+      "slug": "rell",
+      "role": "Support",
+      "class": "Tank",
+      "difficulty": 5,
+      "difficultyLabel": "Moderate",
+      "isHard": false,
+      "wr": 47.5,
+      "meanWr": 48.4,
+      "maxWr": 67.3,
+      "winrateStd": 3.16,
+      "medianGames": 111,
+      "totalGames": 4213,
+      "nPlayers": 29,
+      "medianMastery": 12764,
+      "maxScore": 18444,
+      "otpScore": 25.0,
+      "otpScoreSkew": 45.2,
+      "specialisationShare": 25.0,
+      "heavyOtpShare": 4.2,
+      "contestedGap": -35,
+      "playerTags": [],
+      "isOtp": false,
+      "topPlayer": "Personal",
+      "tier": "Ass",
+      "tierCss": "tier-ass",
+      "tierRole": "C",
+      "tierRoleCss": "tier-c",
+      "skillSpread": 9.3,
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10116.png",
+      "splash": "https://ddragon.leagueoflegends.com/cdn/img/champion/loading/Rell_0.jpg",
+      "bestPlayer": {
+        "player": "Bilou",
+        "rank": 13,
+        "confidence_wr": 55.5,
+        "server": "NA",
+        "best_score": 85.2,
+        "scoring_version": "best-player-v1"
+      },
+      "bestPlayerPodium": {
+        "scoringVersion": "best-player-v1",
+        "scope": "regional",
+        "server": "NA",
+        "capturedAt": "November 24, 2026",
+        "players": [
+          {
+            "player": "Bilou",
+            "server": "NA",
+            "championRank": 13,
+            "tier": "Challenger",
+            "championScore": 13006,
+            "games": 70,
+            "winRate": 67.1,
+            "confidenceWr": 55.5,
+            "score": 85.2,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 96.6,
+              "ladder": 95.0,
+              "board": 58.6,
+              "mastery": 72.4,
+              "games": 76.5
+            }
+          },
+          {
+            "player": "Martini",
+            "server": "NA",
+            "championRank": 3,
+            "tier": "Challenger",
+            "championScore": 13844,
+            "games": 189,
+            "winRate": 58.2,
+            "confidenceWr": 51.1,
+            "score": 85.1,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 75.9,
+              "ladder": 95.0,
+              "board": 93.1,
+              "mastery": 86.2,
+              "games": 94.2
+            }
+          },
+          {
+            "player": "Overhask",
+            "server": "NA",
+            "championRank": 10,
+            "tier": "Challenger",
+            "championScore": 12911,
+            "games": 111,
+            "winRate": 63.1,
+            "confidenceWr": 53.8,
+            "score": 83.6,
+            "scoreCoverage": 1.0,
+            "components": {
+              "performance": 89.7,
+              "ladder": 95.0,
+              "board": 69.0,
+              "mastery": 62.1,
+              "games": 84.7
+            }
+          }
+        ]
+      },
+      "globalBestPlayerPodium": null,
+      "pools": {
+        "25": {
+          "wr": 47.4,
+          "wrOffset": -8.0,
+          "nPlayers": 24,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "B",
+          "tierRoleCss": "tier-b"
+        },
+        "10": {
+          "wr": 45.9,
+          "wrOffset": -8.7,
+          "nPlayers": 9,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        },
+        "5": {
+          "wr": 45.1,
+          "wrOffset": -9.2,
+          "nPlayers": 5,
+          "tier": "Ass",
+          "tierCss": "tier-ass",
+          "tierRole": "C",
+          "tierRoleCss": "tier-c"
+        }
+      },
+      "wrDelta": -0.1,
       "prevTier": null,
       "tierMoved": null,
       "prevTierRole": null,
@@ -20686,19 +20686,6 @@
       "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10059.png"
     },
     {
-      "player": "Letho",
-      "nChampions": 4,
-      "champions": [
-        "Bard",
-        "Jarvan IV",
-        "Poppy",
-        "Rell"
-      ],
-      "avgWr": 59.9,
-      "bestRank": 3,
-      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10105.png"
-    },
-    {
       "player": "气势汹汹短短鲨",
       "nChampions": 4,
       "champions": [
@@ -20710,6 +20697,19 @@
       "avgWr": 59.8,
       "bestRank": 14,
       "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10035.png"
+    },
+    {
+      "player": "Paoloamestoy",
+      "nChampions": 4,
+      "champions": [
+        "Dr. Mundo",
+        "Jayce",
+        "K'Sante",
+        "Vayne"
+      ],
+      "avgWr": 59.6,
+      "bestRank": 3,
+      "firstChampionIcon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10062.png"
     }
   ],
   "funnyNames": [
@@ -20843,21 +20843,21 @@
       "server": "EU"
     },
     {
-      "player": "Vayne13",
-      "champion": "Vayne",
-      "slug": "vayne",
-      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10010.png",
-      "score": 22230,
-      "wr": 66.9,
-      "server": "EU"
-    },
-    {
       "player": "Shaco",
       "champion": "Karma",
       "slug": "karma",
       "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10007.png",
       "score": 22230,
       "wr": 54.4,
+      "server": "EU"
+    },
+    {
+      "player": "Vayne13",
+      "champion": "Vayne",
+      "slug": "vayne",
+      "icon": "https://game.gtimg.cn/images/lgamem/act/lrlib/img/HeadIcon/H_S_10010.png",
+      "score": 22230,
+      "wr": 66.9,
       "server": "EU"
     },
     {
