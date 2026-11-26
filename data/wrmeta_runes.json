@@ -439,7 +439,7 @@
     "tagline": "Gain Attack Damage/Ability Power at high Health",
     "tree": "Sorcery",
     "type": "Minor",
-    "text": "While above 65% Health, gain a bonus 2–20 Attack Damage (based on level) or 2–30 Ability Power (based on level) (Adaptive).",
+    "text": "While above 70% Health, gain a bonus 2–18 Attack Damage (based on level) or 3.3–30 Ability Power (based on level) (Adaptive).",
     "image": "/items/absolute-focus.webp"
   },
   {

@@ -1,9 +1,174 @@
 {
   "schemaVersion": 1,
   "source": "https://wildrift.leagueoflegends.com/en-us/news/tags/patch-notes/",
-  "fetchedAt": "2026-11-17T07:07:51.024Z",
+  "fetchedAt": "2026-11-26T13:11:07.700Z",
   "purpose": "Official chronological evidence archive. Only standard-Rift changes should be promoted into live canonical data.",
   "patches": [
+    {
+      "patch": "7.3g",
+      "title": "Wild Rift Patch Notes 7.3g",
+      "publishedAt": "2026-11-25T10:00:00.000Z",
+      "url": "https://wildrift.leagueoflegends.com/en-us/news/game-updates/wild-rift-patch-notes-7-3g/",
+      "championChanges": [
+        {
+          "champion": "VAYNE",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Vayne hasn’t quite been living up to her reputation as a fearsome duelist, regardless of her build. We’re giving her sustained damage and burst potential during her ultimate a boost to help her bring the pain when she goes on the hunt.",
+          "changes": [
+            {
+              "ability": "Silver Bolts",
+              "text": "Passive Damage: 6%/7%/8%/9% → 5.5%/7%/8.5%/10%"
+            },
+            {
+              "ability": "Final Hour",
+              "text": "Bonus Attack Damage: 30/40/50 → 40/50/60"
+            }
+          ]
+        },
+        {
+          "champion": "IRELIA",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Our previous adjustments to Irelia cut a little too deep, leaving her struggling to find her footing in lane. We’re giving her laning power and sustain a boost, while reducing Bladesurge’s downtime to help her keep dancing around her opponents.",
+          "changes": [
+            {
+              "ability": "Base Stats",
+              "text": "Base Attack Damage: 58 → 62"
+            },
+            {
+              "ability": "Bladesurge",
+              "text": "Cooldown: 9/8/7/6s → 8/7/6/5s\n Healing: 9%/11%/13%/15% → 11%/13%/15%/17%"
+            }
+          ]
+        },
+        {
+          "champion": "GAREN",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Garen’s been relying a little too heavily on his durability to get the job done, so we’re giving his offensive side some love. We’re increasing how well he scales with Attack Damage items to help him pack a bigger punch when building for damage.",
+          "changes": [
+            {
+              "ability": "Judgement",
+              "text": "Damage per spin: 13/17/21/25 + 25%/30%/35%/40% Attack Damage → 10/13/16/19 + 30%/36%/42%/48% Attack Damage\n Armor Shred: 10% → 15%"
+            }
+          ]
+        },
+        {
+          "champion": "AURORA",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "We’re adjusting the width of both casts of Aurora’s first ability to better match their visual effects, making it clearer when her attacks will hit.",
+          "changes": [
+            {
+              "ability": "Twofold Hex",
+              "text": "Projectile width reduced on the initial cast, and increased on the return after recasting."
+            }
+          ]
+        },
+        {
+          "champion": "SMOLDER",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Smolder’s been having a little too easy of a time growing into a late-game menace. We’re slowing down his stacking and reducing his early-to-mid game survivability to give opponents more opportunities to put out his fire before he takes over the Rift.",
+          "changes": [
+            {
+              "ability": "Achooo!",
+              "text": "Cooldown: 12 / 11 / 10 / 9s → 13 / 12 / 11 / 10s"
+            },
+            {
+              "ability": "Flap, Flap, Flap",
+              "text": "Cooldown: 18 / 16 / 14 / 12s → 22 / 19 / 16 / 13s"
+            }
+          ]
+        },
+        {
+          "champion": "SYLAS",
+          "scope": "CHAMPIONS",
+          "modeOnly": false,
+          "summary": "Sylas is still finding his footing on the Rift, but we’re seeing his performance improve as you get more comfortable with his playstyle and builds. We’re giving his waveclear and sustain a small boost to help him hold his own in lane without getting too carried away.",
+          "changes": [
+            {
+              "ability": "Chain Lash",
+              "text": "Explosion Damage to Minions: 30% → 35%"
+            },
+            {
+              "ability": "Kingslayer",
+              "text": "Healing Ratio from Bonus Health: 5% → 6.5%"
+            }
+          ]
+        }
+      ],
+      "textBlocks": [
+        "Champion buffs, marksman adjustments, and new AAA ARAM builds headline this round of balance changes!",
+        "We're back with another round of balance changes, and this time, we're shaking things up across the Rift! Vayne, Irelia, and Garen are getting some extra love, while Smolder's getting his wings clipped before he can take over the late game. We're also taking another pass at marksmen, dialing back some of their late-game power to give other classes more room to shine. And over in AAA ARAM, Bard and Irelia are getting some new tricks up their sleeves with season-exclusive buffs.\n Reminder: content will be released throughout the patch.",
+        "Vayne hasn’t quite been living up to her reputation as a fearsome duelist, regardless of her build. We’re giving her sustained damage and burst potential during her ultimate a boost to help her bring the pain when she goes on the hunt.",
+        "Passive Damage: 6%/7%/8%/9% → 5.5%/7%/8.5%/10%",
+        "Bonus Attack Damage: 30/40/50 → 40/50/60",
+        "Our previous adjustments to Irelia cut a little too deep, leaving her struggling to find her footing in lane. We’re giving her laning power and sustain a boost, while reducing Bladesurge’s downtime to help her keep dancing around her opponents.",
+        "Base Attack Damage: 58 → 62",
+        "Cooldown: 9/8/7/6s → 8/7/6/5s\n Healing: 9%/11%/13%/15% → 11%/13%/15%/17%",
+        "Garen’s been relying a little too heavily on his durability to get the job done, so we’re giving his offensive side some love. We’re increasing how well he scales with Attack Damage items to help him pack a bigger punch when building for damage.",
+        "Damage per spin: 13/17/21/25 + 25%/30%/35%/40% Attack Damage → 10/13/16/19 + 30%/36%/42%/48% Attack Damage\n Armor Shred: 10% → 15%",
+        "We’re adjusting the width of both casts of Aurora’s first ability to better match their visual effects, making it clearer when her attacks will hit.",
+        "Projectile width reduced on the initial cast, and increased on the return after recasting.",
+        "Smolder’s been having a little too easy of a time growing into a late-game menace. We’re slowing down his stacking and reducing his early-to-mid game survivability to give opponents more opportunities to put out his fire before he takes over the Rift.",
+        "Cooldown: 12 / 11 / 10 / 9s → 13 / 12 / 11 / 10s",
+        "Cooldown: 18 / 16 / 14 / 12s → 22 / 19 / 16 / 13s",
+        "Sylas is still finding his footing on the Rift, but we’re seeing his performance improve as you get more comfortable with his playstyle and builds. We’re giving his waveclear and sustain a small boost to help him hold his own in lane without getting too carried away.",
+        "Explosion Damage to Minions: 30% → 35%",
+        "Healing Ratio from Bonus Health: 5% → 6.5%",
+        "ITEMS\n Immortal Shieldbow\n Immortal Shieldbow hasn't been standing out as a compelling option, particularly for melee champions building critical strike. We're giving it a boost to help it compete with other options and make it a more appealing choice when you need a little extra survivability.\n Life Line\n Shield Value: 350 - 650 (melee) / 300 - 550 (Ranged) → 380 - 700 (melee) / 320 - 550 (Ranged)\n Berserker's Greaves\n Since Patch 7.3, marksmen have been enjoying stronger scaling and more distinct playstyles, but their late-game power has gotten a little out of hand. With so much Attack Speed and sustain at their disposal, especially when paired with enchanter supports, they've been leaving other classes in the dust. We're dialing back some of these strengths across the board to give other classes more room to compete in the late game.\n Base Stats\n Attack Speed: 35% → 30%\n Blessed Blade\n On-hit Healing: 10 → 5\n Gunmetal Greaves\n Base Stats\n Attack Speed: 50% → 45%\n Blessed Blade\n On-hit Healing: 12 → 5\n Ardent Censer\n Censer\n Attack Speed gained: 30% → 25%\n Harmonic Echo\n Base Stats:\n Ability Power: 40 → 25\n Guinsoo's Rageblade\n Base Stats\n Attack Speed: 30% → 25%\n RUNES\n Absolute Focus\n Absolute Focus has been giving mages a little too much power for how easily they can activate its bonus. We're dialing back its effectiveness to bring it more in line with other rune options.\n Health threshold required to trigger: 65% → 70%\n Attack Damage: 2 - 20 (based on level) → 2 - 18 (based on level)\n Ability Power: 4 - 40 (based on level) → 3.3 - 30 (based on level)\n AAA ARAM\n Easter Egg Update\n A mysterious Easter egg will be available for a limited time. Purchase a special item from the store to trigger it.\n The Spiritwind Blade Easter egg will become available at a later date, so stay tuned! When triggered, it grants an additional reroll during the first round of Rune Card selection.\n Season-Exclusive Champion Buffs\n We're shaking things up in AAA ARAM with some season-exclusive buffs for Bard and Irelia! Bard is getting more ways to make his basic attack-focused builds shine, while Irelia will have more room to experiment with crit and AP builds.\n These changes will only be available in AAA ARAM for the current season. We'll be keeping an eye on how they perform and listening to your feedback as we continue exploring more ways to bring alternative champion builds into the mode.\n Bard\n Attack Range increased by 100.\n Each basic attack reduces the cooldown of the Passive's Meeps recharge by 2 seconds.\n Removed restrictions on obtaining Attack Speed Augments.\n Irelia\n Passive ability damage can now critically strike.\n (1) now gains a 60% Ability Power ratio, and its damage type has been changed to adaptive damage.\n Champion Balance Adjustments\n Unless otherwise specified, the following changes only apply to AAA ARAM.\n Akali\n We're giving Akali a little more room to weave her abilities together by reducing their cooldowns. To keep her from slipping away with too much power, we're also dialing back her damage reduction to give opponents more opportunities to fight back.\n Damage Taken: 70% → 80%\n Ability Cooldown: 100% → 90%\n Blitzcrank\n Damage Dealt: 100% → 110%\n Damage Taken: 95% → 90%\n Mordekaiser\n Damage Taken: 90% → 100%\n Yasuo\n Damage Dealt: 85% → 80%。\n Miss Fortune\n Damage Dealt: 100% → 105%\n Damage Taken: 100% → 95%\n Sett\n Damage Taken: 95% → 100%\n Master Yi\n Damage Taken: 105% → 100%\n Singed\n Damage Taken: 105% → 100%\n Ezreal\n Damage Dealt: 100% → 105%\n Damage Taken: 100% → 95%\n Kog'Maw\n Attack Speed Ratio: 100% → 90%\n Sylas\n Damage Taken: 90% → 80%\n This change also applies to ARAM\n Vi\n Damage Taken: 90% → 80%\n Nasus\n Ability (1) Cooldown: 7/6/5/4s → 4.5/4/3.5/3s\n Item Adjustments\n Whispering Circlet / Diadem of Songs\n Maximum Mana to Heal and Shield Power conversion ratio: 0.25% → 0.18%\n Edge of Durand\n Attack Damage: 25 → 40\n Warmog's Armor\n We want tanks to have more Health-focused item options worth considering beyond Mogul's Mail. We're buffing Warmog's Armor and Original Heartsteel to give tank players more build options.\n Max Health: 900 → 1200\n Warmog's Heart passive cooldown: 15s → 10s\n Atma's Reckoning\n Critical Rate per 100 Health: 1% → 1.5%\n Maximum Critical Rate bonus: 30% → 45%\n Original Heartsteel\n Charge Damage: 140 + 3.5% Max Health → 140 + 5% Max Health\n Ethereal Weapon\n Deactivation Range: 15 → 25"
+      ],
+      "changeLines": [
+        "Passive Damage: 6%/7%/8%/9% → 5.5%/7%/8.5%/10%",
+        "Bonus Attack Damage: 30/40/50 → 40/50/60",
+        "Base Attack Damage: 58 → 62",
+        "Cooldown: 9/8/7/6s → 8/7/6/5s",
+        "Healing: 9%/11%/13%/15% → 11%/13%/15%/17%",
+        "Damage per spin: 13/17/21/25 + 25%/30%/35%/40% Attack Damage → 10/13/16/19 + 30%/36%/42%/48% Attack Damage",
+        "Armor Shred: 10% → 15%",
+        "Cooldown: 12 / 11 / 10 / 9s → 13 / 12 / 11 / 10s",
+        "Cooldown: 18 / 16 / 14 / 12s → 22 / 19 / 16 / 13s",
+        "Explosion Damage to Minions: 30% → 35%",
+        "Healing Ratio from Bonus Health: 5% → 6.5%",
+        "Shield Value: 350 - 650 (melee) / 300 - 550 (Ranged) → 380 - 700 (melee) / 320 - 550 (Ranged)",
+        "Base Stats",
+        "Attack Speed: 35% → 30%",
+        "On-hit Healing: 10 → 5",
+        "Attack Speed: 50% → 45%",
+        "On-hit Healing: 12 → 5",
+        "Attack Speed gained: 30% → 25%",
+        "Base Stats:",
+        "Ability Power: 40 → 25",
+        "Attack Speed: 30% → 25%",
+        "Health threshold required to trigger: 65% → 70%",
+        "Attack Damage: 2 - 20 (based on level) → 2 - 18 (based on level)",
+        "Ability Power: 4 - 40 (based on level) → 3.3 - 30 (based on level)",
+        "Removed restrictions on obtaining Attack Speed Augments.",
+        "Damage Taken: 70% → 80%",
+        "Ability Cooldown: 100% → 90%",
+        "Damage Dealt: 100% → 110%",
+        "Damage Taken: 95% → 90%",
+        "Damage Taken: 90% → 100%",
+        "Damage Dealt: 85% → 80%。",
+        "Damage Dealt: 100% → 105%",
+        "Damage Taken: 100% → 95%",
+        "Damage Taken: 95% → 100%",
+        "Damage Taken: 105% → 100%",
+        "Attack Speed Ratio: 100% → 90%",
+        "Damage Taken: 90% → 80%",
+        "Ability (1) Cooldown: 7/6/5/4s → 4.5/4/3.5/3s",
+        "Maximum Mana to Heal and Shield Power conversion ratio: 0.25% → 0.18%",
+        "Attack Damage: 25 → 40",
+        "Max Health: 900 → 1200",
+        "Warmog's Heart passive cooldown: 15s → 10s",
+        "Critical Rate per 100 Health: 1% → 1.5%",
+        "Maximum Critical Rate bonus: 30% → 45%",
+        "Charge Damage: 140 + 3.5% Max Health → 140 + 5% Max Health",
+        "Deactivation Range: 15 → 25"
+      ]
+    },
     {
       "patch": "7.3f",
       "title": "Wild Rift Patch Notes 7.3f",

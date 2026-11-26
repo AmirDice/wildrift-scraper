@@ -489,7 +489,7 @@
     "omnivampPct": 10
   },
   "berserkers-greaves": {
-    "healOnHitFlat": 10
+    "healOnHitFlat": 5
   },
   "mercurys-treads": {},
   "plated-steelcaps": {},
@@ -507,7 +507,7 @@
   },
   "gunmetal-greaves": {
     "msPct": 15,
-    "healOnHitFlat": 12
+    "healOnHitFlat": 5
   },
   "chainlaced-crushers": {
     "shieldFlat": {

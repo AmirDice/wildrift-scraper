@@ -353,12 +353,12 @@
     "adaptiveAd": {
       "lvlRange": [
         2,
-        20
+        18
       ]
     },
     "adaptiveAp": {
       "lvlRange": [
-        2,
+        3.3,
         30
       ]
     }

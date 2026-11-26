@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "targetPatch": "7.3f",
+  "targetPatch": "7.3g",
   "updated": "2026-07-21",
   "items": {
     "trinity-force": {
@@ -100,7 +100,7 @@
       "conditional": [
         {
           "label": "Lifeline",
-          "detail": "Dropping below 35% Health shields you for 300-550 (350-650 melee) for 3 seconds. (70s cooldown)"
+          "detail": "Dropping below 35% Health shields you for 320-550 (380-700 melee) for 3 seconds. (70s cooldown)"
         }
       ]
     },

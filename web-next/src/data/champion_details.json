@@ -3931,7 +3931,7 @@
         "slot": "3",
         "key": "E",
         "name": "Judgment",
-        "text": "First Cast : Rapidly spins his sword for 3 seconds, dealing 13 / 17 / 21 / 25 ( +25% / 30% / 35% / 40% AD ) physical damage 8 times over the duration. Every 4 levels, the number of spins increases by 1, up to 11 strikes. Recast : Ends Judgment early and reduces its cooldown by the duration remaining. Armor Shred ; When a champion is hit by 6 strikes, their Armor is shredded by 10% for 4.5 seconds. Every hit refreshes the effect duration. The target nearest to Garen takes 20% increased damage.",
+        "text": "First Cast : Rapidly spins his sword for 3 seconds, dealing 10 / 13 / 16 / 19 ( +30% / 36% / 42% / 48% AD ) physical damage 8 times over the duration. Every 4 levels, the number of spins increases by 1, up to 11 strikes. Recast : Ends Judgment early and reduces its cooldown by the duration remaining. Armor Shred ; When a champion is hit by 6 strikes, their Armor is shredded by 15% for 4.5 seconds. Every hit refreshes the effect duration. The target nearest to Garen takes 20% increased damage.",
         "cooldowns": [
           "9",
           "9",
@@ -4782,9 +4782,9 @@
         "lvl15": 350
       },
       "ad": {
-        "base": 58,
+        "base": 62,
         "perLevel": 4,
-        "lvl15": 114
+        "lvl15": 118
       },
       "attackSpeed": {
         "base": 0.8003,
@@ -4808,12 +4808,12 @@
         "slot": "1",
         "key": "Q",
         "name": "Bladesurge",
-        "text": "Dashes through an enemy, dealing 10 / 40 / 70 / 100 ( +80% AD ) physical damage and healing herself for 9% / 11% / 13% / 15% AD . Bladesurge's cooldown is refreshed if the target was Marked or dies to Bladesurge. When aimed, Bladesurge will prioritize targets it will reset on. Deals 150% damage to minions.",
+        "text": "Dashes through an enemy, dealing 10 / 40 / 70 / 100 ( +80% AD ) physical damage and healing herself for 11% / 13% / 15% / 17% AD . Bladesurge's cooldown is refreshed if the target was Marked or dies to Bladesurge. When aimed, Bladesurge will prioritize targets it will reset on. Deals 150% damage to minions.",
         "cooldowns": [
-          "9",
           "8",
           "7",
-          "6"
+          "6",
+          "5"
         ],
         "damageTypes": [
           "physical"
@@ -13267,10 +13267,10 @@
         "name": "Achooo!",
         "text": "Lets out a flaming sneeze, dealing 65 / 85 / 105 / 125 ( +60% bonus AD ) physical damage and slowing by 35% for 1.5 seconds. Sneeze Blast : Hitting champions causes an explosion, dealing 10 / 35 / 60 / 85 ( +55% bonus AD +80% AP ) physical damage and 55% magic damage in an area. Each consecutive explosion does 75% damage . Smolder gains 1 Dragon Practice stack per champion hit. Deals 130% damage against minions and monsters.",
         "cooldowns": [
+          "13",
           "12",
           "11",
-          "10",
-          "9"
+          "10"
         ],
         "damageTypes": [
           "physical",
@@ -13284,10 +13284,10 @@
         "name": "Flap, Flap, Flap",
         "text": "Gains 75% Movement Speed and ignores terrain for 1.25 seconds. Boom! : While flying, automatically locks on to the lowest Health enemy in range and bombards them 5 times. Each hit deals 15 / 20 / 25 / 30 ( +30% AD ) physical damage and 12% magic damage . Dragon Vision : Gains expanded vision while flying. Prioritizes champions for bombarding.",
         "cooldowns": [
-          "18",
+          "22",
+          "19",
           "16",
-          "14",
-          "12"
+          "13"
         ],
         "damageTypes": [
           "physical",
@@ -13763,7 +13763,7 @@
         "slot": "1",
         "key": "Q",
         "name": "Chain Lash",
-        "text": "Lashes his chains out, intersecting at the target location and casing the effects below: Deals 40 / 70 / 100 / 130 ( +40% AP ) magic damage ; Slows by 15% / 20% / 25% / 30% for 1.5 seconds; After 0.6 seconds, the place where the chains intersect explode with magical energy, dealing a further 80 / 140 / 200 / 260 ( +80% AP ) magic damage . The explosion deals 30% damage to minions.",
+        "text": "Lashes his chains out, intersecting at the target location and casing the effects below: Deals 40 / 70 / 100 / 130 ( +40% AP ) magic damage ; Slows by 15% / 20% / 25% / 30% for 1.5 seconds; After 0.6 seconds, the place where the chains intersect explode with magical energy, dealing a further 80 / 140 / 200 / 260 ( +80% AP ) magic damage . The explosion deals 35% damage to minions.",
         "cooldowns": [
           "9",
           "8",
@@ -13779,7 +13779,7 @@
         "slot": "2",
         "key": "W",
         "name": "Kingslayer",
-        "text": "Lunges at an enemy with magical force, dealing 75 / 125 / 175 / 225 ( +60% AP ) magic damage . If the target is a champion, Sylas restores 30 / 60 / 90 / 120 ( +30% AP +5% bonus HP ) Health . For every 1% of own max HP missing, the healing is increased by 1.67% , up to 60 / 120 / 180 / 240 ( +60% AP +10% bonus HP ) Health .",
+        "text": "Lunges at an enemy with magical force, dealing 75 / 125 / 175 / 225 ( +60% AP ) magic damage . If the target is a champion, Sylas restores 30 / 60 / 90 / 120 ( +30% AP +6.5% bonus HP ) Health . For every 1% of own max HP missing, the healing is increased by 1.67% , up to 60 / 120 / 180 / 240 ( +60% AP +13% bonus HP ) Health .",
         "cooldowns": [
           "12",
           "10",
@@ -15294,7 +15294,7 @@
         "slot": "2",
         "key": "W",
         "name": "Silver Bolts",
-        "text": "Passive : Every third consecutive attack or ability on the same target deals additional 6% / 7% / 8% / 9% true damage of the enemy's maximum Health. Active : Gains 10% / 15% / 20% / 25% Attack Speed and 10% Omnivamp for 3 seconds. Passive deals at least 50 / 65 / 80 / 95 true damage . Passive damage is capped at 200 against monsters.",
+        "text": "Passive : Every third consecutive attack or ability on the same target deals additional 5.5% / 7% / 8.5% / 10% true damage of the enemy's maximum Health. Active : Gains 10% / 15% / 20% / 25% Attack Speed and 10% Omnivamp for 3 seconds. Passive deals at least 50 / 65 / 80 / 95 true damage . Passive damage is capped at 200 against monsters.",
         "cooldowns": [
           "18",
           "17",
@@ -15326,7 +15326,7 @@
         "slot": "4",
         "key": "R",
         "name": "Final Hour",
-        "text": "Gains 30 / 40 / 50 Attack Damage and strengthens Night Hunter and Tumble for 8 / 10 / 12 seconds. When an enemy champion damaged by Vayne dies within 3 seconds, Final Hour's duration is extended by 4 seconds, up to an additional 8 / 10 / 12 seconds.",
+        "text": "Gains 40 / 50 / 60 Attack Damage and strengthens Night Hunter and Tumble for 8 / 10 / 12 seconds. When an enemy champion damaged by Vayne dies within 3 seconds, Final Hour's duration is extended by 4 seconds, up to an additional 8 / 10 / 12 seconds.",
         "cooldowns": [
           "70",
           "65",

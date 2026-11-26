@@ -15,7 +15,7 @@
     "Nimbus Cloak": "Uses a fight-uptime movement estimate because the engine does not receive summoner-cast timing.",
     "Transcendence": "The 10 Ability Haste is modeled; the level-9 per-ability cooldown refund is not.",
     "Perseverance": "Tenacity is modeled permanently and the resistance window is approximated; enemy immobilize timing is contextual.",
-    "Absolute Focus": "Adaptive stats are modeled as a fresh-fight ceiling; uptime after falling below 65% Health is contextual.",
+    "Absolute Focus": "Adaptive stats are modeled as a fresh-fight ceiling; uptime after falling below 70% Health is contextual.",
     "Eyeball Collector": "The engine assumes completed stacks; takedown progress is match-history dependent.",
     "Zombie Ward": "Completed adaptive stacks are modeled; ward takedowns and vision utility are match-history/context dependent.",
     "Last Stand": "Uses an expected low-health uptime rather than an incoming-damage timeline tied to the user's current Health.",

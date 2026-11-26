@@ -5494,7 +5494,8 @@
         "unmodeled": [
           "up to 50% missing HP bonus",
           "20% dmg after first hit",
-          "40% vs minions"
+          "40% vs minions",
+          "7.3g: projectile narrower on the first cast and wider on the recast's return"
         ]
       },
       "2": {
@@ -7009,19 +7010,19 @@
             "name": "Judgment Spin",
             "type": "physical",
             "base": [
+              10,
               13,
-              17,
-              21,
-              25
+              16,
+              19
             ],
             "ratios": [
               {
                 "stat": "ad",
                 "pct": [
-                  25,
                   30,
-                  35,
-                  40
+                  36,
+                  42,
+                  48
                 ]
               }
             ],
@@ -7032,7 +7033,7 @@
         "steroids": [],
         "defensive": [],
         "unmodeled": [
-          "Spin count increases by 1 every 4 levels, up to 11. Nearest target takes 20% increased damage. After 6 hits, shreds target armor by 10% for 4.5s. Can recast to end early and reduce cooldown."
+          "Spin count increases by 1 every 4 levels, up to 11. Nearest target takes 20% increased damage. After 6 hits, shreds target armor by 15% for 4.5s. Can recast to end early and reduce cooldown."
         ]
       },
       "4": {
@@ -9716,10 +9717,10 @@
       "1": {
         "name": "Bladesurge",
         "cooldowns": [
-          9,
           8,
           7,
-          6
+          6,
+          5
         ],
         "damage": [
           {
@@ -9754,13 +9755,13 @@
             "ratios": [
               {
                 "stat": "ad",
-                "pct": 9
+                "pct": 11
               }
             ]
           }
         ],
         "unmodeled": [
-          "cooldown resets if target was marked or dies; deals 150% damage to minions; heal percentage scales 9/11/13/15% AD per rank"
+          "cooldown resets if target was marked or dies; deals 150% damage to minions; heal percentage scales 11/13/15/17% AD per rank"
         ]
       },
       "2": {
@@ -23070,10 +23071,10 @@
       "2": {
         "name": "Achooo!",
         "cooldowns": [
+          13,
           12,
           11,
-          10,
-          9
+          10
         ],
         "damage": [
           {
@@ -23126,10 +23127,10 @@
       "3": {
         "name": "Flap, Flap, Flap",
         "cooldowns": [
-          18,
+          22,
+          19,
           16,
-          14,
-          12
+          13
         ],
         "damage": [
           {
@@ -26624,10 +26625,10 @@
               {
                 "stat": "targetMaxHp",
                 "pct": [
-                  6,
+                  5.5,
                   7,
-                  8,
-                  9
+                  8.5,
+                  10
                 ]
               }
             ],
@@ -26723,9 +26724,9 @@
             "stat": "ad",
             "durationS": 8,
             "flat": [
-              30,
               40,
-              50
+              50,
+              60
             ]
           }
         ],
@@ -31337,7 +31338,7 @@
         "defensive": [],
         "unmodeled": [
           "Slows by 15% / 20% / 25% / 30% for 1.5 seconds",
-          "Explosion deals 30% damage to minions"
+          "Explosion deals 35% damage to minions"
         ]
       },
       "2": {
@@ -31385,7 +31386,7 @@
               },
               {
                 "stat": "ownBonusHp",
-                "pct": 5
+                "pct": 6.5
               }
             ]
           },
@@ -31404,7 +31405,7 @@
               },
               {
                 "stat": "ownBonusHp",
-                "pct": 10
+                "pct": 13
               }
             ],
             "alt": true

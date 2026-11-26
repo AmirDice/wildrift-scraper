@@ -18,7 +18,7 @@
  * apart: every number a patch changes directly (ability ratios, cooldowns,
  * item stats) is on this patch, and only the measured win rates are not.
  */
-export const SKIPPED_PATCH = "7.3f";
+export const SKIPPED_PATCH = "7.3g";
 
 /**
  * The patch the China patch-impact views measure. Separate from SKIPPED_PATCH
@@ -26,7 +26,7 @@ export const SKIPPED_PATCH = "7.3f";
  * on 7.3d's first day there are none, so they stay on 7.3b until China's
  * daily data has caught up.
  */
-export const IMPACT_PATCH = "7.3d";
+export const IMPACT_PATCH = "7.3f";
 
 /**
  * The patch whose games the win rates were actually collected from.
@@ -64,7 +64,7 @@ export const NOT_RECAPTURED: Record<"EU" | "NA", string[]> = {
 };
 
 /** The patch the next collection and the next round of work is aimed at. */
-export const NEXT_PATCH = "7.3f";
+export const NEXT_PATCH = "7.3g";
 
 /** The announced window for the EU/NA/CN ladder collection. */
 export const COLLECTION_START = "Monday, October 5, 2026";
@@ -99,14 +99,15 @@ export const ANNOUNCEMENT = {
   // across patches). Points at /meta rather than /updates.
   // -v11: the Build Studio is back to normal speed. Points at /build.
   // -v12: patch 7.3f and Sylas. Points at his champion page.
-  key: "wtm-announce-sylas-7-3f-2026-11-v12",
-  href: "/champions/sylas",
-  lead: `Sylas and patch ${SKIPPED_PATCH}`,
-  short: `Sylas is on the site: his abilities, a starter build and China's first numbers on him. Every ability, item and rune number is on patch ${SKIPPED_PATCH}, and China's movers now measure it.`,
-  cta: "See Sylas",
-  badges: ["New"],
+  // -v13: patch 7.3g. Points at the champion changes page.
+  key: "wtm-announce-patch-7-3g-2026-11-v13",
+  href: "/changes-report",
+  lead: `Patch ${SKIPPED_PATCH}`,
+  short: `Every ability, item and rune number is on patch ${SKIPPED_PATCH}: Vayne, Irelia and Garen up, Smolder and the attack speed boots down. China's movers start measuring it once a day of games is in.`,
+  cta: "See the changes",
+  badges: ["Patch"],
   /** Pages the banner points at, so it does not appear on top of itself. */
-  hideOn: ["/champions/sylas"],
+  hideOn: ["/changes-report"],
 } as const;
 
 /**
@@ -119,6 +120,22 @@ export const ANNOUNCEMENT = {
  * trustworthy, "improvements to our algorithm" does not.
  */
 export const CHANGELOG: { date: string; title: string; body: string }[] = [
+  {
+    date: "26 November 2026",
+    title: "Patch 7.3g applied",
+    body:
+      "Vayne's ultimate gives more Attack Damage and Silver Bolts now scales "
+      + "harder by rank. Irelia gains base Attack Damage, a shorter Bladesurge "
+      + "cooldown and more healing. Garen's Judgment scales better with Attack "
+      + "Damage and shreds more Armor. Smolder's Achooo! and Flap, Flap, Flap "
+      + "cooldowns went up, and Sylas heals more from bonus Health. Berserker's "
+      + "and Gunmetal Greaves, Guinsoo's Rageblade and Ardent Censer lost "
+      + "attack speed, Harmonic Echo lost Ability Power, Immortal Shieldbow's "
+      + "shield grew, and Absolute Focus gives less and needs 70% Health. Our "
+      + "Absolute Focus Ability Power had been 2 to 30 where Riot's pre-patch "
+      + "value was 4 to 40; it now carries Riot's 3.3 to 30. The win rates are "
+      + "still from the 7.3f collection.",
+  },
   {
     date: "17 November 2026",
     title: "Patch 7.3f applied, and Sylas added",

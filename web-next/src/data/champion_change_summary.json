@@ -1,6 +1,177 @@
 {
   "schemaVersion": 1,
   "champions": {
+    "Vayne": {
+      "totalChanges": 26,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 20,
+      "lastChangedPatch": "7.3g",
+      "lastChangedAt": "2026-11-25T10:00:00.000Z",
+      "lastBalancePatch": "7.3g",
+      "lastBalanceAt": "2026-11-25T10:00:00.000Z"
+    },
+    "Irelia": {
+      "totalChanges": 29,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 23,
+      "lastChangedPatch": "7.3g",
+      "lastChangedAt": "2026-11-25T10:00:00.000Z",
+      "lastBalancePatch": "7.3g",
+      "lastBalanceAt": "2026-11-25T10:00:00.000Z"
+    },
+    "Garen": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 18,
+      "lastChangedPatch": "7.3g",
+      "lastChangedAt": "2026-11-25T10:00:00.000Z",
+      "lastBalancePatch": "7.3g",
+      "lastBalanceAt": "2026-11-25T10:00:00.000Z"
+    },
+    "Aurora": {
+      "totalChanges": 9,
+      "modeOnlyChanges": 0,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.3g",
+      "lastChangedAt": "2026-11-25T10:00:00.000Z",
+      "lastBalancePatch": "7.3g",
+      "lastBalanceAt": "2026-11-25T10:00:00.000Z"
+    },
+    "Smolder": {
+      "totalChanges": 7,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 5,
+      "lastChangedPatch": "7.3g",
+      "lastChangedAt": "2026-11-25T10:00:00.000Z",
+      "lastBalancePatch": "7.3g",
+      "lastBalanceAt": "2026-11-25T10:00:00.000Z"
+    },
+    "Sylas": {
+      "totalChanges": 2,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 1,
+      "lastChangedPatch": "7.3g",
+      "lastChangedAt": "2026-11-25T10:00:00.000Z",
+      "lastBalancePatch": "7.3g",
+      "lastBalanceAt": "2026-11-25T10:00:00.000Z"
+    },
+    "Bard": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 8,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Akali": {
+      "totalChanges": 26,
+      "modeOnlyChanges": 9,
+      "balanceChanges": 17,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Blitzcrank": {
+      "totalChanges": 22,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 19,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Mordekaiser": {
+      "totalChanges": 10,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 7,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Yasuo": {
+      "totalChanges": 23,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 20,
+      "lastChangedPatch": "7.3f",
+      "lastChangedAt": "2026-11-11T10:00:00.000Z",
+      "lastBalancePatch": "7.3f",
+      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
+    },
+    "Miss Fortune": {
+      "totalChanges": 29,
+      "modeOnlyChanges": 6,
+      "balanceChanges": 23,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Sett": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 3,
+      "balanceChanges": 13,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Master Yi": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 2,
+      "balanceChanges": 18,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Singed": {
+      "totalChanges": 13,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 9,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
+    "Ezreal": {
+      "totalChanges": 20,
+      "modeOnlyChanges": 5,
+      "balanceChanges": 15,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Kog'Maw": {
+      "totalChanges": 5,
+      "modeOnlyChanges": 1,
+      "balanceChanges": 4,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Vi": {
+      "totalChanges": 19,
+      "modeOnlyChanges": 4,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.3",
+      "lastChangedAt": "2026-09-21T09:00:00.000Z",
+      "lastBalancePatch": "7.3",
+      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
+    },
+    "Nasus": {
+      "totalChanges": 22,
+      "modeOnlyChanges": 8,
+      "balanceChanges": 14,
+      "lastChangedPatch": "7.3d",
+      "lastChangedAt": "2026-10-28T09:00:00.000Z",
+      "lastBalancePatch": "7.3d",
+      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
+    },
     "Kalista": {
       "totalChanges": 14,
       "modeOnlyChanges": 0,
@@ -23,15 +194,6 @@
       "totalChanges": 15,
       "modeOnlyChanges": 2,
       "balanceChanges": 13,
-      "lastChangedPatch": "7.3f",
-      "lastChangedAt": "2026-11-11T10:00:00.000Z",
-      "lastBalancePatch": "7.3f",
-      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
-    },
-    "Irelia": {
-      "totalChanges": 27,
-      "modeOnlyChanges": 4,
-      "balanceChanges": 22,
       "lastChangedPatch": "7.3f",
       "lastChangedAt": "2026-11-11T10:00:00.000Z",
       "lastBalancePatch": "7.3f",
@@ -82,15 +244,6 @@
       "lastBalancePatch": "7.3f",
       "lastBalanceAt": "2026-11-11T10:00:00.000Z"
     },
-    "Yasuo": {
-      "totalChanges": 22,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 20,
-      "lastChangedPatch": "7.3f",
-      "lastChangedAt": "2026-11-11T10:00:00.000Z",
-      "lastBalancePatch": "7.3f",
-      "lastBalanceAt": "2026-11-11T10:00:00.000Z"
-    },
     "Shyvana": {
       "totalChanges": 28,
       "modeOnlyChanges": 6,
@@ -136,24 +289,6 @@
       "lastBalancePatch": "7.3d",
       "lastBalanceAt": "2026-10-28T09:00:00.000Z"
     },
-    "Akali": {
-      "totalChanges": 25,
-      "modeOnlyChanges": 8,
-      "balanceChanges": 17,
-      "lastChangedPatch": "7.3d",
-      "lastChangedAt": "2026-10-28T09:00:00.000Z",
-      "lastBalancePatch": "7.3d",
-      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
-    },
-    "Nasus": {
-      "totalChanges": 21,
-      "modeOnlyChanges": 7,
-      "balanceChanges": 14,
-      "lastChangedPatch": "7.3d",
-      "lastChangedAt": "2026-10-28T09:00:00.000Z",
-      "lastBalancePatch": "7.3d",
-      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
-    },
     "Samira": {
       "totalChanges": 21,
       "modeOnlyChanges": 3,
@@ -167,24 +302,6 @@
       "totalChanges": 24,
       "modeOnlyChanges": 3,
       "balanceChanges": 19,
-      "lastChangedPatch": "7.3d",
-      "lastChangedAt": "2026-10-28T09:00:00.000Z",
-      "lastBalancePatch": "7.3d",
-      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
-    },
-    "Miss Fortune": {
-      "totalChanges": 28,
-      "modeOnlyChanges": 5,
-      "balanceChanges": 23,
-      "lastChangedPatch": "7.3d",
-      "lastChangedAt": "2026-10-28T09:00:00.000Z",
-      "lastBalancePatch": "7.3d",
-      "lastBalanceAt": "2026-10-28T09:00:00.000Z"
-    },
-    "Singed": {
-      "totalChanges": 12,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 9,
       "lastChangedPatch": "7.3d",
       "lastChangedAt": "2026-10-28T09:00:00.000Z",
       "lastBalancePatch": "7.3d",
@@ -298,15 +415,6 @@
       "lastBalancePatch": "7.3b",
       "lastBalanceAt": "2026-10-14T09:00:00.000Z"
     },
-    "Smolder": {
-      "totalChanges": 6,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 4,
-      "lastChangedPatch": "7.3b",
-      "lastChangedAt": "2026-10-14T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Veigar": {
       "totalChanges": 14,
       "modeOnlyChanges": 1,
@@ -388,15 +496,6 @@
       "lastBalancePatch": "7.3a",
       "lastBalanceAt": "2026-09-29T09:00:00.000Z"
     },
-    "Ezreal": {
-      "totalChanges": 19,
-      "modeOnlyChanges": 4,
-      "balanceChanges": 15,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Kai'Sa": {
       "totalChanges": 10,
       "modeOnlyChanges": 1,
@@ -442,15 +541,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Kog'Maw": {
-      "totalChanges": 4,
-      "modeOnlyChanges": 0,
-      "balanceChanges": 4,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Varus": {
       "totalChanges": 26,
       "modeOnlyChanges": 3,
@@ -473,15 +563,6 @@
       "totalChanges": 8,
       "modeOnlyChanges": 1,
       "balanceChanges": 6,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Vayne": {
-      "totalChanges": 25,
-      "modeOnlyChanges": 6,
-      "balanceChanges": 19,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -518,15 +599,6 @@
       "totalChanges": 23,
       "modeOnlyChanges": 4,
       "balanceChanges": 19,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Garen": {
-      "totalChanges": 19,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 17,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -613,28 +685,10 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Blitzcrank": {
-      "totalChanges": 21,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 19,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Jax": {
       "totalChanges": 20,
       "modeOnlyChanges": 3,
       "balanceChanges": 17,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Vi": {
-      "totalChanges": 18,
-      "modeOnlyChanges": 3,
-      "balanceChanges": 14,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -676,15 +730,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Master Yi": {
-      "totalChanges": 19,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 18,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Darius": {
       "totalChanges": 21,
       "modeOnlyChanges": 3,
@@ -698,15 +743,6 @@
       "totalChanges": 14,
       "modeOnlyChanges": 3,
       "balanceChanges": 10,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Aurora": {
-      "totalChanges": 8,
-      "modeOnlyChanges": 0,
-      "balanceChanges": 7,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -910,15 +946,6 @@
       "lastBalancePatch": "7.3",
       "lastBalanceAt": "2026-09-21T09:00:00.000Z"
     },
-    "Mordekaiser": {
-      "totalChanges": 9,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 7,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
     "Annie": {
       "totalChanges": 17,
       "modeOnlyChanges": 3,
@@ -986,15 +1013,6 @@
       "totalChanges": 14,
       "modeOnlyChanges": 2,
       "balanceChanges": 10,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Sett": {
-      "totalChanges": 18,
-      "modeOnlyChanges": 2,
-      "balanceChanges": 13,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",
@@ -1121,15 +1139,6 @@
       "totalChanges": 14,
       "modeOnlyChanges": 2,
       "balanceChanges": 11,
-      "lastChangedPatch": "7.3",
-      "lastChangedAt": "2026-09-21T09:00:00.000Z",
-      "lastBalancePatch": "7.3",
-      "lastBalanceAt": "2026-09-21T09:00:00.000Z"
-    },
-    "Bard": {
-      "totalChanges": 9,
-      "modeOnlyChanges": 1,
-      "balanceChanges": 8,
       "lastChangedPatch": "7.3",
       "lastChangedAt": "2026-09-21T09:00:00.000Z",
       "lastBalancePatch": "7.3",

@@ -438,7 +438,10 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // Rumble, Kassadin and Yasuo changed; Luden's Echo, Rod of Ages, Lich Bane,
   // Morellonomicon, Hextech Rocketbelt, Liandry's Torment, Eclipse and
   // Goredrinker moved, and Sylas joined the roster.
-  return `build:v88:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v89: patch 7.3g. Vayne, Irelia, Garen, Smolder and Sylas changed;
+  // Immortal Shieldbow, Berserker's and Gunmetal Greaves, Ardent Censer,
+  // Harmonic Echo, Guinsoo's Rageblade and Absolute Focus moved.
+  return `build:v89:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

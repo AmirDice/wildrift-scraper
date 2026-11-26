@@ -469,7 +469,7 @@
     "name": "Absolute Focus",
     "tree": "Sorcery",
     "type": "Minor",
-    "description": "While above 65% Health, gain a bonus 2 - 20 Attack Damage or 2 - 30 Ability Power (Adaptive).",
+    "description": "While above 70% Health, gain a bonus 2 - 18 Attack Damage or 3.3 - 30 Ability Power (Adaptive).",
     "icon": "https://www.wildriftfire.com/images/runes/absolute-focus.png"
   },
   {

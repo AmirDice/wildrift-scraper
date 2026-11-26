@@ -171,7 +171,7 @@
     "tags": [],
     "stats": {
       "attackSpeed": {
-        "value": 50,
+        "value": 45,
         "percent": true
       },
       "moveSpeed": {
@@ -187,7 +187,7 @@
     "statRules": {},
     "passives": [
       "Noxian Gait: Basic attacks against enemy champions grant Movement Speed (10% for melee champions / 7% for ranged champions) for 2 seconds.",
-      "Blessed Blade: Basic attacks restore 12 Health on hit."
+      "Blessed Blade: Basic attacks restore 5 Health on hit."
     ],
     "bootsTier": 3
   },
@@ -331,7 +331,7 @@
     ],
     "stats": {
       "attackSpeed": {
-        "value": 35,
+        "value": 30,
         "percent": true
       },
       "moveSpeed": {
@@ -342,7 +342,7 @@
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Blessed Blade: Attacks restore 10 Health on hit."
+      "Blessed Blade: Attacks restore 5 Health on hit."
     ],
     "upgradesTo": "gunmetal-greaves",
     "bootsTier": 2
@@ -2943,7 +2943,7 @@
     ],
     "stats": {
       "attackSpeed": {
-        "value": 30,
+        "value": 25,
         "percent": true
       },
       "ad": {
@@ -2990,12 +2990,12 @@
       "conditional": [
         {
           "label": "Lifeline",
-          "detail": "Dropping below 35% Health shields you for 300-550 (350-650 melee) for 3 seconds. (70s cooldown)"
+          "detail": "Dropping below 35% Health shields you for 320-550 (380-700 melee) for 3 seconds. (70s cooldown)"
         }
       ]
     },
     "passives": [
-      "Lifeline: Taking damage that would put you below 35% Health grants a shield for 3 seconds (350-650 for melee, 300-550 for ranged, based on level). (70s Cooldown)"
+      "Lifeline: Taking damage that would put you below 35% Health grants a shield for 3 seconds (380-700 for melee, 320-550 for ranged, based on level). (70s Cooldown)"
     ],
     "addedIn": "7.3"
   },
@@ -3949,7 +3949,7 @@
         "percent": false
       },
       "ap": {
-        "value": 40,
+        "value": 25,
         "percent": false
       },
       "manaRegen": {
@@ -4072,7 +4072,7 @@
     "scopedStats": {},
     "statRules": {},
     "passives": [
-      "Censer: Healing or shielding an allied champion other than yourself empowers you both for 6 seconds, granting 30% bonus Attack Speed and 25 bonus magic damage on attacks."
+      "Censer: Healing or shielding an allied champion other than yourself empowers you both for 6 seconds, granting 25% bonus Attack Speed and 25 bonus magic damage on attacks."
     ]
   },
   {

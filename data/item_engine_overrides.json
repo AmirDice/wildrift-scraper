@@ -515,9 +515,9 @@
     "_coverage": "partial",
     "_coverage_reason": "Ally on-hit damage is modeled, but the ally attack-speed increase cannot be converted safely without that ally's attack-damage profile. The holder's own triggered buff is modeled.",
     "_why_ally_as": "allyAsPct is read by NEITHER engine, deliberately. Censer grants an ally '15-34% Attack Speed and their attacks deal 16-22 bonus magic damage'; the damage half IS priced, through allyOnHitFlatMagic. Pricing the attack-speed half needs a conversion from ally attack speed to ally damage, and that needs to know what share of that ally's damage is autos -- a number this model does not carry. A guessed constant here would be worse than a visible mismatch, so the key stays unread and the item is undervalued by a known amount rather than valued by an invented one.",
-    "allyAsPct": 30,
+    "allyAsPct": 25,
     "allyOnHitFlatMagic": 25,
-    "selfTriggeredAsPct": 30,
+    "selfTriggeredAsPct": 25,
     "selfTriggeredOnHitMagic": 25,
     "allyTriggerDurationS": 6,
     "_why_support_timeline": "Both holder and ally buffs last six seconds and require a real ally heal/shield event.",
@@ -680,7 +680,7 @@
   "immortal-shieldbow": {
     "shieldFlat": {
       "lvlRange": [
-        300,
+        320,
         550
       ]
     },

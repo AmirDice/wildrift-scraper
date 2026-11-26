@@ -1,0 +1,679 @@
+{
+ "patch": "7.3g",
+ "url": "https://wildrift.leagueoflegends.com/en-gb/news/game-updates/wild-rift-patch-notes-7-3g/",
+ "parsedAt": "2026-11-26T13:04:42+00:00",
+ "blades": [
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 0,
+     "title": "",
+     "path": [
+      ""
+     ],
+     "notes": [
+      "We're back with another round of balance changes, and this time, we're shaking things up across the Rift! Vayne, Irelia, and Garen are getting some extra love, while Smolder's getting his wings clipped before he can take over the late game. We're also taking another pass at marksmen, dialing back some of their late-game power to give other classes more room to shine. And over in AAA ARAM, Bard and Irelia are getting some new tricks up their sleeves with season-exclusive buffs.",
+      "Reminder: content will be released throughout the patch."
+     ],
+     "lines": []
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "VAYNE",
+   "summary": "Vayne hasn’t quite been living up to her reputation as a fearsome duelist, regardless of her build. We’re giving her sustained damage and burst potential during her ultimate a boost to help her bring the pain when she goes on the hunt.",
+   "blocks": [
+    {
+     "title": "Silver Bolts",
+     "lines": [
+      "Passive Damage: 6%/7%/8%/9% → 5.5%/7%/8.5%/10%"
+     ]
+    },
+    {
+     "title": "Final Hour",
+     "lines": [
+      "Bonus Attack Damage: 30/40/50 → 40/50/60"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "IRELIA",
+   "summary": "Our previous adjustments to Irelia cut a little too deep, leaving her struggling to find her footing in lane. We’re giving her laning power and sustain a boost, while reducing Bladesurge’s downtime to help her keep dancing around her opponents.",
+   "blocks": [
+    {
+     "title": "Base Stats",
+     "lines": [
+      "Base Attack Damage: 58 → 62"
+     ]
+    },
+    {
+     "title": "Bladesurge",
+     "lines": [
+      "Cooldown: 9/8/7/6s → 8/7/6/5s",
+      "Healing: 9%/11%/13%/15% → 11%/13%/15%/17%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "GAREN",
+   "summary": "Garen’s been relying a little too heavily on his durability to get the job done, so we’re giving his offensive side some love. We’re increasing how well he scales with Attack Damage items to help him pack a bigger punch when building for damage.",
+   "blocks": [
+    {
+     "title": "Judgement",
+     "lines": [
+      "Damage per spin: 13/17/21/25 + 25%/30%/35%/40% Attack Damage → 10/13/16/19 + 30%/36%/42%/48% Attack Damage",
+      "Armor Shred: 10% → 15%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "AURORA",
+   "summary": "We’re adjusting the width of both casts of Aurora’s first ability to better match their visual effects, making it clearer when her attacks will hit.",
+   "blocks": [
+    {
+     "title": "Twofold Hex",
+     "lines": [
+      "Projectile width reduced on the initial cast, and increased on the return after recasting."
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "SMOLDER",
+   "summary": "Smolder’s been having a little too easy of a time growing into a late-game menace. We’re slowing down his stacking and reducing his early-to-mid game survivability to give opponents more opportunities to put out his fire before he takes over the Rift.",
+   "blocks": [
+    {
+     "title": "Achooo!",
+     "lines": [
+      "Cooldown: 12 / 11 / 10 / 9s → 13 / 12 / 11 / 10s"
+     ]
+    },
+    {
+     "title": "Flap, Flap, Flap",
+     "lines": [
+      "Cooldown: 18 / 16 / 14 / 12s → 22 / 19 / 16 / 13s"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "champion",
+   "champion": "SYLAS",
+   "summary": "Sylas is still finding his footing on the Rift, but we’re seeing his performance improve as you get more comfortable with his playstyle and builds. We’re giving his waveclear and sustain a small boost to help him hold his own in lane without getting too carried away.",
+   "blocks": [
+    {
+     "title": "Chain Lash",
+     "lines": [
+      "Explosion Damage to Minions: 30% → 35%"
+     ]
+    },
+    {
+     "title": "Kingslayer",
+     "lines": [
+      "Healing Ratio from Bonus Health: 5% → 6.5%"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "rich",
+   "id": "",
+   "blocks": [
+    {
+     "level": 2,
+     "title": "ITEMS",
+     "path": [
+      "ITEMS"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Immortal Shieldbow",
+     "path": [
+      "ITEMS",
+      "Immortal Shieldbow"
+     ],
+     "notes": [
+      "Immortal Shieldbow hasn't been standing out as a compelling option, particularly for melee champions building critical strike. We're giving it a boost to help it compete with other options and make it a more appealing choice when you need a little extra survivability.",
+      "Life Line"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Life Line",
+     "path": [
+      "ITEMS",
+      "Immortal Shieldbow",
+      "Life Line"
+     ],
+     "notes": [],
+     "lines": [
+      "Shield Value: 350 - 650 (melee) / 300 - 550 (Ranged) → 380 - 700 (melee) / 320 - 550 (Ranged)"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Berserker's Greaves",
+     "path": [
+      "ITEMS",
+      "Berserker's Greaves"
+     ],
+     "notes": [
+      "Since Patch 7.3, marksmen have been enjoying stronger scaling and more distinct playstyles, but their late-game power has gotten a little out of hand. With so much Attack Speed and sustain at their disposal, especially when paired with enchanter supports, they've been leaving other classes in the dust. We're dialing back some of these strengths across the board to give other classes more room to compete in the late game.",
+      "Base Stats",
+      "Blessed Blade"
+     ],
+     "lines": [
+      "Attack Speed: 35% → 30%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Blessed Blade",
+     "path": [
+      "ITEMS",
+      "Berserker's Greaves",
+      "Blessed Blade"
+     ],
+     "notes": [],
+     "lines": [
+      "On-hit Healing: 10 → 5"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Gunmetal Greaves",
+     "path": [
+      "ITEMS",
+      "Gunmetal Greaves"
+     ],
+     "notes": [
+      "Base Stats",
+      "Blessed Blade"
+     ],
+     "lines": [
+      "Attack Speed: 50% → 45%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Blessed Blade",
+     "path": [
+      "ITEMS",
+      "Gunmetal Greaves",
+      "Blessed Blade"
+     ],
+     "notes": [],
+     "lines": [
+      "On-hit Healing: 12 → 5"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Ardent Censer",
+     "path": [
+      "ITEMS",
+      "Ardent Censer"
+     ],
+     "notes": [
+      "Censer"
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Censer",
+     "path": [
+      "ITEMS",
+      "Ardent Censer",
+      "Censer"
+     ],
+     "notes": [],
+     "lines": [
+      "Attack Speed gained: 30% → 25%"
+     ],
+     "fromParagraph": true
+    },
+    {
+     "level": 4,
+     "title": "Harmonic Echo",
+     "path": [
+      "ITEMS",
+      "Harmonic Echo"
+     ],
+     "notes": [
+      "Base Stats:"
+     ],
+     "lines": [
+      "Ability Power: 40 → 25"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Guinsoo's Rageblade",
+     "path": [
+      "ITEMS",
+      "Guinsoo's Rageblade"
+     ],
+     "notes": [
+      "Base Stats"
+     ],
+     "lines": [
+      "Attack Speed: 30% → 25%"
+     ]
+    },
+    {
+     "level": 2,
+     "title": "RUNES",
+     "path": [
+      "RUNES"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Absolute Focus",
+     "path": [
+      "RUNES",
+      "Absolute Focus"
+     ],
+     "notes": [
+      "Absolute Focus has been giving mages a little too much power for how easily they can activate its bonus. We're dialing back its effectiveness to bring it more in line with other rune options."
+     ],
+     "lines": [
+      "Health threshold required to trigger: 65% → 70%",
+      "Attack Damage: 2 - 20 (based on level) → 2 - 18 (based on level)",
+      "Ability Power: 4 - 40 (based on level) → 3.3 - 30 (based on level)"
+     ]
+    },
+    {
+     "level": 3,
+     "title": "AAA ARAM",
+     "path": [
+      "RUNES",
+      "AAA ARAM"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 4,
+     "title": "Easter Egg Update",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Easter Egg Update"
+     ],
+     "notes": [],
+     "lines": [
+      "A mysterious Easter egg will be available for a limited time. Purchase a special item from the store to trigger it.",
+      "The Spiritwind Blade Easter egg will become available at a later date, so stay tuned! When triggered, it grants an additional reroll during the first round of Rune Card selection."
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Season-Exclusive Champion Buffs",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Season-Exclusive Champion Buffs"
+     ],
+     "notes": [
+      "We're shaking things up in AAA ARAM with some season-exclusive buffs for Bard and Irelia! Bard is getting more ways to make his basic attack-focused builds shine, while Irelia will have more room to experiment with crit and AP builds.",
+      "These changes will only be available in AAA ARAM for the current season. We'll be keeping an eye on how they perform and listening to your feedback as we continue exploring more ways to bring alternative champion builds into the mode."
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Bard",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Season-Exclusive Champion Buffs",
+      "Bard"
+     ],
+     "notes": [],
+     "lines": [
+      "Attack Range increased by 100.",
+      "Each basic attack reduces the cooldown of the Passive's Meeps recharge by 2 seconds.",
+      "Removed restrictions on obtaining Attack Speed Augments."
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Irelia",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Season-Exclusive Champion Buffs",
+      "Irelia"
+     ],
+     "notes": [],
+     "lines": [
+      "Passive ability damage can now critically strike.",
+      "(1) now gains a 60% Ability Power ratio, and its damage type has been changed to adaptive damage."
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Champion Balance Adjustments",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments"
+     ],
+     "notes": [
+      "Unless otherwise specified, the following changes only apply to AAA ARAM."
+     ],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Akali",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Akali"
+     ],
+     "notes": [
+      "We're giving Akali a little more room to weave her abilities together by reducing their cooldowns. To keep her from slipping away with too much power, we're also dialing back her damage reduction to give opponents more opportunities to fight back."
+     ],
+     "lines": [
+      "Damage Taken: 70% → 80%",
+      "Ability Cooldown: 100% → 90%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Blitzcrank",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Blitzcrank"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Dealt: 100% → 110%",
+      "Damage Taken: 95% → 90%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Mordekaiser",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Mordekaiser"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Taken: 90% → 100%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Yasuo",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Yasuo"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Dealt: 85% → 80%。"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Miss Fortune",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Miss Fortune"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Dealt: 100% → 105%",
+      "Damage Taken: 100% → 95%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Sett",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Sett"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Taken: 95% → 100%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Master Yi",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Master Yi"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Taken: 105% → 100%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Singed",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Singed"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Taken: 105% → 100%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Ezreal",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Ezreal"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Dealt: 100% → 105%",
+      "Damage Taken: 100% → 95%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Kog'Maw",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Kog'Maw"
+     ],
+     "notes": [],
+     "lines": [
+      "Attack Speed Ratio: 100% → 90%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Sylas",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Sylas"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Taken: 90% → 80%",
+      "This change also applies to ARAM"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Vi",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Vi"
+     ],
+     "notes": [],
+     "lines": [
+      "Damage Taken: 90% → 80%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Nasus",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Champion Balance Adjustments",
+      "Nasus"
+     ],
+     "notes": [],
+     "lines": [
+      "Ability (1) Cooldown: 7/6/5/4s → 4.5/4/3.5/3s"
+     ]
+    },
+    {
+     "level": 4,
+     "title": "Item Adjustments",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Item Adjustments"
+     ],
+     "notes": [],
+     "lines": []
+    },
+    {
+     "level": 5,
+     "title": "Whispering Circlet / Diadem of Songs",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Item Adjustments",
+      "Whispering Circlet / Diadem of Songs"
+     ],
+     "notes": [],
+     "lines": [
+      "Maximum Mana to Heal and Shield Power conversion ratio: 0.25% → 0.18%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Edge of Durand",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Item Adjustments",
+      "Edge of Durand"
+     ],
+     "notes": [],
+     "lines": [
+      "Attack Damage: 25 → 40"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Warmog's Armor",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Item Adjustments",
+      "Warmog's Armor"
+     ],
+     "notes": [
+      "We want tanks to have more Health-focused item options worth considering beyond Mogul's Mail. We're buffing Warmog's Armor and Original Heartsteel to give tank players more build options."
+     ],
+     "lines": [
+      "Max Health: 900 → 1200",
+      "Warmog's Heart passive cooldown: 15s → 10s"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Atma's Reckoning",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Item Adjustments",
+      "Atma's Reckoning"
+     ],
+     "notes": [],
+     "lines": [
+      "Critical Rate per 100 Health: 1% → 1.5%",
+      "Maximum Critical Rate bonus: 30% → 45%"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Original Heartsteel",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Item Adjustments",
+      "Original Heartsteel"
+     ],
+     "notes": [],
+     "lines": [
+      "Charge Damage: 140 + 3.5% Max Health → 140 + 5% Max Health"
+     ]
+    },
+    {
+     "level": 5,
+     "title": "Ethereal Weapon",
+     "path": [
+      "RUNES",
+      "AAA ARAM",
+      "Item Adjustments",
+      "Ethereal Weapon"
+     ],
+     "notes": [],
+     "lines": [
+      "Deactivation Range: 15 → 25"
+     ]
+    }
+   ]
+  }
+ ]
+}

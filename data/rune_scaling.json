@@ -352,12 +352,12 @@
       "stats": [
         {
           "stat": "adaptive",
-          "ad": 20,
+          "ad": 18,
           "ap": 30,
-          "note": "at level 15, while above 65% Health"
+          "note": "at level 15, while above 70% Health"
         }
       ],
-      "evidence": "bonus 2–20 Attack Damage"
+      "evidence": "bonus 2–18 Attack Damage"
     },
     "Gathering Storm": {
       "stats": [
