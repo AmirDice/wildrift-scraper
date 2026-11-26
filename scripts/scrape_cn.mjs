@@ -43,9 +43,14 @@ const HISTORY_DIR = path.join(ROOT, "data", "history", "cn");
 // live the day its notes came out, so the 11th is taken as the first day of
 // games and the 10th as the last clean snapshot (Sylas himself arrived on
 // the 12th). If the balance changes landed a day later, move both forward.
-const MOVERS_PATCH = "7.3f";
-const MOVERS_PATCH_LIVE = "2026-11-11";
-const MOVERS_BASELINE_DATE = "2026-11-10";
+//
+// 7.3g: Riot published the notes on Wednesday 25 November 2026, the same
+// weekday pattern as 7.3d and 7.3f, so the 25th is taken as the first day of
+// games and the 24th as the last clean snapshot. If China's update landed a
+// day later, move both forward.
+const MOVERS_PATCH = "7.3g";
+const MOVERS_PATCH_LIVE = "2026-11-25";
+const MOVERS_BASELINE_DATE = "2026-11-24";
 
 const HERO_LIST_URL = "https://game.gtimg.cn/images/lgamem/act/lrlib/js/heroList/hero_list.js";
 const RANK_URL = "https://mlol.qt.qq.com/go/lgame_battle_info/hero_rank_list_v2";
