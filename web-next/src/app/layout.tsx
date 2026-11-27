@@ -13,6 +13,7 @@ import { AnchorAd } from "@/components/anchor-ad";
 import { ADSENSE_CLIENT, ADS_LIVE } from "@/lib/ads";
 import { JsonLd, organizationJsonLd, websiteJsonLd } from "@/lib/structured-data";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CONSENT_REGIONS, CONSENT_RESTORE_SNIPPET, GA_ID, GROW_SITE_ID } from "@/lib/analytics";
 import { AnalyticsConsent } from "@/components/analytics-consent";
 import { getChampions, pendingChampions } from "@/lib/data";
@@ -207,6 +208,8 @@ gtag('config', '${GA_ID}');`}
             Google's banner appears. Production only, like GA. */}
         {GA_ID ? <AnalyticsConsent /> : null}
         <Analytics />
+        {/* Real-visitor Core Web Vitals per route; cookieless, like Analytics. */}
+        <SpeedInsights />
       </body>
     </html>
   );

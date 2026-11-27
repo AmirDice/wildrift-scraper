@@ -1,3 +1,4 @@
+import { reportError } from "@/lib/report-error";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { AUTH_CONFIGURED, SESSION_COOKIE, readSession } from "@/lib/session";
@@ -22,7 +23,7 @@ export async function POST() {
     if (!session.url) return NextResponse.json({ error: "Stripe did not return a portal URL." }, { status: 502 });
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error("Stripe portal session failed", error);
+    await reportError("Stripe portal session failed", error);
     return NextResponse.json({ error: "Could not open billing management. Please try again." }, { status: 502 });
   }
 }

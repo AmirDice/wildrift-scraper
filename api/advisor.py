@@ -39,6 +39,43 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from web.build_advisor import ITEMS, advise_runes, advise_best_of, start_usage, why_not  # noqa: E402
 from web.site_agent import answer_site_question  # noqa: E402
 
+# Error tracking. Every failure below is caught so the caller gets a clean
+# message, which also meant it only ever reached the function log. Sentry gets
+# a copy. Inert without SENTRY_DSN, and optional as an import so local runs
+# (the site spawns this file as a subprocess) need nothing new installed.
+#
+# include_local_variables is off: frame locals here hold the prompt, the model
+# response and, one frame down, the provider API key.
+SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+try:
+    import sentry_sdk  # noqa: E402
+except ImportError:  # pragma: no cover - local runs without the package
+    sentry_sdk = None
+if SENTRY_DSN and sentry_sdk is not None:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        environment=os.environ.get("VERCEL_ENV", "development"),
+        release=os.environ.get("VERCEL_GIT_COMMIT_SHA") or None,
+        send_default_pii=False,
+        include_local_variables=False,
+        traces_sample_rate=0,
+    )
+
+
+def _report(context: str) -> None:
+    """Send the exception being handled to Sentry, then flush: the function
+    can be frozen as soon as the response is written."""
+    traceback.print_exc(file=sys.stderr)
+    if not SENTRY_DSN or sentry_sdk is None:
+        return
+    try:
+        with sentry_sdk.new_scope() as scope:
+            scope.set_tag("advisor.context", context)
+            sentry_sdk.capture_exception()
+        sentry_sdk.flush(timeout=2)
+    except Exception:  # noqa: BLE001 - monitoring must never break a response
+        pass
+
 # Shared secret so only our own Next.js route can spend DeepSeek credit. Without
 # it this endpoint is an open, billable API.
 ADVISOR_SECRET = os.environ.get("ADVISOR_SECRET", "")
@@ -154,7 +191,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
         except SystemExit as exc:
             return 500, {"error": str(exc)}
         except Exception:  # noqa: BLE001
-            traceback.print_exc(file=sys.stderr)
+            _report("site_agent")
             return 502, {"error": "The site agent is temporarily unavailable. Please try again later."}
 
     champion = _clean(body.get("champion"))
@@ -251,7 +288,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
         except SystemExit as exc:
             return 500, {"error": str(exc)}
         except Exception as exc:  # noqa: BLE001
-            traceback.print_exc(file=sys.stderr)
+            _report("runes_or_why_not")
             return 502, {"error": "Build generation is temporarily unavailable. Please try again later."}
 
     if mode == "counter" and not enemies:
@@ -293,7 +330,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
     except Exception as exc:                # noqa: BLE001
         # The traceback goes to the function log, never to the caller: it can
         # carry file paths and request detail.
-        traceback.print_exc(file=sys.stderr)
+        _report("build")
         return 502, {"error": "Build generation is temporarily unavailable. Please try again later."}
 
     if isinstance(result, dict) and result.get("error"):

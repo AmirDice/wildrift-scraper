@@ -1,3 +1,4 @@
+import { reportError } from "@/lib/report-error";
 import { kvGetNumber, kvIncr, kvPushCapped, kvSetAdd } from "@/lib/kv";
 import { STRIPE_SECRET_KEY, stripeGet, stripeKeyConfigured } from "@/lib/stripe";
 import { impressumComplete } from "@/lib/impressum";
@@ -112,7 +113,7 @@ export async function packOffers(): Promise<PackOffer[]> {
         .format(price.unit_amount / 100);
       return { id: pack.id, credits: pack.credits, price: formatted, amount: price.unit_amount, currency };
     } catch (error) {
-      console.error(`Could not read the Stripe price for the ${pack.id} pack`, error);
+      await reportError(`Could not read the Stripe price for the ${pack.id} pack`, error);
       return null;
     }
   }))).filter((o): o is PackOffer => o != null);

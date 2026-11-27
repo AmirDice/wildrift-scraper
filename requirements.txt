@@ -13,6 +13,10 @@ requests>=2.31.0
 # ModuleNotFoundError on its first Gemini generation.
 google-genai>=1.0.0
 
+# Error tracking for the deployed function (api/advisor.py). Small, pure
+# Python, and a no-op without SENTRY_DSN.
+sentry-sdk>=2.20.0
+
 # Everything else the repo needs -- scrapers, OCR, the legacy Streamlit app --
 # is in requirements-scrape.txt:
 #

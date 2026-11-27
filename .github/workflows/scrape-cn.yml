@@ -25,6 +25,8 @@ on:
 
 permissions:
   contents: write
+  # For the failure alert below: it opens (or comments on) an issue.
+  issues: write
 
 concurrency:
   group: scrape-cn
@@ -80,3 +82,22 @@ jobs:
         env:
           HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
         run: curl -sS -X POST "$HOOK"
+
+      # A failed run used to surface only as stale China numbers days later.
+      # Opening an issue makes GitHub email the repo owner, and one open issue
+      # collects the repeats as comments instead of filing a new one per day.
+      # /api/health also reports the data as "degraded" after 3 days.
+      - name: Alert on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="China scrape failing"
+          existing=$(gh issue list --state open --search "in:title \"$title\"" --json number --jq '.[0].number')
+          body="The daily China scrape failed on $(date -u +%Y-%m-%d). Run: $RUN_URL"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "$body"
+          else
+            gh issue create --title "$title" --body "$body"
+          fi

@@ -1,3 +1,4 @@
+import { reportError } from "@/lib/report-error";
 import { spawn } from "node:child_process";
 import { readdirSync, statSync } from "node:fs";
 import { homedir } from "node:os";
@@ -540,7 +541,7 @@ async function handlePost(request: Request) {
       // Provider responses can contain billing state, API details, local file
       // paths, and full tracebacks. Keep those in server logs; the browser
       // receives only a stable, actionable message.
-      console.error("Advisor generation failed", res.error);
+      await reportError("Advisor generation failed", res.error);
       const responseQuota = res.quotaRefundable
         ? await refundQuota(user, ip, unlimited, paidLimit, source)
         : quota;
@@ -601,7 +602,7 @@ export async function POST(request: Request) {
   try {
     return await handlePost(request);
   } catch (error) {
-    console.error("Build route failed", error);
+    await reportError("Build route failed", error);
     return NextResponse.json(
       { error: "The build service hit an unexpected error. Please try again." },
       { status: 500 },

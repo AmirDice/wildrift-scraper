@@ -4,6 +4,7 @@
  * used by request-time quota checks. Webhooks update this projection, and no
  * browser-provided plan value is ever trusted.
  */
+import { reportError } from "@/lib/report-error";
 import { kvGetJson, kvSetJson } from "@/lib/kv";
 import {
   STRIPE_PLUS_MONTHLY_PRICE_ID,
@@ -173,7 +174,7 @@ export async function plusPrices(): Promise<PlusPrice[]> {
         prices.push({ interval, amount: price.unit_amount, currency: price.currency });
       }
     } catch (error) {
-      console.error(`Stripe ${interval} Plus price lookup failed`, error);
+      await reportError(`Stripe ${interval} Plus price lookup failed`, error);
     }
   }
   if (prices.length) await kvSetJson(PRICE_CACHE_KEY, { ids, prices }, 3600);

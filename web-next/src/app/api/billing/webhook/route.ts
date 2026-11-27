@@ -1,3 +1,4 @@
+import { reportError } from "@/lib/report-error";
 import { NextResponse } from "next/server";
 import {
   getSubscription,
@@ -118,7 +119,7 @@ export async function POST(request: Request) {
   try {
     if (await handleCredits(event.type, object)) return NextResponse.json({ received: true });
   } catch (error) {
-    console.error("Stripe credits grant failed", error);
+    await reportError("Stripe credits grant failed", error);
     return NextResponse.json({ error: "Credits grant failed." }, { status: 500 });
   }
 
@@ -129,7 +130,7 @@ export async function POST(request: Request) {
   } catch (error) {
     // A 500 makes Stripe retry the event, which is what we want for a
     // transient Stripe or KV failure.
-    console.error("Stripe webhook sync failed", error);
+    await reportError("Stripe webhook sync failed", error);
     return NextResponse.json({ error: "Webhook sync failed." }, { status: 500 });
   }
   return NextResponse.json({ received: true });

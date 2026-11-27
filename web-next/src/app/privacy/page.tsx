@@ -120,6 +120,12 @@ export default function PrivacyPage() {
             on and nothing else.
           </p>
           <p className="mt-2 text-sm leading-relaxed text-muted">
+            Vercel Speed Insights measures how fast pages load for real visitors, also without
+            cookies. When something breaks on our servers, the error and the page it happened on
+            are sent to Sentry so we can fix it; cookies, IP addresses and account details are
+            removed before anything is sent.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-muted">
             The site also uses Google Analytics 4 to understand how visitors find and use it. In
             the EU, the EEA, the UK and Switzerland it runs under Google Consent Mode: until you
             accept in the consent message, it stores no cookies and sends only anonymous,
