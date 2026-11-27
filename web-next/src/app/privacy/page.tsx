@@ -123,7 +123,10 @@ export default function PrivacyPage() {
             Vercel Speed Insights measures how fast pages load for real visitors, also without
             cookies. When something breaks on our servers, the error and the page it happened on
             are sent to Sentry so we can fix it; cookies, IP addresses and account details are
-            removed before anything is sent.
+            removed before anything is sent. Requests to the build tools and the site assistant
+            are logged with Langfuse (EU region) so we can see which step of a generation is slow,
+            failing or expensive. That log holds the build request and what the model answered,
+            including a question typed to the assistant, but nothing that identifies you.
           </p>
           <p className="mt-2 text-sm leading-relaxed text-muted">
             The site also uses Google Analytics 4 to understand how visitors find and use it. In

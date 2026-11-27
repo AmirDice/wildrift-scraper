@@ -38,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from web.build_advisor import ITEMS, advise_runes, advise_best_of, start_usage, why_not  # noqa: E402
 from web.site_agent import answer_site_question  # noqa: E402
+from web import observability  # noqa: E402
 
 # Error tracking. Every failure below is caught so the caller gets a clean
 # message, which also meant it only ever reached the function log. Sentry gets
@@ -338,6 +339,29 @@ def build_from_request(body: dict) -> tuple[int, dict]:
     return 200, result
 
 
+def _trace_shape(body: dict) -> tuple[str, list[str], dict]:
+    """Name, tags and metadata for the request's Langfuse trace. Only the
+    request's game parameters -- never the caller's identity, which this
+    function does not have anyway."""
+    if body.get("task") == "site-agent":
+        return "site_agent", ["site_agent"], {}
+    if isinstance(body.get("whyNot"), dict):
+        why = body["whyNot"]
+        return "why_not", ["why_not"], {"champion": _clean(why.get("champion")),
+                                        "candidate": _slug(why.get("candidate"))}
+    mode = "counter" if _clean(body.get("mode")) == "counter" else "studio"
+    kind = "runes" if _clean(body.get("only")) == "runes" else mode
+    meta = {
+        "champion": _clean(body.get("champion")),
+        "role": _clean(body.get("role")),
+        "enemies": _clean_list(body.get("enemies")),
+        "playstyle": _clean(body.get("playstyle")) or "standard",
+        "buildBias": _clean(body.get("buildBias")) or "balanced",
+        "runs": body.get("runs") or 1,
+    }
+    return kind, [kind, *([meta["champion"]] if meta["champion"] else [])], meta
+
+
 class handler(BaseHTTPRequestHandler):
     def _send(self, status: int, payload: dict) -> None:
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -379,10 +403,24 @@ class handler(BaseHTTPRequestHandler):
         # can record what each feature costs (see start_usage). Attached to
         # failures too: a generation that failed validation was still billed.
         usage = start_usage()
-        status, payload = build_from_request(body)
-        if isinstance(payload, dict) and usage["calls"]:
-            payload["usage"] = usage
+        name, tags, meta = _trace_shape(body)
+        with observability.request_trace(name, tags=tags, metadata=meta,
+                                         input=observability.clip(body.get("question"), 2000)
+                                         if name == "site_agent" else meta) as trace:
+            status, payload = build_from_request(body)
+            if isinstance(payload, dict) and usage["calls"]:
+                payload["usage"] = usage
+            trace.update(
+                output={"status": status,
+                        "error": payload.get("error") if isinstance(payload, dict) else None},
+                level="ERROR" if status >= 500 else ("WARNING" if status >= 400 else None),
+                metadata={"status": status, "calls": usage["calls"]},
+            )
+            trace.update_trace(output={"status": status, "calls": usage["calls"],
+                                       "tokens": {k: usage.get(k, 0) for k in ("input", "output", "thoughts")}})
         self._send(status, payload)
+        # After the response, never before it: see observability.flush.
+        observability.flush()
 
     def do_GET(self) -> None:  # noqa: N802
         """Health check: confirms the function booted and found its data."""

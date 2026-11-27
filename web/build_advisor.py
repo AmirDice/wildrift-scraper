@@ -48,6 +48,7 @@ from web.advisor import env as advisor_env
 from web.advisor import (crit_policy, itemmeta, profiles, repair, runemeta,
                          summoners, supportitem)
 from web.advisor import prompt as prompt_mod
+from web import observability
 from web.advisor import threats as threats_mod
 from web.advisor import validate as validate_mod
 
@@ -611,6 +612,15 @@ def _record_usage(model: str, response, level: str = "") -> None:
         by["thoughts"] += n("thoughts_token_count")
 
 
+def _staged(name: str, fn):
+    """Run fn with every model call inside it labelled as stage `name`, for
+    the Langfuse trace (see web/observability.py)."""
+    def run(*args, **kwargs):
+        with observability.stage(name):
+            return fn(*args, **kwargs)
+    return run
+
+
 def _gemini_call(prompt: str, model: str = "", system: str = "",
                  thinking_level: str = "medium") -> dict:
     """The same contract as the DeepSeek path: prompt in, parsed build out.
@@ -651,9 +661,17 @@ def _gemini_call(prompt: str, model: str = "", system: str = "",
     last = None
     for attempt in range(4):
         try:
-            r = client.models.generate_content(model=model or MODEL, contents=prompt, config=config)
-            _record_usage(model or MODEL, r, level)
-            return json.loads(r.text)
+            # One Langfuse generation per ATTEMPT, so retries and 429 backoff
+            # are visible as failed generations rather than one slow call.
+            # A JSON parse failure is inside the block on purpose: Google
+            # billed it, and it is exactly the failure worth seeing.
+            with observability.generation(
+                    model=model or MODEL, prompt=prompt, system=system or prompt_mod.SYSTEM,
+                    thinking_level=level, attempt=attempt, temperature=0) as gen:
+                r = client.models.generate_content(model=model or MODEL, contents=prompt, config=config)
+                _record_usage(model or MODEL, r, level)
+                observability.record(gen, r)
+                return json.loads(r.text)
         except Exception as exc:                       # noqa: BLE001
             last = exc
             text = str(exc)
@@ -3948,7 +3966,7 @@ def advise(champion: str, role: str, enemies: list[str],
                 champion, combat, scaling, damage_path, unrestricted_mode,
                 damage_style)
             candidate_count = _tournament_candidate_count(damage_archetypes)
-            raw_candidates = call(_tournament_generation_prompt(
+            raw_candidates = _staged("tournament", call)(_tournament_generation_prompt(
                 prompt, damage_archetypes, candidate_count, build_bias,
                 champion, unrestricted_mode))
             tournament_stage = "validating candidates"
@@ -3968,7 +3986,7 @@ def advise(champion: str, role: str, enemies: list[str],
                 retry_context = "\n".join(candidate_errors[-12:]) or "no legal candidate was returned"
                 print("[advisor] no legal tournament candidates; requesting one "
                       "constrained candidate retry", file=sys.stderr)
-                raw_candidates = call(_tournament_generation_prompt(
+                raw_candidates = _staged("tournament", call)(_tournament_generation_prompt(
                     prompt, damage_archetypes, candidate_count, build_bias,
                     champion, unrestricted_mode)
                     + "\n\nCANDIDATE GATE ERRORS FROM YOUR PREVIOUS RESPONSE:\n"
@@ -4116,13 +4134,13 @@ def advise(champion: str, role: str, enemies: list[str],
                     "to that engine candidate's final items; set forCandidate to its "
                     "exact id. Do not target a different candidate."
                 )
-            res = call(judge_prompt, thinking_level="high")
+            res = _staged("judge", call)(judge_prompt, thinking_level="high")
 
             tested_signatures = {_candidate_signature(c) for c in candidates}
             if _candidate_signature(res) not in tested_signatures:
                 print("[advisor] tournament judge invented an untested core; requesting "
                       "a constrained correction", file=sys.stderr)
-                res = call(judge_prompt + "\n\nERROR: Your previous final answer did not "
+                res = _staged("judge", call)(judge_prompt + "\n\nERROR: Your previous final answer did not "
                            "preserve one tested core exactly. Return the full schema again "
                            "using one listed candidate unchanged.",
                            thinking_level="high")
@@ -4431,9 +4449,9 @@ def advise(champion: str, role: str, enemies: list[str],
                 "reason": f"{type(exc).__name__}: {exc}"[:300],
                 "fellBackTo": "one ordinary generation",
             }
-            res = call(prompt)
+            res = _staged("author", call)(prompt)
     else:
-        res = call(prompt)
+        res = _staged("author", call)(prompt)
     if (build_bias == "max_damage" and not locked_runes
             and not unrestricted_mode):
         if _repair_max_damage_runes(res):
@@ -4517,7 +4535,7 @@ def advise(champion: str, role: str, enemies: list[str],
             # Through call(), not _call(): the bare call ran on ADVISOR_MODEL, so
             # a counter build drafted on Flash-Lite was regenerated on 3.8 Flash,
             # 67-74s in production on 2026-10-27 and most of the wait.
-            res = call(prompt + "\n\nYour previous answer had ERRORS. Fix them and "
+            res = _staged("regenerate", call)(prompt + "\n\nYour previous answer had ERRORS. Fix them and "
                        "return the corrected JSON only:\n- " + "\n- ".join(report.flat()))
             report = _check(res)
             continue
@@ -4526,7 +4544,7 @@ def advise(champion: str, role: str, enemies: list[str],
             print(f"[advisor] targeted repair: {section} ({len(errors)} errors)",
                   file=sys.stderr)
             emit({"stage": "repairing", "section": section})
-            patch = call(repair.repair_prompt(section, res, errors, pool_slugs, context=prompt))
+            patch = _staged("repair", call)(repair.repair_prompt(section, res, errors, pool_slugs, context=prompt))
             repair.apply_repair(res, section, patch)
         report = _check(res)
 
@@ -4960,7 +4978,7 @@ def why_not(champion: str, items: list[str], boots: str,
         '"viable_alternative" | "situational" | "worse_here" | "not_viable", '
         '"answer": string, "competesWith": item name from the build or null}'
     )
-    data = _call(key, prompt)
+    data = _staged("why_not", _call)(key, prompt)
     verdict = str(data.get("verdict") or "").strip()
     if verdict not in ("viable_alternative", "situational", "worse_here", "not_viable"):
         verdict = "worse_here"
@@ -5072,7 +5090,7 @@ def advise_runes(champion: str, role: str, enemies: list[str],
             kwargs["thinking_level"] = thinking_level
         return _call(key, text, **kwargs)
 
-    res = call(prompt)
+    res = _staged("runes", call)(prompt)
     emit({"stage": "validating"})
 
     page = res.get("runes") if isinstance(res, dict) else None
@@ -5088,7 +5106,7 @@ def advise_runes(champion: str, role: str, enemies: list[str],
         # (Bone Plating + Second Wind, both slot 2) and, re-asked from scratch
         # at low, repeated it: 2 of 3 runs ended with no page at all. Repairs
         # are rare, so the slower thinking costs little on average.
-        fixed = call(prompt + "\n\nYour previous rune page was:\n"
+        fixed = _staged("runes_repair", call)(prompt + "\n\nYour previous rune page was:\n"
                      + json.dumps(page if isinstance(page, dict) else res)[:1500]
                      + "\n\nIt had ERRORS. Return the corrected JSON only:\n- "
                      + "\n- ".join(errors), thinking_level="medium")

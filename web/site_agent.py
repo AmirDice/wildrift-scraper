@@ -11,6 +11,7 @@ import os
 import sys
 
 from web.build_advisor import _gemini_call
+from web import observability
 
 
 # The build model, not the budget one. Anonymous visitors get ONE model answer
@@ -87,7 +88,8 @@ def answer_site_question(question: str, context: dict, history: list[dict] | Non
         "inference, label it as an inference.\n\nINPUT:\n"
         + json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     )
-    raw = _gemini_call(prompt, model=MODEL, system=SYSTEM, thinking_level="low")
+    with observability.stage("site_agent"):
+        raw = _gemini_call(prompt, model=MODEL, system=SYSTEM, thinking_level="low")
     if not isinstance(raw, dict):
         raise RuntimeError("agent returned a non-object response")
     answer = str(raw.get("answer") or "").strip()[:2_400]

@@ -177,7 +177,9 @@ class TestDeploymentShape:
         listed = {line.split(">=")[0].split("==")[0].strip().lower()
                   for line in text.splitlines()
                   if line.strip() and not line.strip().startswith("#")}
-        required = {"requests", "google-genai"}
+        # sentry-sdk and langfuse: error tracking and LLM tracing (both
+        # imported by api/advisor.py, both no-ops without their keys).
+        required = {"requests", "google-genai", "sentry-sdk", "langfuse"}
         assert required <= listed, (
             f"the advisor imports these but the bundle does not install them: "
             f"{sorted(required - listed)}")
