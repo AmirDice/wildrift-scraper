@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getChampion, getChampions } from "@/lib/data";
@@ -32,7 +33,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const description = `The runes top ${champion.name} players run in Wild Rift${top ? `, led by ${top.name}` : ""}, plus the most-played rune pages per lane with win and pick rates.`;
   return {
     title, description,
-    alternates: { canonical: `/champions/${slug}/runes` },
+    alternates: { canonical: `/champions/${slug}/runes`, languages: languageAlternates(`/champions/${slug}/runes`) },
     openGraph: { title, description, url: `https://wrtruemeta.com/champions/${slug}/runes` },
   };
 }

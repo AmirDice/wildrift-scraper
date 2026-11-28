@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getChampion, getChampions } from "@/lib/data";
@@ -38,7 +39,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const description = `${champion.name} ${label.toLowerCase()} in Wild Rift: the most-played item cores${core ? ` (${core.entities.map((e) => e.name).join(", ")})` : ""}, rune pages, spells and lane matchups, with win and pick rates from China Legendary ranked.`;
   return {
     title, description,
-    alternates: { canonical: `/champions/${slug}/${lane}` },
+    alternates: { canonical: `/champions/${slug}/${lane}`, languages: languageAlternates(`/champions/${slug}/${lane}`) },
     openGraph: { title, description, url: `https://wrtruemeta.com/champions/${slug}/${lane}` },
   };
 }

@@ -1,0 +1,2366 @@
+{
+ "champions": {
+  "Aatrox": {
+   "es": "Aatrox",
+   "fr": "Aatrox",
+   "ko": "아트록스",
+   "pl": "Aatrox",
+   "tr": "Aatrox",
+   "zh": "亚托克斯"
+  },
+  "Ahri": {
+   "es": "Ahri",
+   "fr": "Ahri",
+   "ko": "아리",
+   "pl": "Ahri",
+   "tr": "Ahri",
+   "zh": "阿狸"
+  },
+  "Akali": {
+   "es": "Akali",
+   "fr": "Akali",
+   "ko": "아칼리",
+   "pl": "Akali",
+   "tr": "Akali",
+   "zh": "阿卡丽"
+  },
+  "Akshan": {
+   "es": "Akshan",
+   "fr": "Akshan",
+   "ko": "아크샨",
+   "pl": "Akshan",
+   "tr": "Akshan",
+   "zh": "阿克尚"
+  },
+  "Alistar": {
+   "es": "Alistar",
+   "fr": "Alistar",
+   "ko": "알리스타",
+   "pl": "Alistar",
+   "tr": "Alistar",
+   "zh": "阿利斯塔"
+  },
+  "Ambessa": {
+   "es": "Ambessa",
+   "fr": "Ambessa",
+   "ko": "암베사",
+   "pl": "Ambessa",
+   "tr": "Ambessa",
+   "zh": "安蓓萨"
+  },
+  "Amumu": {
+   "es": "Amumu",
+   "fr": "Amumu",
+   "ko": "아무무",
+   "pl": "Amumu",
+   "tr": "Amumu",
+   "zh": "阿木木"
+  },
+  "Annie": {
+   "es": "Annie",
+   "fr": "Annie",
+   "ko": "애니",
+   "pl": "Annie",
+   "tr": "Annie",
+   "zh": "安妮"
+  },
+  "Ashe": {
+   "es": "Ashe",
+   "fr": "Ashe",
+   "ko": "애쉬",
+   "pl": "Ashe",
+   "tr": "Ashe",
+   "zh": "艾希"
+  },
+  "Aurelion Sol": {
+   "es": "Aurelion Sol",
+   "fr": "Aurelion Sol",
+   "ko": "아우렐리온 솔",
+   "pl": "Aurelion Sol",
+   "tr": "Aurelion Sol",
+   "zh": "奥瑞利安·索尔"
+  },
+  "Aurora": {
+   "es": "Aurora",
+   "fr": "Aurora",
+   "ko": "오로라",
+   "pl": "Aurora",
+   "tr": "Aurora",
+   "zh": "阿萝拉"
+  },
+  "Bard": {
+   "es": "Bardo",
+   "fr": "Bard",
+   "ko": "바드",
+   "pl": "Bard",
+   "tr": "Bard",
+   "zh": "巴德"
+  },
+  "Blitzcrank": {
+   "es": "Blitzcrank",
+   "fr": "Blitzcrank",
+   "ko": "블리츠크랭크",
+   "pl": "Blitzcrank",
+   "tr": "Blitzcrank",
+   "zh": "布里茨"
+  },
+  "Brand": {
+   "es": "Brand",
+   "fr": "Brand",
+   "ko": "브랜드",
+   "pl": "Brand",
+   "tr": "Brand",
+   "zh": "布兰德"
+  },
+  "Braum": {
+   "es": "Braum",
+   "fr": "Braum",
+   "ko": "브라움",
+   "pl": "Braum",
+   "tr": "Braum",
+   "zh": "布隆"
+  },
+  "Caitlyn": {
+   "es": "Caitlyn",
+   "fr": "Caitlyn",
+   "ko": "케이틀린",
+   "pl": "Caitlyn",
+   "tr": "Caitlyn",
+   "zh": "凯特琳"
+  },
+  "Camille": {
+   "es": "Camille",
+   "fr": "Camille",
+   "ko": "카밀",
+   "pl": "Camille",
+   "tr": "Camille",
+   "zh": "卡蜜尔"
+  },
+  "Cho'Gath": {
+   "es": "Cho'Gath",
+   "fr": "Cho'Gath",
+   "ko": "초가스",
+   "pl": "Cho'Gath",
+   "tr": "Cho'Gath",
+   "zh": "科加斯"
+  },
+  "Corki": {
+   "es": "Corki",
+   "fr": "Corki",
+   "ko": "코르키",
+   "pl": "Corki",
+   "tr": "Corki",
+   "zh": "库奇"
+  },
+  "Darius": {
+   "es": "Darius",
+   "fr": "Darius",
+   "ko": "다리우스",
+   "pl": "Darius",
+   "tr": "Darius",
+   "zh": "德莱厄斯"
+  },
+  "Diana": {
+   "es": "Diana",
+   "fr": "Diana",
+   "ko": "다이애나",
+   "pl": "Diana",
+   "tr": "Diana",
+   "zh": "黛安娜"
+  },
+  "Dr. Mundo": {
+   "es": "Dr. Mundo",
+   "fr": "Dr. Mundo",
+   "ko": "문도 박사",
+   "pl": "Dr Mundo",
+   "tr": "Dr. Mundo",
+   "zh": "蒙多医生"
+  },
+  "Draven": {
+   "es": "Draven",
+   "fr": "Draven",
+   "ko": "드레이븐",
+   "pl": "Draven",
+   "tr": "Draven",
+   "zh": "德莱文"
+  },
+  "Ekko": {
+   "es": "Ekko",
+   "fr": "Ekko",
+   "ko": "에코",
+   "pl": "Ekko",
+   "tr": "Ekko",
+   "zh": "艾克"
+  },
+  "Evelynn": {
+   "es": "Evelynn",
+   "fr": "Evelynn",
+   "ko": "이블린",
+   "pl": "Evelynn",
+   "tr": "Evelynn",
+   "zh": "伊芙琳"
+  },
+  "Ezreal": {
+   "es": "Ezreal",
+   "fr": "Ezreal",
+   "ko": "이즈리얼",
+   "pl": "Ezreal",
+   "tr": "Ezreal",
+   "zh": "伊泽瑞尔"
+  },
+  "Fiddlesticks": {
+   "es": "Fiddlesticks",
+   "fr": "Fiddlesticks",
+   "ko": "피들스틱",
+   "pl": "Fiddlesticks",
+   "tr": "Fiddlesticks",
+   "zh": "费德提克"
+  },
+  "Fiora": {
+   "es": "Fiora",
+   "fr": "Fiora",
+   "ko": "피오라",
+   "pl": "Fiora",
+   "tr": "Fiora",
+   "zh": "菲奥娜"
+  },
+  "Fizz": {
+   "es": "Fizz",
+   "fr": "Fizz",
+   "ko": "피즈",
+   "pl": "Fizz",
+   "tr": "Fizz",
+   "zh": "菲兹"
+  },
+  "Galio": {
+   "es": "Galio",
+   "fr": "Galio",
+   "ko": "갈리오",
+   "pl": "Galio",
+   "tr": "Galio",
+   "zh": "加里奥"
+  },
+  "Garen": {
+   "es": "Garen",
+   "fr": "Garen",
+   "ko": "가렌",
+   "pl": "Garen",
+   "tr": "Garen",
+   "zh": "盖伦"
+  },
+  "Gnar": {
+   "es": "Gnar",
+   "fr": "Gnar",
+   "ko": "나르",
+   "pl": "Gnar",
+   "tr": "Gnar",
+   "zh": "纳尔"
+  },
+  "Gragas": {
+   "es": "Gragas",
+   "fr": "Gragas",
+   "ko": "그라가스",
+   "pl": "Gragas",
+   "tr": "Gragas",
+   "zh": "古拉加斯"
+  },
+  "Graves": {
+   "es": "Graves",
+   "fr": "Graves",
+   "ko": "그레이브즈",
+   "pl": "Graves",
+   "tr": "Graves",
+   "zh": "格雷福斯"
+  },
+  "Gwen": {
+   "es": "Gwen",
+   "fr": "Gwen",
+   "ko": "그웬",
+   "pl": "Gwen",
+   "tr": "Gwen",
+   "zh": "格温"
+  },
+  "Hecarim": {
+   "es": "Hecarim",
+   "fr": "Hecarim",
+   "ko": "헤카림",
+   "pl": "Hecarim",
+   "tr": "Hecarim",
+   "zh": "赫卡里姆"
+  },
+  "Heimerdinger": {
+   "es": "Heimerdinger",
+   "fr": "Heimerdinger",
+   "ko": "하이머딩거",
+   "pl": "Heimerdinger",
+   "tr": "Heimerdinger",
+   "zh": "黑默丁格"
+  },
+  "Hwei": {
+   "es": "Hwei",
+   "fr": "Hwei",
+   "ko": "흐웨이",
+   "pl": "Hwei",
+   "tr": "Hwei",
+   "zh": "彗"
+  },
+  "Irelia": {
+   "es": "Irelia",
+   "fr": "Irelia",
+   "ko": "이렐리아",
+   "pl": "Irelia",
+   "tr": "Irelia",
+   "zh": "艾瑞莉娅"
+  },
+  "Janna": {
+   "es": "Janna",
+   "fr": "Janna",
+   "ko": "잔나",
+   "pl": "Janna",
+   "tr": "Janna",
+   "zh": "迦娜"
+  },
+  "Jarvan IV": {
+   "es": "Jarvan IV",
+   "fr": "Jarvan IV",
+   "ko": "자르반 4세",
+   "pl": "Jarvan IV",
+   "tr": "Jarvan IV",
+   "zh": "嘉文四世"
+  },
+  "Jax": {
+   "es": "Jax",
+   "fr": "Jax",
+   "ko": "잭스",
+   "pl": "Jax",
+   "tr": "Jax",
+   "zh": "贾克斯"
+  },
+  "Jayce": {
+   "es": "Jayce",
+   "fr": "Jayce",
+   "ko": "제이스",
+   "pl": "Jayce",
+   "tr": "Jayce",
+   "zh": "杰斯"
+  },
+  "Jhin": {
+   "es": "Jhin",
+   "fr": "Jhin",
+   "ko": "진",
+   "pl": "Jhin",
+   "tr": "Jhin",
+   "zh": "烬"
+  },
+  "Jinx": {
+   "es": "Jinx",
+   "fr": "Jinx",
+   "ko": "징크스",
+   "pl": "Jinx",
+   "tr": "Jinx",
+   "zh": "金克丝"
+  },
+  "K'Sante": {
+   "es": "K'Sante",
+   "fr": "K'Santé",
+   "ko": "크산테",
+   "pl": "K'Sante",
+   "tr": "K'Sante",
+   "zh": "奎桑提"
+  },
+  "Kai'Sa": {
+   "es": "Kai'Sa",
+   "fr": "Kai'Sa",
+   "ko": "카이사",
+   "pl": "Kai'Sa",
+   "tr": "Kai'Sa",
+   "zh": "卡莎"
+  },
+  "Kalista": {
+   "es": "Kalista",
+   "fr": "Kalista",
+   "ko": "칼리스타",
+   "pl": "Kalista",
+   "tr": "Kalista",
+   "zh": "卡莉丝塔"
+  },
+  "Karma": {
+   "es": "Karma",
+   "fr": "Karma",
+   "ko": "카르마",
+   "pl": "Karma",
+   "tr": "Karma",
+   "zh": "卡尔玛"
+  },
+  "Kassadin": {
+   "es": "Kassadin",
+   "fr": "Kassadin",
+   "ko": "카사딘",
+   "pl": "Kassadin",
+   "tr": "Kassadin",
+   "zh": "卡萨丁"
+  },
+  "Katarina": {
+   "es": "Katarina",
+   "fr": "Katarina",
+   "ko": "카타리나",
+   "pl": "Katarina",
+   "tr": "Katarina",
+   "zh": "卡特琳娜"
+  },
+  "Kayle": {
+   "es": "Kayle",
+   "fr": "Kayle",
+   "ko": "케일",
+   "pl": "Kayle",
+   "tr": "Kayle",
+   "zh": "凯尔"
+  },
+  "Kayn": {
+   "es": "Kayn",
+   "fr": "Kayn",
+   "ko": "케인",
+   "pl": "Kayn",
+   "tr": "Kayn",
+   "zh": "凯隐"
+  },
+  "Kennen": {
+   "es": "Kennen",
+   "fr": "Kennen",
+   "ko": "케넨",
+   "pl": "Kennen",
+   "tr": "Kennen",
+   "zh": "凯南"
+  },
+  "Kha'Zix": {
+   "es": "Kha'Zix",
+   "fr": "Kha'Zix",
+   "ko": "카직스",
+   "pl": "Kha'Zix",
+   "tr": "Kha'Zix",
+   "zh": "卡兹克"
+  },
+  "Kindred": {
+   "es": "Kindred",
+   "fr": "Kindred",
+   "ko": "킨드레드",
+   "pl": "Kindred",
+   "tr": "Kindred",
+   "zh": "千珏"
+  },
+  "Kog'Maw": {
+   "es": "Kog'Maw",
+   "fr": "Kog'Maw",
+   "ko": "코그모",
+   "pl": "Kog'Maw",
+   "tr": "Kog'Maw",
+   "zh": "克格莫"
+  },
+  "Lee Sin": {
+   "es": "Lee Sin",
+   "fr": "Lee Sin",
+   "ko": "리 신",
+   "pl": "Lee Sin",
+   "tr": "Lee Sin",
+   "zh": "李青"
+  },
+  "Leona": {
+   "es": "Leona",
+   "fr": "Leona",
+   "ko": "레오나",
+   "pl": "Leona",
+   "tr": "Leona",
+   "zh": "蕾欧娜"
+  },
+  "Lillia": {
+   "es": "Lillia",
+   "fr": "Lillia",
+   "ko": "릴리아",
+   "pl": "Lillia",
+   "tr": "Lillia",
+   "zh": "莉莉娅"
+  },
+  "Lissandra": {
+   "es": "Lissandra",
+   "fr": "Lissandra",
+   "ko": "리산드라",
+   "pl": "Lissandra",
+   "tr": "Lissandra",
+   "zh": "丽桑卓"
+  },
+  "Lucian": {
+   "es": "Lucian",
+   "fr": "Lucian",
+   "ko": "루시안",
+   "pl": "Lucian",
+   "tr": "Lucian",
+   "zh": "卢锡安"
+  },
+  "Lulu": {
+   "es": "Lulu",
+   "fr": "Lulu",
+   "ko": "룰루",
+   "pl": "Lulu",
+   "tr": "Lulu",
+   "zh": "璐璐"
+  },
+  "Lux": {
+   "es": "Lux",
+   "fr": "Lux",
+   "ko": "럭스",
+   "pl": "Lux",
+   "tr": "Lux",
+   "zh": "拉克丝"
+  },
+  "Malphite": {
+   "es": "Malphite",
+   "fr": "Malphite",
+   "ko": "말파이트",
+   "pl": "Malphite",
+   "tr": "Malphite",
+   "zh": "墨菲特"
+  },
+  "Maokai": {
+   "es": "Maokai",
+   "fr": "Maokai",
+   "ko": "마오카이",
+   "pl": "Maokai",
+   "tr": "Maokai",
+   "zh": "茂凯"
+  },
+  "Master Yi": {
+   "es": "Maestro Yi",
+   "fr": "Maître Yi",
+   "ko": "마스터 이",
+   "pl": "Master Yi",
+   "tr": "Master Yi",
+   "zh": "易"
+  },
+  "Mel": {
+   "es": "Mel",
+   "fr": "Mel",
+   "ko": "멜",
+   "pl": "Mel",
+   "tr": "Mel",
+   "zh": "梅尔"
+  },
+  "Milio": {
+   "es": "Milio",
+   "fr": "Milio",
+   "ko": "밀리오",
+   "pl": "Milio",
+   "tr": "Milio",
+   "zh": "米利欧"
+  },
+  "Miss Fortune": {
+   "es": "Miss Fortune",
+   "fr": "Miss Fortune",
+   "ko": "미스 포츈",
+   "pl": "Miss Fortune",
+   "tr": "Miss Fortune",
+   "zh": "厄运小姐"
+  },
+  "Mordekaiser": {
+   "es": "Mordekaiser",
+   "fr": "Mordekaiser",
+   "ko": "모데카이저",
+   "pl": "Mordekaiser",
+   "tr": "Mordekaiser",
+   "zh": "莫德凯撒"
+  },
+  "Morgana": {
+   "es": "Morgana",
+   "fr": "Morgana",
+   "ko": "모르가나",
+   "pl": "Morgana",
+   "tr": "Morgana",
+   "zh": "莫甘娜"
+  },
+  "Nami": {
+   "es": "Nami",
+   "fr": "Nami",
+   "ko": "나미",
+   "pl": "Nami",
+   "tr": "Nami",
+   "zh": "娜美"
+  },
+  "Nasus": {
+   "es": "Nasus",
+   "fr": "Nasus",
+   "ko": "나서스",
+   "pl": "Nasus",
+   "tr": "Nasus",
+   "zh": "内瑟斯"
+  },
+  "Nautilus": {
+   "es": "Nautilus",
+   "fr": "Nautilus",
+   "ko": "노틸러스",
+   "pl": "Nautilus",
+   "tr": "Nautilus",
+   "zh": "诺提勒斯"
+  },
+  "Nidalee": {
+   "es": "Nidalee",
+   "fr": "Nidalee",
+   "ko": "니달리",
+   "pl": "Nidalee",
+   "tr": "Nidalee",
+   "zh": "奈德丽"
+  },
+  "Nilah": {
+   "es": "Nilah",
+   "fr": "Nilah",
+   "ko": "닐라",
+   "pl": "Nilah",
+   "tr": "Nilah",
+   "zh": "尼菈"
+  },
+  "Nocturne": {
+   "es": "Nocturne",
+   "fr": "Nocturne",
+   "ko": "녹턴",
+   "pl": "Nocturne",
+   "tr": "Nocturne",
+   "zh": "魔腾"
+  },
+  "Norra": {
+   "zh": "诺拉"
+  },
+  "Nunu & Willump": {
+   "es": "Nunu y Willump",
+   "fr": "Nunu et Willump",
+   "ko": "누누와 윌럼프",
+   "pl": "Nunu i Willump",
+   "tr": "Nunu ve Willump",
+   "zh": "努努和威朗普"
+  },
+  "Olaf": {
+   "es": "Olaf",
+   "fr": "Olaf",
+   "ko": "올라프",
+   "pl": "Olaf",
+   "tr": "Olaf",
+   "zh": "奥拉夫"
+  },
+  "Orianna": {
+   "es": "Orianna",
+   "fr": "Orianna",
+   "ko": "오리아나",
+   "pl": "Orianna",
+   "tr": "Orianna",
+   "zh": "奥莉安娜"
+  },
+  "Ornn": {
+   "es": "Ornn",
+   "fr": "Ornn",
+   "ko": "오른",
+   "pl": "Ornn",
+   "tr": "Ornn",
+   "zh": "奥恩"
+  },
+  "Pantheon": {
+   "es": "Pantheon",
+   "fr": "Pantheon",
+   "ko": "판테온",
+   "pl": "Pantheon",
+   "tr": "Pantheon",
+   "zh": "潘森"
+  },
+  "Poppy": {
+   "es": "Poppy",
+   "fr": "Poppy",
+   "ko": "뽀삐",
+   "pl": "Poppy",
+   "tr": "Poppy",
+   "zh": "波比"
+  },
+  "Pyke": {
+   "es": "Pyke",
+   "fr": "Pyke",
+   "ko": "파이크",
+   "pl": "Pyke",
+   "tr": "Pyke",
+   "zh": "派克"
+  },
+  "Rakan": {
+   "es": "Rakan",
+   "fr": "Rakan",
+   "ko": "라칸",
+   "pl": "Rakan",
+   "tr": "Rakan",
+   "zh": "洛"
+  },
+  "Rammus": {
+   "es": "Rammus",
+   "fr": "Rammus",
+   "ko": "람머스",
+   "pl": "Rammus",
+   "tr": "Rammus",
+   "zh": "拉莫斯"
+  },
+  "Rell": {
+   "es": "Rell",
+   "fr": "Rell",
+   "ko": "렐",
+   "pl": "Rell",
+   "tr": "Rell",
+   "zh": "芮尔"
+  },
+  "Renekton": {
+   "es": "Renekton",
+   "fr": "Renekton",
+   "ko": "레넥톤",
+   "pl": "Renekton",
+   "tr": "Renekton",
+   "zh": "雷克顿"
+  },
+  "Rengar": {
+   "es": "Rengar",
+   "fr": "Rengar",
+   "ko": "렝가",
+   "pl": "Rengar",
+   "tr": "Rengar",
+   "zh": "雷恩加尔"
+  },
+  "Riven": {
+   "es": "Riven",
+   "fr": "Riven",
+   "ko": "리븐",
+   "pl": "Riven",
+   "tr": "Riven",
+   "zh": "锐雯"
+  },
+  "Rumble": {
+   "es": "Rumble",
+   "fr": "Rumble",
+   "ko": "럼블",
+   "pl": "Rumble",
+   "tr": "Rumble",
+   "zh": "兰博"
+  },
+  "Ryze": {
+   "es": "Ryze",
+   "fr": "Ryze",
+   "ko": "라이즈",
+   "pl": "Ryze",
+   "tr": "Ryze",
+   "zh": "瑞兹"
+  },
+  "Samira": {
+   "es": "Samira",
+   "fr": "Samira",
+   "ko": "사미라",
+   "pl": "Samira",
+   "tr": "Samira",
+   "zh": "莎弥拉"
+  },
+  "Senna": {
+   "es": "Senna",
+   "fr": "Senna",
+   "ko": "세나",
+   "pl": "Senna",
+   "tr": "Senna",
+   "zh": "赛娜"
+  },
+  "Seraphine": {
+   "es": "Seraphine",
+   "fr": "Séraphine",
+   "ko": "세라핀",
+   "pl": "Seraphine",
+   "tr": "Seraphine",
+   "zh": "萨勒芬妮"
+  },
+  "Sett": {
+   "es": "Sett",
+   "fr": "Sett",
+   "ko": "세트",
+   "pl": "Sett",
+   "tr": "Sett",
+   "zh": "瑟提"
+  },
+  "Shen": {
+   "es": "Shen",
+   "fr": "Shen",
+   "ko": "쉔",
+   "pl": "Shen",
+   "tr": "Shen",
+   "zh": "慎"
+  },
+  "Shyvana": {
+   "es": "Shyvana",
+   "fr": "Shyvana",
+   "ko": "쉬바나",
+   "pl": "Shyvana",
+   "tr": "Shyvana",
+   "zh": "希瓦娜"
+  },
+  "Singed": {
+   "es": "Singed",
+   "fr": "Singed",
+   "ko": "신지드",
+   "pl": "Singed",
+   "tr": "Singed",
+   "zh": "辛吉德"
+  },
+  "Sion": {
+   "es": "Sion",
+   "fr": "Sion",
+   "ko": "사이온",
+   "pl": "Sion",
+   "tr": "Sion",
+   "zh": "赛恩"
+  },
+  "Sivir": {
+   "es": "Sivir",
+   "fr": "Sivir",
+   "ko": "시비르",
+   "pl": "Sivir",
+   "tr": "Sivir",
+   "zh": "希维尔"
+  },
+  "Skarner": {
+   "es": "Skarner",
+   "fr": "Skarner",
+   "ko": "스카너",
+   "pl": "Skarner",
+   "tr": "Skarner",
+   "zh": "斯卡纳"
+  },
+  "Smolder": {
+   "es": "Smolder",
+   "fr": "Smolder",
+   "ko": "스몰더",
+   "pl": "Smolder",
+   "tr": "Smolder",
+   "zh": "斯莫德"
+  },
+  "Sona": {
+   "es": "Sona",
+   "fr": "Sona",
+   "ko": "소나",
+   "pl": "Sona",
+   "tr": "Sona",
+   "zh": "娑娜"
+  },
+  "Soraka": {
+   "es": "Soraka",
+   "fr": "Soraka",
+   "ko": "소라카",
+   "pl": "Soraka",
+   "tr": "Soraka",
+   "zh": "索拉卡"
+  },
+  "Swain": {
+   "es": "Swain",
+   "fr": "Swain",
+   "ko": "스웨인",
+   "pl": "Swain",
+   "tr": "Swain",
+   "zh": "斯维因"
+  },
+  "Sylas": {
+   "es": "Sylas",
+   "fr": "Sylas",
+   "ko": "사일러스",
+   "pl": "Sylas",
+   "tr": "Sylas",
+   "zh": "塞拉斯"
+  },
+  "Syndra": {
+   "es": "Syndra",
+   "fr": "Syndra",
+   "ko": "신드라",
+   "pl": "Syndra",
+   "tr": "Syndra",
+   "zh": "辛德拉"
+  },
+  "Taliyah": {
+   "es": "Taliyah",
+   "fr": "Taliyah",
+   "ko": "탈리야",
+   "pl": "Taliyah",
+   "tr": "Taliyah",
+   "zh": "塔莉垭"
+  },
+  "Talon": {
+   "es": "Talon",
+   "fr": "Talon",
+   "ko": "탈론",
+   "pl": "Talon",
+   "tr": "Talon",
+   "zh": "泰隆"
+  },
+  "Teemo": {
+   "es": "Teemo",
+   "fr": "Teemo",
+   "ko": "티모",
+   "pl": "Teemo",
+   "tr": "Teemo",
+   "zh": "提莫"
+  },
+  "Thresh": {
+   "es": "Thresh",
+   "fr": "Thresh",
+   "ko": "쓰레쉬",
+   "pl": "Thresh",
+   "tr": "Thresh",
+   "zh": "锤石"
+  },
+  "Tristana": {
+   "es": "Tristana",
+   "fr": "Tristana",
+   "ko": "트리스타나",
+   "pl": "Tristana",
+   "tr": "Tristana",
+   "zh": "崔丝塔娜"
+  },
+  "Tryndamere": {
+   "es": "Tryndamere",
+   "fr": "Tryndamere",
+   "ko": "트린다미어",
+   "pl": "Tryndamere",
+   "tr": "Tryndamere",
+   "zh": "泰达米尔"
+  },
+  "Twisted Fate": {
+   "es": "Twisted Fate",
+   "fr": "Twisted Fate",
+   "ko": "트위스티드 페이트",
+   "pl": "Twisted Fate",
+   "tr": "Twisted Fate",
+   "zh": "崔斯特"
+  },
+  "Twitch": {
+   "es": "Twitch",
+   "fr": "Twitch",
+   "ko": "트위치",
+   "pl": "Twitch",
+   "tr": "Twitch",
+   "zh": "图奇"
+  },
+  "Urgot": {
+   "es": "Urgot",
+   "fr": "Urgot",
+   "ko": "우르곳",
+   "pl": "Urgot",
+   "tr": "Urgot",
+   "zh": "厄加特"
+  },
+  "Varus": {
+   "es": "Varus",
+   "fr": "Varus",
+   "ko": "바루스",
+   "pl": "Varus",
+   "tr": "Varus",
+   "zh": "韦鲁斯"
+  },
+  "Vayne": {
+   "es": "Vayne",
+   "fr": "Vayne",
+   "ko": "베인",
+   "pl": "Vayne",
+   "tr": "Vayne",
+   "zh": "薇恩"
+  },
+  "Veigar": {
+   "es": "Veigar",
+   "fr": "Veigar",
+   "ko": "베이가",
+   "pl": "Veigar",
+   "tr": "Veigar",
+   "zh": "维迦"
+  },
+  "Vel'Koz": {
+   "es": "Vel'Koz",
+   "fr": "Vel'Koz",
+   "ko": "벨코즈",
+   "pl": "Vel'Koz",
+   "tr": "Vel'Koz",
+   "zh": "维克兹"
+  },
+  "Vex": {
+   "es": "Vex",
+   "fr": "Vex",
+   "ko": "벡스",
+   "pl": "Vex",
+   "tr": "Vex",
+   "zh": "薇古丝"
+  },
+  "Vi": {
+   "es": "Vi",
+   "fr": "Vi",
+   "ko": "바이",
+   "pl": "Vi",
+   "tr": "Vi",
+   "zh": "蔚"
+  },
+  "Viego": {
+   "es": "Viego",
+   "fr": "Viego",
+   "ko": "비에고",
+   "pl": "Viego",
+   "tr": "Viego",
+   "zh": "佛耶戈"
+  },
+  "Viktor": {
+   "es": "Viktor",
+   "fr": "Viktor",
+   "ko": "빅토르",
+   "pl": "Viktor",
+   "tr": "Viktor",
+   "zh": "维克托"
+  },
+  "Vladimir": {
+   "es": "Vladimir",
+   "fr": "Vladimir",
+   "ko": "블라디미르",
+   "pl": "Vladimir",
+   "tr": "Vladimir",
+   "zh": "弗拉基米尔"
+  },
+  "Volibear": {
+   "es": "Volibear",
+   "fr": "Volibear",
+   "ko": "볼리베어",
+   "pl": "Volibear",
+   "tr": "Volibear",
+   "zh": "沃利贝尔"
+  },
+  "Warwick": {
+   "es": "Warwick",
+   "fr": "Warwick",
+   "ko": "워윅",
+   "pl": "Warwick",
+   "tr": "Warwick",
+   "zh": "沃里克"
+  },
+  "Wukong": {
+   "es": "Wukong",
+   "fr": "Wukong",
+   "ko": "오공",
+   "pl": "Wukong",
+   "tr": "Wukong",
+   "zh": "孙悟空"
+  },
+  "Xayah": {
+   "es": "Xayah",
+   "fr": "Xayah",
+   "ko": "자야",
+   "pl": "Xayah",
+   "tr": "Xayah",
+   "zh": "霞"
+  },
+  "Xin Zhao": {
+   "es": "Xin Zhao",
+   "fr": "Xin Zhao",
+   "ko": "신 짜오",
+   "pl": "Xin Zhao",
+   "tr": "Xin Zhao",
+   "zh": "赵信"
+  },
+  "Yasuo": {
+   "es": "Yasuo",
+   "fr": "Yasuo",
+   "ko": "야스오",
+   "pl": "Yasuo",
+   "tr": "Yasuo",
+   "zh": "亚索"
+  },
+  "Yone": {
+   "es": "Yone",
+   "fr": "Yone",
+   "ko": "요네",
+   "pl": "Yone",
+   "tr": "Yone",
+   "zh": "永恩"
+  },
+  "Yunara": {
+   "es": "Yunara",
+   "fr": "Yunara",
+   "ko": "유나라",
+   "pl": "Yunara",
+   "tr": "Yunara",
+   "zh": "芸阿娜"
+  },
+  "Yuumi": {
+   "es": "Yuumi",
+   "fr": "Yuumi",
+   "ko": "유미",
+   "pl": "Yuumi",
+   "tr": "Yuumi",
+   "zh": "悠米"
+  },
+  "Zed": {
+   "es": "Zed",
+   "fr": "Zed",
+   "ko": "제드",
+   "pl": "Zed",
+   "tr": "Zed",
+   "zh": "劫"
+  },
+  "Zeri": {
+   "es": "Zeri",
+   "fr": "Zeri",
+   "ko": "제리",
+   "pl": "Zeri",
+   "tr": "Zeri",
+   "zh": "泽丽"
+  },
+  "Ziggs": {
+   "es": "Ziggs",
+   "fr": "Ziggs",
+   "ko": "직스",
+   "pl": "Ziggs",
+   "tr": "Ziggs",
+   "zh": "吉格斯"
+  },
+  "Zilean": {
+   "es": "Zilean",
+   "fr": "Zilean",
+   "ko": "질리언",
+   "pl": "Zilean",
+   "tr": "Zilean",
+   "zh": "基兰"
+  },
+  "Zoe": {
+   "es": "Zoe",
+   "fr": "Zoé",
+   "ko": "조이",
+   "pl": "Zoe",
+   "tr": "Zoe",
+   "zh": "佐伊"
+  },
+  "Zyra": {
+   "es": "Zyra",
+   "fr": "Zyra",
+   "ko": "자이라",
+   "pl": "Zyra",
+   "tr": "Zyra",
+   "zh": "婕拉"
+  }
+ },
+ "items": {
+  "Abyssal Mask": {
+   "es": "Máscara abisal",
+   "fr": "Masque abyssal",
+   "ko": "심연의 가면",
+   "pl": "Maska Otchłani",
+   "tr": "Cehennem Maskesi",
+   "zh": "深渊面具"
+  },
+  "Archangel's Staff": {
+   "es": "Bastón del arcángel",
+   "fr": "Bâton de l'archange",
+   "ko": "대천사의 지팡이",
+   "pl": "Kostur Archanioła",
+   "tr": "Başmelek Asası",
+   "zh": "大天使之杖"
+  },
+  "Ardent Censer": {
+   "es": "Incensario ardiente",
+   "fr": "Encensoir ardent",
+   "ko": "불타는 향로",
+   "pl": "Ognisty Trybularz",
+   "tr": "Kızgın Buhurdanlık",
+   "zh": "炽热香炉"
+  },
+  "Armored Advance": {
+   "es": "Avance blindado",
+   "fr": "Avancée blindée",
+   "ko": "무장 진격",
+   "pl": "Opancerzone Natarcie",
+   "tr": "Zırhlı Atılım",
+   "zh": "装甲战靴"
+  },
+  "Banshee's Veil": {
+   "es": "Velo del hada de la muerte",
+   "fr": "Voile de la banshee",
+   "ko": "밴시의 장막",
+   "pl": "Całun Banshee",
+   "tr": "Banshee'nin Duvağı",
+   "zh": "女妖面纱"
+  },
+  "Berserker's Greaves": {
+   "es": "Grebas de berserker",
+   "fr": "Jambières du berzerker",
+   "ko": "광전사의 군화",
+   "pl": "Nagolenniki Berserkera",
+   "tr": "Savaşçı Çizmeleri",
+   "zh": "狂战士胫甲"
+  },
+  "Black Cleaver": {
+   "es": "Cuchilla negra",
+   "fr": "Couperet noir",
+   "ko": "칠흑의 양날 도끼",
+   "pl": "Czarny Tasak",
+   "tr": "Kara Balta",
+   "zh": "黑色切割者"
+  },
+  "Black Mist Scythe": {
+   "es": "Guadaña de la Niebla Negra",
+   "fr": "Faux de Brume noire",
+   "ko": "검은 안개 낫",
+   "pl": "Kosa Czarnej Mgły",
+   "tr": "Kara Sis Tırpanı",
+   "zh": "黑雾巨镰"
+  },
+  "Blackfire Torch": {
+   "es": "Antorcha de fuego negro",
+   "fr": "Torche noire",
+   "ko": "어둠불꽃 횃불",
+   "pl": "Pochodnia Mrocznego Ognia",
+   "tr": "Siyahateş Meşalesi",
+   "zh": "黯炎火炬"
+  },
+  "Blade of the Ruined King": {
+   "es": "Hoja del rey arruinado",
+   "fr": "Lame du roi déchu",
+   "ko": "몰락한 왕의 검",
+   "pl": "Ostrze Zniszczonego Króla",
+   "tr": "Mahvolmuş Kralın Kılıcı",
+   "zh": "破败王者之刃"
+  },
+  "Bloodletter's Curse": {
+   "es": "Maldición sanguinolenta",
+   "fr": "Malédiction du sanguinaire",
+   "ko": "핏빛 저주",
+   "pl": "Klątwa Krwawego Listu",
+   "tr": "Kandöken'in Laneti",
+   "zh": "放血者的诅咒"
+  },
+  "Bloodthirster": {
+   "es": "Sanguinaria",
+   "fr": "Soif-de-sang",
+   "ko": "피바라기",
+   "pl": "Krwiopijec",
+   "tr": "Kanasusamış",
+   "zh": "饮血剑"
+  },
+  "Bulwark of the Mountain": {
+   "es": "Baluarte de la montaña",
+   "fr": "Pavois de la montagne",
+   "ko": "타곤 산의 방벽",
+   "pl": "Bastion Góry",
+   "tr": "Dağın Siperi",
+   "zh": "山脉壁垒"
+  },
+  "Chainlaced Crushers": {
+   "es": "Trituradoras encadenadas",
+   "fr": "Broyeuses à chaînes",
+   "ko": "사슬끈 분쇄자",
+   "pl": "Spętane Kruszyciele",
+   "tr": "Zincirli Eziciler",
+   "zh": "带链碾碎者"
+  },
+  "Chempunk Chainsword": {
+   "es": "Mecanoespada punki",
+   "fr": "Épée dentelée chimico-punk",
+   "ko": "화공 펑크 사슬검",
+   "pl": "Chempunkowy Łańcuchowy Miecz",
+   "tr": "Zaun Zincirkılıcı",
+   "zh": "炼金朋克链锯剑"
+  },
+  "Cosmic Drive": {
+   "es": "Impulso cósmico",
+   "fr": "Volonté cosmique",
+   "ko": "우주의 추진력",
+   "pl": "Kosmiczny Impuls",
+   "tr": "Kozmik Hızlandırıcı",
+   "zh": "星界驱驰"
+  },
+  "Crimson Lucidity": {
+   "es": "Lucidez carmesí",
+   "fr": "Lucidité pourpre",
+   "ko": "핏빛 명석함",
+   "pl": "Karmazynowa Klarowność",
+   "tr": "Kızıl Ionia Çizmeleri",
+   "zh": "猩红明朗"
+  },
+  "Cryptbloom": {
+   "es": "Florescencia sepulcral",
+   "fr": "Fleur de crypte",
+   "ko": "무덤꽃",
+   "pl": "Kryptokwiat",
+   "tr": "Makber Çiçeği",
+   "zh": "蜕生"
+  },
+  "Dead Man's Plate": {
+   "es": "Coraza del muerto",
+   "fr": "Plaque du mort",
+   "ko": "망자의 갑옷",
+   "pl": "Pancerz Umrzyka",
+   "tr": "Ölü Adamın Zırhı",
+   "zh": "亡者的板甲"
+  },
+  "Death's Dance": {
+   "es": "Baile de la muerte",
+   "fr": "Danse de la mort",
+   "ko": "죽음의 무도",
+   "pl": "Taniec Śmierci",
+   "tr": "Ölümün Dansı",
+   "zh": "死亡之舞"
+  },
+  "Diadem of Songs": {
+   "es": "Diadema melodiosa",
+   "fr": "Diadème musical",
+   "ko": "악곡의 왕관",
+   "pl": "Diadem Pieśni",
+   "tr": "Ezgi Diyademi",
+   "zh": "歌之权冠"
+  },
+  "Divine Sunderer": {
+   "es": "Desgarrador divino",
+   "fr": "Pourfendeur divin",
+   "ko": "신성한 파괴자",
+   "pl": "Boski Łamacz",
+   "tr": "İlahsindiren",
+   "zh": "神圣分离者"
+  },
+  "Dusk and Dawn": {
+   "es": "Amanecer y anochecer",
+   "fr": "Aube et crépuscule",
+   "ko": "황혼과 새벽",
+   "pl": "Zmierzch i Brzask",
+   "tr": "Gündüz ve Gece",
+   "zh": "黄昏与黎明"
+  },
+  "Duskblade of Draktharr": {
+   "es": "Filoscuro de Draktharr",
+   "fr": "Épée vespérale de Draktharr",
+   "ko": "드락사르의 황혼검",
+   "pl": "Mroczne Ostrze Draktharru",
+   "tr": "Draktharr'ın Gece Kılıcı",
+   "zh": "德拉克萨的暮刃"
+  },
+  "Echoes of Helia": {
+   "es": "Ecos de Helia",
+   "fr": "Échos d'Helia",
+   "ko": "헬리아의 메아리",
+   "pl": "Echa Helii",
+   "tr": "Helia'nın Yankıları",
+   "zh": "海力亚的回响"
+  },
+  "Eclipse": {
+   "es": "Eclipse",
+   "fr": "Éclipse",
+   "ko": "월식",
+   "pl": "Zaćmienie",
+   "tr": "Kararma",
+   "zh": "星蚀"
+  },
+  "Edge of Night": {
+   "es": "Filo de la noche",
+   "fr": "Manteau de la nuit",
+   "ko": "밤의 끝자락",
+   "pl": "Ostrze Nocy",
+   "tr": "Gecenin Kıyısı",
+   "zh": "夜之锋刃"
+  },
+  "Essence Reaver": {
+   "es": "Segador de esencia",
+   "fr": "Faux spectrale",
+   "ko": "정수 약탈자",
+   "pl": "Złodziej Esencji",
+   "tr": "Canbiçen",
+   "zh": "夺萃之镰"
+  },
+  "Experimental Hexplate": {
+   "es": "Experimento de hexarmadura",
+   "fr": "Hexplaque expérimentale",
+   "ko": "실험적 마공학판",
+   "pl": "Eksperymentalny Hexpierśnik",
+   "tr": "Deneysel Hexzırh",
+   "zh": "海克斯注力刚壁"
+  },
+  "Fiendhunter Bolts": {
+   "es": "Dardos rastreademonios",
+   "fr": "Chasseur de monstres",
+   "ko": "악마사냥꾼의 화살",
+   "pl": "Bełty Łowcy Diabłów",
+   "tr": "İblis Avcısı Oku",
+   "zh": "猎魔人弩箭"
+  },
+  "Fimbulwinter": {
+   "es": "El gran invierno",
+   "fr": "Fimbulvetr",
+   "ko": "종말의 겨울",
+   "pl": "Wielka Zima",
+   "tr": "Son Kış",
+   "zh": "末日寒冬"
+  },
+  "Force of Nature": {
+   "es": "Fuerza de la naturaleza",
+   "fr": "Force de la nature",
+   "ko": "대자연의 힘",
+   "pl": "Siła Natury",
+   "tr": "Doğanın Kudreti",
+   "zh": "自然之力"
+  },
+  "Frozen Heart": {
+   "es": "Corazón de hielo",
+   "fr": "Cœur gelé",
+   "ko": "얼어붙은 심장",
+   "pl": "Mroźne Serce",
+   "tr": "Donmuş Yürek",
+   "zh": "冰霜之心"
+  },
+  "Galeforce": {
+   "es": "Viento huracanado",
+   "fr": "Force du vent",
+   "ko": "돌풍",
+   "pl": "Potęga Wichury",
+   "tr": "Rüzgârın Hiddeti",
+   "zh": "狂风之力"
+  },
+  "Gargoyle Stoneplate": {
+   "es": "Protector pétreo de gárgola",
+   "fr": "Lithoplastron de gargouille",
+   "ko": "가고일 돌갑옷",
+   "pl": "Kamienna Płyta Gargulca",
+   "tr": "Gargoyl Taşzırhı",
+   "zh": "石像鬼石板甲"
+  },
+  "Gluttonous Greaves": {
+   "es": "Grebas codiciosas",
+   "fr": "Jambières gloutonnes",
+   "ko": "탐욕의 군화",
+   "pl": "Nagolenniki Pasibrzucha",
+   "tr": "Açgözlü Çizmeleri",
+   "zh": "暴食胫甲"
+  },
+  "Goredrinker": {
+   "es": "Chupasangre",
+   "fr": "Éviscérateur",
+   "ko": "선혈포식자",
+   "pl": "Chłeptacz Posoki",
+   "tr": "Kaniçen",
+   "zh": "渴血战斧"
+  },
+  "Guardian Angel": {
+   "es": "Ángel de la guarda",
+   "fr": "Ange gardien",
+   "ko": "수호 천사",
+   "pl": "Anioł Stróż",
+   "tr": "Koruyucu Melek",
+   "zh": "守护天使"
+  },
+  "Guinsoo's Rageblade": {
+   "es": "Hoja de furia de Guinsoo",
+   "fr": "Lame enragée de Guinsoo",
+   "ko": "구인수의 격노검",
+   "pl": "Ostrze Gniewu Guinsoo",
+   "tr": "Guinsoo'nun Hiddeti",
+   "zh": "鬼索的狂暴之刃"
+  },
+  "Gunmetal Greaves": {
+   "es": "Grebas de metal",
+   "fr": "Jambières de métal",
+   "ko": "건메탈 군화",
+   "pl": "Spiżowe Nagolenniki",
+   "tr": "Bakır-Çinko Çizmeler",
+   "zh": "炮铜胫甲"
+  },
+  "Heartsteel": {
+   "es": "Corazón de acero",
+   "fr": "Cœuracier",
+   "ko": "강철심장",
+   "pl": "Stalowe Serce",
+   "tr": "Çelikyürek",
+   "zh": "心之钢"
+  },
+  "Hexoptics C44": {
+   "es": "Óptica hextech C44",
+   "fr": "Lunettes Hextech C44",
+   "ko": "마법광학 장치 C44",
+   "pl": "Hexoptyka C44",
+   "tr": "Hexgörü C44",
+   "zh": "海克斯镜片 C44"
+  },
+  "Hextech Rocketbelt": {
+   "es": "Cintomisil hextech",
+   "fr": "Ceinture-roquette Hextech",
+   "ko": "마법공학 로켓 벨트",
+   "pl": "Hextechowy Pas Rakietowy",
+   "tr": "Hextech Füzekemer",
+   "zh": "海克斯科技火箭腰带"
+  },
+  "Hollow Radiance": {
+   "es": "Fulgor vano",
+   "fr": "Rayonnement du vide",
+   "ko": "공허한 광휘",
+   "pl": "Głucha Poświata",
+   "tr": "Donuk Işıltı",
+   "zh": "璀璨回响"
+  },
+  "Horizon Focus": {
+   "es": "Precisión infalible",
+   "fr": "Concentration lointaine",
+   "ko": "지평선의 초점",
+   "pl": "Skupienie Horyzontalne",
+   "tr": "Ufukgetiren",
+   "zh": "视界专注"
+  },
+  "Hullbreaker": {
+   "es": "Rompecascos",
+   "fr": "Brise-coques",
+   "ko": "선체파괴자",
+   "pl": "Kadłubołamacz",
+   "tr": "Omurgakıran",
+   "zh": "破舰者"
+  },
+  "Iceborn Gauntlet": {
+   "es": "Guantelete de hielo",
+   "fr": "Gantelet givrant",
+   "ko": "얼어붙은 건틀릿",
+   "pl": "Lodowa Rękawica",
+   "tr": "Buzdoğan Eldiven",
+   "zh": "冰脉护手"
+  },
+  "Immortal Shieldbow": {
+   "es": "Arcoescudo inmortal",
+   "fr": "Arc-bouclier immortel",
+   "ko": "불멸의 철갑궁",
+   "pl": "Nieśmiertelny Łuklerz",
+   "tr": "Ölümsüz Kalkanyay",
+   "zh": "不朽盾弓"
+  },
+  "Imperial Mandate": {
+   "es": "Mandato imperial",
+   "fr": "Mandat impérial",
+   "ko": "제국의 명령",
+   "pl": "Imperialny Mandat",
+   "tr": "İmparatorun Fermanı",
+   "zh": "帝国指令"
+  },
+  "Infinity Edge": {
+   "es": "Filo infinito",
+   "fr": "Lame d'infini",
+   "ko": "무한의 대검",
+   "pl": "Ostrze Nieskończoności",
+   "tr": "Ebedi Kılıç",
+   "zh": "无尽之刃"
+  },
+  "Ionian Boots of Lucidity": {
+   "es": "Botas jonias de la lucidez",
+   "fr": "Bottes de lucidité",
+   "ko": "명석함의 아이오니아 장화",
+   "pl": "Ioniańskie Buty Jasności Umysłu",
+   "tr": "Ionia Çizmeleri",
+   "zh": "明朗之靴"
+  },
+  "Kaenic Rookern": {
+   "es": "Rookern kaénico",
+   "fr": "Rookern kaénique",
+   "ko": "케이닉 루컨",
+   "pl": "Kaeniczna Powłoka",
+   "tr": "Kutluyas Rukern",
+   "zh": "败魔"
+  },
+  "Knight's Vow": {
+   "es": "Promesa de caballero",
+   "fr": "Vœu du chevalier",
+   "ko": "기사의 맹세",
+   "pl": "Przysięga Rycerska",
+   "tr": "Şövalyenin Adağı",
+   "zh": "骑士之誓"
+  },
+  "Kraken Slayer": {
+   "es": "Verdugo de krakens",
+   "fr": "Tueur de krakens",
+   "ko": "크라켄 학살자",
+   "pl": "Pogromca Krakenów",
+   "tr": "Kraken Katili",
+   "zh": "海妖杀手"
+  },
+  "Liandry's Torment": {
+   "es": "Tormento de Liandry",
+   "fr": "Tourment de Liandry",
+   "ko": "리안드리의 고통",
+   "pl": "Udręka Liandry'ego",
+   "tr": "Liandry'nin Eziyeti",
+   "zh": "兰德里的折磨"
+  },
+  "Lich Bane": {
+   "es": "Perdición del liche",
+   "fr": "Fléau de liche",
+   "ko": "리치베인",
+   "pl": "Zmora Licza",
+   "tr": "Lich Boğan",
+   "zh": "巫妖之祸"
+  },
+  "Locket of the Iron Solari": {
+   "es": "Medallón de los Solari de Hierro",
+   "fr": "Médaillon de l'Iron Solari",
+   "ko": "강철의 솔라리 펜던트",
+   "pl": "Naszyjnik Żelaznych Solari",
+   "tr": "Demir Solari'nin Broşu",
+   "zh": "钢铁烈阳之匣"
+  },
+  "Lord Dominik's Regards": {
+   "es": "Recuerdos de lord Dominik",
+   "fr": "Salutations de Dominik",
+   "ko": "도미닉 경의 인사",
+   "pl": "Pozdrowienia Lorda Dominika",
+   "tr": "Dominik Efendi'nin Hürmetleri",
+   "zh": "多米尼克领主的致意"
+  },
+  "Luden's Echo": {
+   "es": "Eco de Luden",
+   "fr": "Écho de Luden",
+   "ko": "루덴의 메아리",
+   "pl": "Echo Luden",
+   "tr": "Luden'in Feryadı",
+   "zh": "卢登的回声"
+  },
+  "Malignance": {
+   "es": "Malignidad",
+   "fr": "Malfaisance",
+   "ko": "악의",
+   "pl": "Złowrogość",
+   "tr": "Habaset",
+   "zh": "残疫"
+  },
+  "Manamune": {
+   "es": "Manamune",
+   "fr": "Manamune",
+   "ko": "마나무네",
+   "pl": "Manamune",
+   "tr": "Manaveren",
+   "zh": "魔宗"
+  },
+  "Maw of Malmortius": {
+   "es": "Fauces de Malmortius",
+   "fr": "Gueule de Malmortius",
+   "ko": "맬모셔스의 아귀",
+   "pl": "Paszcza Malmortiusa",
+   "tr": "Malmortius'un Ağzı",
+   "zh": "玛莫提乌斯之噬"
+  },
+  "Mercurial Scimitar": {
+   "es": "Cimitarra mercurial",
+   "fr": "Cimeterre mercuriel",
+   "ko": "헤르메스의 시미터",
+   "pl": "Rtęciowy Bułat",
+   "tr": "Cıva Yatağan",
+   "zh": "水银弯刀"
+  },
+  "Mercury's Treads": {
+   "es": "Botas de mercurio",
+   "fr": "Sandales de Mercure",
+   "ko": "헤르메스의 발걸음",
+   "pl": "Obuwie Merkurego",
+   "tr": "Merkür'ün Adımları",
+   "zh": "水银之靴"
+  },
+  "Mikael's Blessing": {
+   "es": "Bendición de Mikael",
+   "fr": "Bénédiction de Mikael",
+   "ko": "미카엘의 축복",
+   "pl": "Błogosławieństwo Mikaela",
+   "tr": "Mikael'in Lütfu",
+   "zh": "米凯尔的祝福"
+  },
+  "Morellonomicon": {
+   "es": "Morellonomicón",
+   "fr": "Morellonomicon",
+   "ko": "모렐로노미콘",
+   "pl": "Morellonomicon",
+   "tr": "Morellonomikon",
+   "zh": "莫雷洛秘典"
+  },
+  "Mortal Reminder": {
+   "es": "Recordatorio letal",
+   "fr": "Rappel mortel",
+   "ko": "필멸자의 운명",
+   "pl": "Śmiertelne Przypomnienie",
+   "tr": "Fani Hatıratı",
+   "zh": "凡性的提醒"
+  },
+  "Muramana": {
+   "es": "Muramana",
+   "fr": "Muramana",
+   "ko": "무라마나",
+   "pl": "Muramana",
+   "tr": "Muramana",
+   "zh": "魔切"
+  },
+  "Nashor's Tooth": {
+   "es": "Diente de Nashor",
+   "fr": "Dent de Nashor",
+   "ko": "내셔의 이빨",
+   "pl": "Ząb Nashora",
+   "tr": "Nashor'un Dişi",
+   "zh": "纳什之牙"
+  },
+  "Overlord's Bloodmail": {
+   "es": "Sangría del soberano",
+   "fr": "Armure sanguine",
+   "ko": "지배자의 피갑옷",
+   "pl": "Krwawa Kolczuga Władcy",
+   "tr": "Savaş Beyinin Kanzırhı",
+   "zh": "霸王血铠"
+  },
+  "Phantom Dancer": {
+   "es": "Bailarín espectral",
+   "fr": "Danseur fantôme",
+   "ko": "유령 무희",
+   "pl": "Widmowy Tancerz",
+   "tr": "Hayalet Dansçı",
+   "zh": "幻影之舞"
+  },
+  "Plated Steelcaps": {
+   "es": "Botas blindadas",
+   "fr": "Coques en acier",
+   "ko": "판금 장화",
+   "pl": "Pancerniaki",
+   "tr": "Çelik Kaplamalı Çizme",
+   "zh": "铁板靴"
+  },
+  "Quicksilver Sash": {
+   "es": "Fajín de mercurio",
+   "fr": "Ceinture de mercure",
+   "ko": "수은 장식띠",
+   "pl": "Rtęciowa Szarfa",
+   "tr": "Cıvalı Kuşak",
+   "zh": "水银饰带"
+  },
+  "Rabadon's Deathcap": {
+   "es": "Sombrero mortal de Rabadon",
+   "fr": "Coiffe de Rabadon",
+   "ko": "라바돈의 죽음모자",
+   "pl": "Zabójczy Kapelusz Rabadona",
+   "tr": "Rabadon'un Şapkası",
+   "zh": "灭世者的死亡之帽"
+  },
+  "Radiant Virtue": {
+   "es": "Virtud radiante",
+   "fr": "Vertu radieuse",
+   "ko": "광휘의 미덕",
+   "pl": "Świetlista Cnota",
+   "tr": "Erdem Işığı",
+   "zh": "辉耀美德"
+  },
+  "Randuin's Omen": {
+   "es": "Presagio de Randuin",
+   "fr": "Présage de Randuin",
+   "ko": "란두인의 예언",
+   "pl": "Omen Randuina",
+   "tr": "Randuin'in Alameti",
+   "zh": "兰顿之兆"
+  },
+  "Rapid Firecannon": {
+   "es": "Cañón de fuego rápido",
+   "fr": "Canon ultrarapide",
+   "ko": "고속 연사포",
+   "pl": "Ognista Armata",
+   "tr": "Bombardıman Topu",
+   "zh": "疾射火炮"
+  },
+  "Riftmaker": {
+   "es": "Creagrietas",
+   "fr": "Créateur de failles",
+   "ko": "균열 생성기",
+   "pl": "Szczelinotwórca",
+   "tr": "Vadiyaran",
+   "zh": "裂隙制造者"
+  },
+  "Rod of Ages": {
+   "es": "Vara de las edades",
+   "fr": "Bâton séculaire",
+   "ko": "영겁의 지팡이",
+   "pl": "Różdżka Wieków",
+   "tr": "Asırlık Sopa",
+   "zh": "时光之杖"
+  },
+  "Runaan's Hurricane": {
+   "es": "Huracán de Runaan",
+   "fr": "Ouragan de Runaan",
+   "ko": "루난의 허리케인",
+   "pl": "Huragan Runaana",
+   "tr": "Runaan'ın Kasırgası",
+   "zh": "卢安娜的飓风"
+  },
+  "Rylai's Crystal Scepter": {
+   "es": "Cetro de cristal de Rylai",
+   "fr": "Sceptre de Rylai",
+   "ko": "라일라이의 수정홀",
+   "pl": "Kryształowy Kostur Rylai",
+   "tr": "Rylai'nin Kristal Asası",
+   "zh": "瑞莱的冰晶节杖"
+  },
+  "Seeker's Armguard": {
+   "es": "Brazalete de la buscadora",
+   "fr": "Protège-bras du savant",
+   "ko": "추적자의 팔목 보호대",
+   "pl": "Naramiennik Poszukiwacza",
+   "tr": "Maceracının Pazubendi",
+   "zh": "探索者的护臂"
+  },
+  "Seraph's Embrace": {
+   "es": "Abrazo del serafín",
+   "fr": "Étreinte du séraphin",
+   "ko": "대천사의 포옹",
+   "pl": "Uścisk Serafina",
+   "tr": "Seraph'ın Şefkati",
+   "zh": "炽天使之拥"
+  },
+  "Serpent's Fang": {
+   "es": "Colmillo de serpiente",
+   "fr": "Crochet de serpent",
+   "ko": "독사의 송곳니",
+   "pl": "Wężowy Kieł",
+   "tr": "Yılan Dişi",
+   "zh": "巨蛇之牙"
+  },
+  "Serylda's Grudge": {
+   "es": "Rencor de Serylda",
+   "fr": "Rancune de Serylda",
+   "ko": "세릴다의 원한",
+   "pl": "Uraza Seryldy",
+   "tr": "Serylda'nın Garezi",
+   "zh": "赛瑞尔达的怨恨"
+  },
+  "Shurelya's Battlesong": {
+   "es": "Canción de batalla de Shurelya",
+   "fr": "Chant de guerre de Shurelya",
+   "ko": "슈렐리아의 군가",
+   "pl": "Pieśń Bitewna Shurelyi",
+   "tr": "Shurelya'nın Savaş Şarkısı",
+   "zh": "舒瑞娅的战歌"
+  },
+  "Spear of Shojin": {
+   "es": "Lanza de Shojin",
+   "fr": "Lance de Shojin",
+   "ko": "쇼진의 창",
+   "pl": "Włócznia Shojin",
+   "tr": "Shojin'in Mızrağı",
+   "zh": "朔极之矛"
+  },
+  "Spellslinger's Shoes": {
+   "es": "Botas del lanzahechizos",
+   "fr": "Chaussures de lanceur de sorts",
+   "ko": "주문투척자의 신발",
+   "pl": "Buty Miotacza Zaklęć",
+   "tr": "Sahir Pabuçları",
+   "zh": "灵能使之靴"
+  },
+  "Statikk Shiv": {
+   "es": "Puñal de Statikk",
+   "fr": "Poignard de Statikk",
+   "ko": "스태틱의 단검",
+   "pl": "Kosa Statikka",
+   "tr": "Statikk Hançer",
+   "zh": "斯塔缇克电刃"
+  },
+  "Sterak's Gage": {
+   "es": "Calibrador de Sterak",
+   "fr": "Gage de Sterak",
+   "ko": "스테락의 도전",
+   "pl": "Gruboskórność Steraka",
+   "tr": "Sterak'ın Güvencesi",
+   "zh": "斯特拉克的挑战护手"
+  },
+  "Stormrazor": {
+   "es": "Navaja de asalto",
+   "fr": "Lame tempête",
+   "ko": "폭풍갈퀴",
+   "pl": "Klinga Burzy",
+   "tr": "Fırtınabiçen",
+   "zh": "岚切"
+  },
+  "Stormsurge": {
+   "es": "Sobrecarga tormentosa",
+   "fr": "Onde orageuse",
+   "ko": "폭풍 쇄도",
+   "pl": "Przepływ Burzy",
+   "tr": "Yıldırım Asası",
+   "zh": "风暴狂涌"
+  },
+  "Stridebreaker": {
+   "es": "Cortasendas",
+   "fr": "Estropieur",
+   "ko": "발걸음 분쇄기",
+   "pl": "Łamacz Falangi",
+   "tr": "Hızkesen",
+   "zh": "挺进破坏者"
+  },
+  "Sundered Sky": {
+   "es": "Firmamento desgarrado",
+   "fr": "Ciel éventré",
+   "ko": "갈라진 하늘",
+   "pl": "Rozdarte Niebo",
+   "tr": "Yarık Gökyüzü",
+   "zh": "焚天"
+  },
+  "Sunfire Aegis": {
+   "es": "Égida de fuego solar",
+   "fr": "Égide solaire",
+   "ko": "태양불꽃 방패",
+   "pl": "Słoneczna Egida",
+   "tr": "Günateşi Kalkanı",
+   "zh": "日炎圣盾"
+  },
+  "Terminus": {
+   "es": "El final",
+   "fr": "Terminus",
+   "ko": "경계",
+   "pl": "Ostatni Przystanek",
+   "tr": "Son Durak",
+   "zh": "界弓"
+  },
+  "The Collector": {
+   "es": "Recaudadora",
+   "fr": "Percepteur",
+   "ko": "징수의 총",
+   "pl": "Kolekcjoner",
+   "tr": "Tahsildar",
+   "zh": "收集者"
+  },
+  "Thornmail": {
+   "es": "Malla de espinas",
+   "fr": "Cotte épineuse",
+   "ko": "가시 갑옷",
+   "pl": "Kolczasta Kolczuga",
+   "tr": "Çivili Zırh",
+   "zh": "荆棘之甲"
+  },
+  "Titanic Hydra": {
+   "es": "Hidra titánica",
+   "fr": "Hydre titanesque",
+   "ko": "거대한 히드라",
+   "pl": "Kolosalna Hydra",
+   "tr": "Haşmetli Hydra",
+   "zh": "巨型九头蛇"
+  },
+  "Trinity Force": {
+   "es": "Fuerza de trinidad",
+   "fr": "Force de la trinité",
+   "ko": "삼위일체",
+   "pl": "Moc Trójcy",
+   "tr": "Üçlü Kuvvet",
+   "zh": "三相之力"
+  },
+  "Unending Despair": {
+   "es": "Desesperanza eterna",
+   "fr": "Désespoir infini",
+   "ko": "끝없는 절망",
+   "pl": "Nieskończona Rozpacz",
+   "tr": "Sonsuz Çaresizlik",
+   "zh": "无终恨意"
+  },
+  "Void Staff": {
+   "es": "Bastón del Vacío",
+   "fr": "Bâton du vide",
+   "ko": "공허의 지팡이",
+   "pl": "Kostur Pustki",
+   "tr": "Hiçlik Değneği",
+   "zh": "虚空之杖"
+  },
+  "Warmog's Armor": {
+   "es": "Armadura de Warmog",
+   "fr": "Armure de Warmog",
+   "ko": "워모그의 갑옷",
+   "pl": "Plemienna Zbroja",
+   "tr": "Warmog'un Zırhı",
+   "zh": "狂徒铠甲"
+  },
+  "Whispering Circlet": {
+   "es": "Diadema susurrante",
+   "fr": "Diadème des murmures",
+   "ko": "속삭이는 머리띠",
+   "pl": "Szepczący Diadem",
+   "tr": "Fısıldayan Taç",
+   "zh": "耳语头环"
+  },
+  "Winter's Approach": {
+   "es": "Llegada del invierno",
+   "fr": "Approche de l'hiver",
+   "ko": "혹한의 손길",
+   "pl": "Nadejście Zimy",
+   "tr": "Yaklaşan Kış",
+   "zh": "凛冬之临"
+  },
+  "Youmuu's Ghostblade": {
+   "es": "Filo fantasmal de Youmuu",
+   "fr": "Lame spectre de Youmuu",
+   "ko": "요우무의 유령검",
+   "pl": "Widmowe Ostrze Youmuu",
+   "tr": "Youmuu'nun Hayaletkılıcı",
+   "zh": "幽梦之灵"
+  },
+  "Yun Tal Wildarrows": {
+   "es": "Flechas de los Yun Tal",
+   "fr": "Flèches des Yun Tal",
+   "ko": "윤 탈 야생화살",
+   "pl": "Nieokiełznane Strzały Yun Tal",
+   "tr": "Yun Tal Yabanokları",
+   "zh": "育恩塔尔荒野箭"
+  },
+  "Zeke's Convergence": {
+   "es": "Convergencia de Zeke",
+   "fr": "Convergence de Zeke",
+   "ko": "지크의 융합",
+   "pl": "Konwergencja Zeke'a",
+   "tr": "Zeke'nin Ahengi",
+   "zh": "基克的聚合"
+  },
+  "Zhonya's Hourglass": {
+   "es": "Reloj de arena de Zhonya",
+   "fr": "Sablier de Zhonya",
+   "ko": "존야의 모래시계",
+   "pl": "Klepsydra Zhonyi",
+   "tr": "Zhonya'nın Kumsaati",
+   "zh": "中娅沙漏"
+  }
+ },
+ "runes": {
+  "Absolute Focus": {
+   "es": "Concentración absoluta",
+   "fr": "Concentration absolue",
+   "ko": "절대 집중",
+   "pl": "Całkowite Skupienie",
+   "tr": "Mutlak Odak",
+   "zh": "绝对专注"
+  },
+  "Arcane Comet": {
+   "es": "Cometa arcano",
+   "fr": "Comète arcanique",
+   "ko": "신비로운 유성",
+   "pl": "Ezoteryczna Kometa",
+   "tr": "Sihirli Yıldız",
+   "zh": "奥术彗星"
+  },
+  "Axiom Arcanist": {
+   "es": "Arcanólogo axiomático",
+   "fr": "Arcaniste axiomatique",
+   "ko": "액시옴 비전 마법사",
+   "pl": "Aksjomatyczny Adept Arkanów",
+   "tr": "Aksiyom Üstadı",
+   "zh": "公理秘术"
+  },
+  "Bone Plating": {
+   "es": "Revestimiento de huesos",
+   "fr": "Plaque d'os",
+   "ko": "뼈 방패",
+   "pl": "Kościana Zbroja",
+   "tr": "Kemik Zırh",
+   "zh": "骸骨镀层"
+  },
+  "Celerity": {
+   "es": "Celeridad",
+   "fr": "Célérité",
+   "ko": "기민함",
+   "pl": "Chyżość",
+   "tr": "Sürat",
+   "zh": "迅捷"
+  },
+  "Cheap Shot": {
+   "es": "Golpe bajo",
+   "fr": "Coup bas",
+   "ko": "비열한 한 방",
+   "pl": "Cios Poniżej Pasa",
+   "tr": "Belden Aşağı",
+   "zh": "恶意中伤"
+  },
+  "Conqueror": {
+   "es": "Conquistador",
+   "fr": "Conquérant",
+   "ko": "정복자",
+   "pl": "Zdobywca",
+   "tr": "Yenilmez",
+   "zh": "征服者"
+  },
+  "Coup de Grace": {
+   "es": "Golpe de gracia",
+   "fr": "Coup de grâce",
+   "ko": "최후의 일격",
+   "pl": "Ostateczny Cios",
+   "tr": "Son Darbe",
+   "zh": "恩赐解脱"
+  },
+  "Cut Down": {
+   "es": "Derribado",
+   "fr": "Abattage",
+   "ko": "체력차 극복",
+   "pl": "Odcięcie",
+   "tr": "Biç Devir",
+   "zh": "砍倒"
+  },
+  "Dark Harvest": {
+   "es": "Cosecha oscura",
+   "fr": "Moisson noire",
+   "ko": "어둠의 수확",
+   "pl": "Mroczne Żniwa",
+   "tr": "Kara Hasat",
+   "zh": "黑暗收割"
+  },
+  "Demolish": {
+   "es": "Demoler",
+   "fr": "Démolition",
+   "ko": "철거",
+   "pl": "Demolka",
+   "tr": "Tahrip",
+   "zh": "爆破"
+  },
+  "Electrocute": {
+   "es": "Electrocutar",
+   "fr": "Électrocution",
+   "ko": "감전",
+   "pl": "Elektryzacja",
+   "tr": "Elektrik Ver",
+   "zh": "电刑"
+  },
+  "First Strike": {
+   "es": "Primer golpe",
+   "fr": "Premier coup",
+   "ko": "선제공격",
+   "pl": "Pierwsze Uderzenie",
+   "tr": "İlk Vuruş",
+   "zh": "先攻"
+  },
+  "Fleet Footwork": {
+   "es": "Pies veloces",
+   "fr": "Jeu de jambes",
+   "ko": "기민한 발놀림",
+   "pl": "Zwinne Nogi",
+   "tr": "Ayağı Çabuk",
+   "zh": "迅捷步法"
+  },
+  "Font of Life": {
+   "es": "Fuente de vida",
+   "fr": "Fontaine de vie",
+   "ko": "생명의 샘",
+   "pl": "Przypływ Życia",
+   "tr": "Yaşam Kaynağı",
+   "zh": "生命源泉"
+  },
+  "Gathering Storm": {
+   "es": "Se avecina tormenta",
+   "fr": "Tempête menaçante",
+   "ko": "폭풍의 결집",
+   "pl": "Nadchodząca Burza",
+   "tr": "Yaklaşan Fırtına",
+   "zh": "风暴聚集"
+  },
+  "Grasp of the Undying": {
+   "es": "Garras del inmortal",
+   "fr": "Poigne de l'immortel",
+   "ko": "착취의 손아귀",
+   "pl": "Uścisk Nieumarłego",
+   "tr": "Hortlağın Pençesi",
+   "zh": "不灭之握"
+  },
+  "Guardian": {
+   "es": "Protector",
+   "fr": "Gardien",
+   "ko": "수호자",
+   "pl": "Opiekun",
+   "tr": "Muhafız",
+   "zh": "守护者"
+  },
+  "Hextech Flashtraption": {
+   "es": "Destello hextech",
+   "fr": "Canaliportation Hextech",
+   "ko": "마법공학 점멸기",
+   "pl": "Hextechowy Błyskalazek",
+   "tr": "Hextech Sıçratıcısı",
+   "zh": "海克斯科技闪现罗网"
+  },
+  "Last Stand": {
+   "es": "Último esfuerzo",
+   "fr": "Baroud d'honneur",
+   "ko": "최후의 저항",
+   "pl": "Ostatni Bastion",
+   "tr": "Son Direniş",
+   "zh": "坚毅不倒"
+  },
+  "Legend: Alacrity": {
+   "es": "Leyenda: Presteza",
+   "fr": "Légende : alacrité",
+   "ko": "전설: 민첩함",
+   "pl": "Legenda: Żwawość",
+   "tr": "Efsane: Çeviklik",
+   "zh": "传说：欢欣"
+  },
+  "Legend: Bloodline": {
+   "es": "Leyenda: Linaje",
+   "fr": "Légende : sangsue",
+   "ko": "전설: 핏빛 길",
+   "pl": "Legenda: Rodowód",
+   "tr": "Efsane: Kan",
+   "zh": "传说：血统"
+  },
+  "Legend: Haste": {
+   "es": "Leyenda: Velocidad",
+   "fr": "Légende : accélération",
+   "ko": "전설: 가속",
+   "pl": "Legenda: Przyspieszenie",
+   "tr": "Efsane: Hız",
+   "zh": "传说：急速"
+  },
+  "Lethal Tempo": {
+   "es": "Compás letal",
+   "fr": "Tempo mortel",
+   "ko": "치명적 속도",
+   "pl": "Zabójcze Tempo",
+   "tr": "Ölümcül Tempo",
+   "zh": "致命节奏"
+  },
+  "Manaflow Band": {
+   "es": "Banda de maná",
+   "fr": "Ruban de mana",
+   "ko": "마나순환 팔찌",
+   "pl": "Opaska Przepływu Many",
+   "tr": "Mana Akışı Yüzüğü",
+   "zh": "法力流系带"
+  },
+  "Nimbus Cloak": {
+   "es": "Capa del nimbo",
+   "fr": "Manteau nuageux",
+   "ko": "빛의 망토",
+   "pl": "Płaszcz Nimbu",
+   "tr": "Bulut Pelerini",
+   "zh": "灵光披风"
+  },
+  "Overgrowth": {
+   "es": "Sobrecrecimiento",
+   "fr": "Surcroissance",
+   "ko": "과잉성장",
+   "pl": "Przerost",
+   "tr": "Aşırı Büyüme",
+   "zh": "过度生长"
+  },
+  "Relentless Hunter": {
+   "es": "Cazador incesante",
+   "fr": "Chasseur acharné",
+   "ko": "끈질긴 사냥꾼",
+   "pl": "Bezwzględny Łowca",
+   "tr": "İnsafsız Avcı",
+   "zh": "无情猎手"
+  },
+  "Revitalize": {
+   "es": "Revitalizar",
+   "fr": "Revitalisation",
+   "ko": "소생",
+   "pl": "Rewitalizacja",
+   "tr": "Canlandır",
+   "zh": "复苏"
+  },
+  "Scorch": {
+   "es": "Piroláser",
+   "fr": "Brûlure",
+   "ko": "주문 작열",
+   "pl": "Poparzenie",
+   "tr": "Kızart",
+   "zh": "焦灼"
+  },
+  "Second Wind": {
+   "es": "Fuerzas renovadas",
+   "fr": "Second souffle",
+   "ko": "재생의 바람",
+   "pl": "Drugi Oddech",
+   "tr": "İkinci Şans",
+   "zh": "复苏之风"
+  },
+  "Sudden Impact": {
+   "es": "Impacto repentino",
+   "fr": "Ruée offensive",
+   "ko": "돌발 일격",
+   "pl": "Niespodziewane Uderzenie",
+   "tr": "Ani Darbe",
+   "zh": "猛然冲击"
+  },
+  "Transcendence": {
+   "es": "Trascendencia",
+   "fr": "Transcendance",
+   "ko": "깨달음",
+   "pl": "Transcendencja",
+   "tr": "Yücelik",
+   "zh": "超然"
+  },
+  "Triumph": {
+   "es": "Triunfo",
+   "fr": "Triomphe",
+   "ko": "승전보",
+   "pl": "Triumf",
+   "tr": "Zafer",
+   "zh": "凯旋"
+  }
+ },
+ "spells": {
+  "Barrier": {
+   "es": "Barrera",
+   "fr": "Barrière",
+   "ko": "방어막",
+   "pl": "Bariera",
+   "tr": "Bariyer",
+   "zh": "屏障"
+  },
+  "Cleanse": {
+   "es": "Limpiar",
+   "fr": "Purge",
+   "ko": "정화",
+   "pl": "Oczyszczenie",
+   "tr": "Arındır",
+   "zh": "净化"
+  },
+  "Exhaust": {
+   "es": "Extenuación",
+   "fr": "Fatigue",
+   "ko": "탈진",
+   "pl": "Wyczerpanie",
+   "tr": "Bitkinlik",
+   "zh": "虚弱"
+  },
+  "Flash": {
+   "es": "Destello",
+   "fr": "Saut éclair",
+   "ko": "점멸",
+   "pl": "Błysk",
+   "tr": "Sıçra",
+   "zh": "闪现"
+  },
+  "Ghost": {
+   "es": "Fantasmal",
+   "fr": "Fantôme",
+   "ko": "유체화",
+   "pl": "Duch",
+   "tr": "Hayalet",
+   "zh": "幽灵疾步"
+  },
+  "Heal": {
+   "es": "Curar",
+   "fr": "Soins",
+   "ko": "회복",
+   "pl": "Uzdrowienie",
+   "tr": "Şifa",
+   "zh": "治疗术"
+  },
+  "Ignite": {
+   "es": "Prender",
+   "fr": "Embrasement",
+   "ko": "점화",
+   "pl": "Podpalenie",
+   "tr": "Tutuştur",
+   "zh": "引燃"
+  },
+  "Smite": {
+   "es": "Aplastar",
+   "fr": "Châtiment",
+   "ko": "강타",
+   "pl": "Porażenie",
+   "tr": "Çarp",
+   "zh": "惩戒"
+  },
+  "Teleport": {
+   "es": "Teleportar",
+   "fr": "Téléportation",
+   "ko": "순간이동",
+   "pl": "Teleportacja",
+   "tr": "Işınlan",
+   "zh": "传送"
+  }
+ },
+ "version": "16.23.1"
+}

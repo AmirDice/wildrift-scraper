@@ -1,4 +1,5 @@
 import { HotTag } from "@/components/hot-tag";
+import { languageAlternates } from "@/lib/i18n";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { site, getChampions, regionBoard } from "@/lib/data";
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   title: `Wild Rift Tier List Patch ${CURRENT_PATCH}${UPDATED ? ` (Updated ${UPDATED})` : ""} | EU, NA & China Win Rates`,
   description:
     `The Wild Rift tier list for patch ${CURRENT_PATCH}, combining real top-player win rates from EU and NA with official China server data from lolm.qq.com. Switch regions and filter by role from GOD to L tiers.`,
-  alternates: { canonical: "/tier-list" },
+  alternates: { canonical: "/tier-list", languages: languageAlternates("/tier-list") },
   openGraph: {
     title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU, NA & China Win Rates`,
     description: `Every Wild Rift champion ranked for patch ${CURRENT_PATCH} by the real win rates of its best players across EU and NA, plus China's official rates.`,

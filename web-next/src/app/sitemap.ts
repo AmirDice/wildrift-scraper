@@ -4,6 +4,7 @@ import { getPosts } from "@/lib/blog";
 import { impactPatches } from "@/lib/patch-impact";
 import { hasCounterPage } from "@/lib/counters";
 import { hasRunesPage, lanePages } from "@/lib/champion-seo";
+import { LOCALES, localizedPath } from "@/lib/i18n";
 import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 
 const BASE = "https://wrtruemeta.com";
@@ -97,5 +98,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const impactPages: MetadataRoute.Sitemap = impactPatches().map((patch) => ({
     url: `${BASE}/patch-impact/${patch}`, lastModified: now, changeFrequency: "weekly", priority: 0.75,
   }));
-  return [...staticPages, ...championPages, ...counterPages, ...seoPages, ...blogPages, ...impactPages];
+  // Translated pages (2026-11-28, lib/i18n.ts): every English page that has
+  // a translation, once per language.
+  const translatable = [
+    { path: "/", lastModified: collected, priority: 0.8 },
+    { path: "/tier-list", lastModified: collected, priority: 0.8 },
+    ...getChampions().filter((c) => !c.statsPending).flatMap((c) => [
+      { path: `/champions/${c.slug}`, lastModified: collected, priority: 0.7 },
+      ...lanePages(c.slug).map((l) => ({ path: `/champions/${c.slug}/${l.lane}`, lastModified: collected, priority: 0.6 })),
+      ...(hasRunesPage(c) ? [{ path: `/champions/${c.slug}/runes`, lastModified: collected, priority: 0.55 }] : []),
+      ...(hasCounterPage(c.slug) ? [{ path: `/champions/${c.slug}/counters`, lastModified: collected, priority: 0.6 }] : []),
+    ]),
+  ];
+  const localizedPages: MetadataRoute.Sitemap = translatable.flatMap((p) => LOCALES.map((lang) => ({
+    url: `${BASE}${localizedPath(lang, p.path)}`,
+    lastModified: p.lastModified,
+    changeFrequency: "weekly" as const,
+    priority: p.priority,
+  })));
+  return [...staticPages, ...championPages, ...counterPages, ...seoPages, ...localizedPages, ...blogPages, ...impactPages];
 }

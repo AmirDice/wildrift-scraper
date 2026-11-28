@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import Link from "next/link";
 import { site, getChampions, tierLabel, type Champion, regionBoard } from "@/lib/data";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
@@ -29,7 +30,7 @@ import { CURRENT_PATCH } from "@/lib/patch";
 const UPDATED = tierListUpdated();
 export const metadata: Metadata = {
   title: { absolute: `WrTrueMeta | Wild Rift Tier List${CURRENT_PATCH ? ` Patch ${CURRENT_PATCH}` : ""}, Win Rates & Meta${UPDATED ? ` (Updated ${UPDATED})` : ""}` },
-  alternates: { canonical: "/" },
+  alternates: { canonical: "/", languages: languageAlternates("/") },
 };
 
 export default function HomePage() {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import Link from "next/link";
@@ -101,7 +102,7 @@ export async function generateMetadata(props: PageProps<"/champions/[slug]">): P
     ? `${champion.name} in Wild Rift: full kit, ability numbers, base stats and item build. Win rate and tier arrive once there is a ranked sample to build them from.`
     : `${champion.name} is ${tierLabel(meta.tier)} tier in Wild Rift with a ${meta.wr.toFixed(1)}% win rate across its 50 best players in EU and NA. Counters, matchups, abilities, runes, item build and full patch history.`;
   const splash = horizontalSplash(champion.splash);
-  return { title, description, alternates: { canonical: `/champions/${champion.slug}` }, openGraph: { title, description, images: [splash] }, twitter: { card: "summary_large_image", title, description, images: [splash] } };
+  return { title, description, alternates: { canonical: `/champions/${champion.slug}`, languages: champion.statsPending ? undefined : languageAlternates(`/champions/${champion.slug}`) }, openGraph: { title, description, images: [splash] }, twitter: { card: "summary_large_image", title, description, images: [splash] } };
 }
 
 /** An item's name and icon for the per-server build card. Unknown slugs still

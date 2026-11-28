@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import itemsCatalogue from "@/data/items.json";
@@ -42,7 +43,7 @@ export async function generateMetadata(props: PageProps<"/champions/[slug]/count
   const description = `The champions that beat ${champion.name} most often in Wild Rift ranked${top.length ? `: ${top.join(", ")}` : ""}. Measured matchup win rates, who to avoid, and what to build against ${champion.name}.`;
   return {
     title, description,
-    alternates: { canonical: `/champions/${slug}/counters` },
+    alternates: { canonical: `/champions/${slug}/counters`, languages: languageAlternates(`/champions/${slug}/counters`) },
     openGraph: { title, description, url: `https://wrtruemeta.com/champions/${slug}/counters` },
   };
 }
