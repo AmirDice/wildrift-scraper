@@ -194,7 +194,8 @@ class TestUnknownEnemyHandling:
 
 class TestItemPool:
     def test_withheld_items_are_declared_rather_than_silently_dropped(self, hecarim_unknown):
-        assert "ITEMS WITHHELD FROM THE POOL" in hecarim_unknown
+        # The catalogue is shared since 2026-11-28; the filter is this note.
+        assert "NOT AVAILABLE FOR THIS BUILD" in hecarim_unknown
         assert "runaans-hurricane" in hecarim_unknown
 
     def test_the_audit_is_spellblade_for_hecarim(self, hecarim_unknown):
@@ -205,7 +206,7 @@ class TestItemPool:
 
     def test_the_prompt_is_not_truncated_and_carries_every_section(self, hecarim_unknown):
         for section in ["CHAMPION: Hecarim", "ROLE: Jungle", "RULES, IN TWO TIERS",
-                        "BOOTS (pick ONE tier-2", "RUNES (page =", "ITEM POOL"]:
+                        "BOOTS (pick ONE tier-2", "RUNES (page =", "ITEM CATALOGUE", "NOT AVAILABLE FOR THIS BUILD"]:
             assert section in hecarim_unknown, section
         assert len(hecarim_unknown) > 40_000
 

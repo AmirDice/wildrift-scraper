@@ -523,6 +523,7 @@ def validate(
     summoner_icons: dict | None = None,
     identity: dict | None = None,
     ladder_core: list[str] | None = None,
+    defensive_boots_ok: bool = False,
     hard_cc_count: int | None = None,
     healing_level: str = "",
     unrestricted_mode: bool = False,
@@ -781,7 +782,7 @@ def validate(
         # where the defensive boot is sometimes simply the better choice. So the
         # ban now applies only when there is nothing to be defensive about.
         if (not unrestricted_mode and boots in DEFENSIVE_BOOTS and champion_class in OFFENSE_FIRST_CLASSES
-                and not enemies_known):
+                and not enemies_known and not defensive_boots_ok):
             report.fail("boots",
                         f"{champion_class} main boots cannot be defensive {boots} when no enemy "
                         "team was supplied -- there is no threat to itemise against. Choose "

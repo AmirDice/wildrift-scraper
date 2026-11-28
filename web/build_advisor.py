@@ -1803,6 +1803,14 @@ def _ladder_rune_page(record: dict, authored: list[dict], champion: str,
     return None, "unavailable"
 
 
+def _shared_catalogue(unrestricted_mode: bool, pool_slugs: list[str]) -> list[str]:
+    """Every completed item still in the game: one catalogue for every request,
+    so it can lead the prompt and be cached. Unrestricted mode already uses
+    the full pool; the union keeps a locked or special-case pool item listed."""
+    live = {s for s, item in itemmeta.completed_items().items() if not item.get("removedIn")}
+    return sorted(live | set(pool_slugs))
+
+
 def _ladder_core(champion: str) -> list[str]:
     """The five core items top players build on this champion, in order.
 
@@ -3711,6 +3719,11 @@ def advise(champion: str, role: str, enemies: list[str],
     # 7.3 replaced ten items and rewrote forty-two, and Jinx's list still
     # named one the patch deleted. It comes back on its own with the first
     # collection on the new patch; see prompt.consensus_predates_patch.
+    # Official high-elo builds (prompt.official_builds_block) replaced the
+    # ladder as the build evidence on 2026-11-28. They follow the same on/off
+    # switch (unrestricted mode and objective=best turn them off) but NOT the
+    # ladder's staleness check: they carry their own dates and patch label.
+    official_anchor = ladder_anchor
     if ladder_anchor and prompt_mod.consensus_predates_patch():
         ladder_anchor = False
     risk_tolerance = risk_tolerance if risk_tolerance in RISK_TOLERANCE else "medium"
@@ -3789,7 +3802,31 @@ def advise(champion: str, role: str, enemies: list[str],
         identity_key = "Kayn (Rhaast)"
     identity_card = prompt_mod.identity_card(identity_key)
 
-    prompt = "\n\n".join(x for x in [
+    # CACHE-FRIENDLY ORDER (2026-11-28). Gemini bills a recently seen prompt
+    # PREFIX at ~5% of the input price, but the prompt used to open with
+    # "CHAMPION: <name>", so two champions shared no prefix at all even though
+    # their prompts are 95% identical: measured, the first build of every
+    # champion had 0 cached tokens. The parts that are the same for every
+    # request now come first -- the full item catalogue, the rune catalogue and
+    # the boots guide -- and everything about this champion and request
+    # follows. The per-champion item filter still applies: what this build may
+    # not use is listed after the catalogue (unavailable_note), and the
+    # validator still enforces pool_slugs.
+    official_evidence = (prompt_mod.official_builds_block(identity_key, role, pool_slugs)
+                         if official_anchor else "")
+    official_core = (prompt_mod.official_core_slugs(identity_key, role, pool_slugs)
+                     if official_evidence else [])
+    shared_prefix = [
+        prompt_mod.item_pool_block(_shared_catalogue(unrestricted_mode, pool_slugs)),
+        runemeta.pool_text_block(),
+        prompt_mod.boots_block(
+            "" if unrestricted_mode else champion_record.get("class", ""),
+            enemies_known,
+            "standard" if unrestricted_mode else damage_path),
+    ]
+    prompt = "\n\n".join(x for x in shared_prefix + [
+        "--- THE REQUEST: everything above is shared reference; everything below is "
+        "about THIS champion and THIS build ---",
         prompt_mod.champion_block(champion, CHAMPS, ARCHETYPES, WRMETA, derived),
         ("EXPERIMENTAL UNRESTRICTED MODE: ignore curated champion identity, class and "
          "item-family recommendations and search all supplied legal item paths. This "
@@ -3805,7 +3842,13 @@ def advise(champion: str, role: str, enemies: list[str],
             if len(_ladder_core(identity_key)) >= 4 and not item_locks else "")
          if unrestricted_mode else
          prompt_mod.meta_identity_block(identity_key, constrain=(objective != "best"))),
-        prompt_mod.ladder_consensus_block(identity_key) if ladder_anchor else "",
+        # Evidence, most specific first: official page; official page plus
+        # ladder ITEMS when its item cores are missing or were dropped by the
+        # guardrails; the full ladder block when there is no official page.
+        (official_evidence + ("\n\n" + prompt_mod.ladder_items_block(identity_key)
+                              if not official_core and ladder_anchor else "")
+         if official_evidence else
+         prompt_mod.ladder_consensus_block(identity_key) if ladder_anchor else ""),
         f"ROLE: {role}",
         # Every selected option governs the WHOLE loadout. Stated once here
         # rather than repeated inside each option's own text: those are written
@@ -3873,6 +3916,8 @@ def advise(champion: str, role: str, enemies: list[str],
             champion, ' '.join((a.get('text') or '')
                                for a in (champion_record.get('abilities') or [])))),
         "" if unrestricted_mode else _support_item_block(role),
+        "" if unrestricted_mode else prompt_mod.boots_champion_note(
+            identity_key, role, champion_record.get("class", ""), enemies_known),
         # Locks: the player has pinned these and the build MUST contain them.
         # They are a constraint on an otherwise free optimisation, so build the
         # best loadout that still honours them -- do not just append them.
@@ -3917,19 +3962,15 @@ def advise(champion: str, role: str, enemies: list[str],
         _meta_block(champion),
         prompt_mod.audit_block(kit_linked_items, combat),
         prompt_mod.rules_block(enemies_known, combat),
-        prompt_mod.boots_block(
-            "" if unrestricted_mode else champion_record.get("class", ""),
-            enemies_known,
-            "standard" if unrestricted_mode else damage_path),
         ("UNRESTRICTED BOOT OVERRIDE: the boot guidance above is informational only. "
          "Choose any supplied legal tier-2 boot and time it by the measured objective; "
          "do not force an offensive, defensive or class-typical boot."
          if unrestricted_mode else ""),
-        runemeta.pool_text_block(),
-        prompt_mod.item_pool_block(
-            pool_slugs,
-            repeats_on_hit=combat.get("repeatedOnHitReliance") == "high"),
-        prompt_mod.filtered_note(withheld),
+        prompt_mod.unavailable_note(
+            _shared_catalogue(unrestricted_mode, pool_slugs), pool_slugs, withheld),
+        ("ON-HIT NOTE: this champion applies its own on-hit effect on every attack, so "
+         "every item marked MULTIPLIES-ON-HIT also multiplies THIS CHAMPION'S OWN ON-HIT "
+         "PASSIVE." if combat.get("repeatedOnHitReliance") == "high" else ""),
     ] if x)
 
     champion_class = champion_record.get("class", "")
@@ -4496,7 +4537,13 @@ def advise(champion: str, role: str, enemies: list[str],
             # objected. That is identity drift, and it is the failure the
             # ladder core exists to catch; answering an enemy comp is not a
             # licence to stop playing the champion. Now enforced in both.
-            ladder_core=(prompt_mod.ladder_core_slugs(identity_key)
+            # Tank boots fix (2026-11-28): a defensive main boot is legal
+            # without an enemy team for tanks and for champions whose measured
+            # boot is defensive (Darius: Steelcaps 19/30).
+            defensive_boots_ok=prompt_mod.defensive_boots_allowed(
+                identity_key, role, champion_record.get("class", "")),
+            ladder_core=(official_core if official_core else
+                         prompt_mod.ladder_core_slugs(identity_key)
                          if ladder_anchor and not unrestricted_mode else []),
             # How many enemies actually have hard crowd control, so the
             # validator can reject a tenacity rune bought against one.

@@ -15,6 +15,7 @@ unusual choice. Rules now arrive in three tiers, and only the first is absolute.
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from web.advisor import crit_policy, itemmeta, profiles, runemeta, threats
@@ -230,6 +231,16 @@ SYSTEM = (
     "outputs, and `confidence` should fall when the inputs are thin -- an unknown enemy "
     "team, or a champion whose supplied data is flagged as incomplete.\n"
 
+    # Length caps (2026-11-28). Output tokens cost 5x input, and a studio
+    # answer ran ~4k tokens, most of it per-candidate reasons for 15-18 items
+    # and a six-part guide. Every field the page shows is kept; only its
+    # length is capped.
+    "LENGTH LIMITS -- keep every field, keep it short: each candidateItemScores and "
+    "mandatoryAuditScores `reason` is at most 12 words; each one-line reason "
+    "(boots, runes, summoners, bootsUpgradeReason) is at most 15 words; each playGuide "
+    "section is 1-2 sentences, at most 40 words; `why` is 3 bullets of at most 15 words "
+    "each; buildScore.reason is at most 25 words. Cut adjectives and restated context, "
+    "not the specific item, rune or timing that makes the point.\n"
     "Return ONLY JSON:\n"
     '{"candidateItemScores":[{"item":"<slug>","score":0-100,"reason":"...",'
     '"synergyWith":["<slug in your five that this multiplies or is multiplied by>"]}],'
@@ -258,7 +269,7 @@ SYSTEM = (
     '"resultingOrder":["<slug>","<slug>","<slug>","<slug>","<slug>"],"when":"..."},'
     '"playGuide":{"earlyGame":"...","powerSpike":"...","midGame":"...","lateGame":"...",'
     '"teamfight":"...","pitfall":"...","laneMatchup":"... (only with a lane opponent)"},'
-    '"why":["3-5 short bullets"]}'
+    '"why":["3 short bullets"]}'
 )
 
 
@@ -1209,7 +1220,9 @@ def boots_block(champion_class: str, enemies_known: bool, damage_path: str = "st
                 "required; 'they have some AD' is not a reason.\n")
         else:
             policy = (
-                "DEFENSIVE BOOTS -- situationalBoots ONLY for this request:\n"
+                "DEFENSIVE BOOTS -- situationalBoots ONLY for this request, UNLESS the "
+                "BOOTS FOR THIS CHAMPION note further down lifts it (tanks, and champions "
+                "whose measured boot is defensive):\n"
                 "No enemy team was supplied, so there is no threat to itemise against. "
                 "Take offensive or utility boots as the main choice and list BOTH "
                 "defensive options in situationalBoots as general alternatives, each with "
@@ -1350,8 +1363,12 @@ def item_pool_block(slugs: list[str], repeats_on_hit: bool = False) -> str:
         rows.append(f"{slug} [{item['category']}] {item['cost']}g {stats} "
                     f"(tempo={meta['tempoProfile']}; tags={tags}{excl_note}{syn_note}"
                     f"{new_note}) :: {passive}")
-    header = ("ITEM POOL (the only items you may build; the description is the factual "
-              "source, the tags are an index into it). An item marked EXCLUSIVE-GROUP "
+    # The catalogue is shared across every request (it leads the prompt so it
+    # can be cached), so it no longer says "the only items you may build":
+    # the per-build filter is the NOT AVAILABLE note after it.
+    header = ("ITEM CATALOGUE (every item in the game; the description is the factual "
+              "source, the tags are an index into it). Some may be withheld for a given "
+              "build -- see NOT AVAILABLE FOR THIS BUILD below. An item marked EXCLUSIVE-GROUP "
               "cannot be built alongside ANY other item carrying the same group name -- "
               "the game refuses the second purchase, so a build holding two is illegal, "
               "not merely suboptimal.")
@@ -1393,6 +1410,25 @@ def audit_block(slugs: list[str], combat_profile: dict) -> str:
         + "\n- ".join(slugs))
 
 
+def unavailable_note(catalogue: list[str], pool: list[str], withheld: list[dict]) -> str:
+    """What THIS build may not use out of the shared catalogue.
+
+    The catalogue now leads the prompt unfiltered so it can be cached across
+    champions; this note carries the per-champion filter instead. Selecting
+    anything listed fails validation, exactly as before."""
+    pool_set = set(pool)
+    reasons = {w["item"]: w["reason"] for w in withheld}
+    blocked = [s for s in catalogue if s not in pool_set]
+    if not blocked:
+        return ""
+    default_reason = "not in this build's pool"
+    lines = [f"- {s}: {reasons.get(s, default_reason)}" for s in blocked]
+    return ("NOT AVAILABLE FOR THIS BUILD -- these are in the catalogue above but withheld "
+            "for this champion and request (deterministic pre-filter, not a judgement about "
+            "strength). Do NOT select or score them; selecting one fails validation. If you "
+            "believe one is genuinely correct, say so in `why` instead:\n" + "\n".join(lines))
+
+
 def filtered_note(removed: list[dict]) -> str:
     """Tell the model what was withheld, so it cannot silently miss something."""
     if not removed:
@@ -1402,3 +1438,336 @@ def filtered_note(removed: list[dict]) -> str:
             "strength). If you believe one of these is genuinely correct for this build, "
             "say so in `why` rather than selecting it -- it is not in the pool and "
             "selecting it will fail validation:\n" + "\n".join(lines))
+
+
+# --------------------------------------------------------------------------
+# Official high-elo builds (Tencent, China server, Legendary ranked)
+# --------------------------------------------------------------------------
+#
+# Replaces the ladder consensus as the build evidence in the prompt
+# (2026-11-28). The ladder block hid its source and its counts on purpose:
+# shown "36/50" pick counts, the model rubber-stamped the list. This data is a
+# different kind of evidence -- Riot/Tencent's own published rows with a WIN
+# RATE and a PICK RATE for each item core, rune page, boot and spell pair --
+# and the owner chose to show those numbers. The guard against copying is in
+# the wording: rows are evidence to weigh, low pick rates make a win rate
+# noise, and anything adopted still has to fit this kit and request.
+#
+# Rows below MIN_OFFICIAL_PICK are dropped. The source ranks by win rate, so
+# its top rows are often a 72% win rate on 2.8% of games while the real core
+# sits at 12% pick lower down.
+
+OFFICIAL_LOADOUTS = ROOT / "web-next" / "src" / "data" / "cn_loadouts.json"
+MIN_OFFICIAL_PICK = 1.5
+_OFFICIAL_CACHE: dict | None = None
+_ROLE_TO_LANE = {"baron": "baron", "jungle": "jungle", "mid": "mid",
+                 "dragon": "dragon", "support": "support"}
+
+
+def _official_store() -> dict:
+    global _OFFICIAL_CACHE
+    if _OFFICIAL_CACHE is None:
+        try:
+            _OFFICIAL_CACHE = json.loads(OFFICIAL_LOADOUTS.read_text(encoding="utf-8"))
+        except Exception:
+            _OFFICIAL_CACHE = {}
+    return _OFFICIAL_CACHE
+
+
+def _official_record(name: str, role: str = "") -> dict | None:
+    """The champion's official loadout for this lane, or its first lane."""
+    base = name.split(" (")[0]
+    key = re.sub(r"[^a-z0-9]", "", base.lower())
+    champs = _official_store().get("champions") or {}
+    entries = champs.get(key)
+    if not entries:
+        entries = next((v for k, v in champs.items()
+                        if re.sub(r"[^a-z0-9]", "", k) == key), None)
+    if not entries:
+        return None
+    lane = _ROLE_TO_LANE.get((role or "").strip().lower())
+    return next((e for e in entries if e.get("lane") == lane), entries[0])
+
+
+#: A tab older than this relative to its own capture is a page the source did
+#: not refresh: Ahri's boots tab was captured in November but dated 4 July.
+MAX_TAB_AGE_DAYS = 21
+#: Item tabs with fewer rows than this are near-empty pages, not a meta. Ahri
+#: mid had 2 rows, both bruiser cores, beside a mage rune page.
+MIN_ITEM_ROWS = 3
+
+
+def _tab_fresh(rec: dict, tab: dict) -> bool:
+    from datetime import date
+    raw, cap = str(tab.get("date") or ""), str(rec.get("capturedAt") or "")[:10]
+    if len(raw) != 8 or len(cap) != 10:
+        return False
+    try:
+        age = date.fromisoformat(cap) - date(int(raw[:4]), int(raw[4:6]), int(raw[6:8]))
+    except ValueError:
+        return False
+    return age.days <= MAX_TAB_AGE_DAYS
+
+
+def _official_rows(rec: dict, tab: str, limit: int) -> list[dict]:
+    data = (rec.get("tabs") or {}).get(tab) or {}
+    rows = data.get("rows") or []
+    # Boots are the exception: the source's boots page stopped updating in
+    # July 2026 for EVERY champion (dated 26 May - 9 July while items, runes and
+    # spells are November). Still the best boots signal there is -- Ornn's 82%
+    # Steelcaps is what the tank-boots bug keeps getting wrong -- so it is kept
+    # and labelled with its month in the block instead of dropped.
+    if tab != "boots" and not _tab_fresh(rec, data):
+        return []
+    if tab == "items" and len(rows) < MIN_ITEM_ROWS:
+        return []
+    kept = [r for r in rows if (r.get("pickRate") or 0) >= MIN_OFFICIAL_PICK]
+    kept.sort(key=lambda r: -(r.get("pickRate") or 0))
+    return kept[:limit]
+
+
+def _item_slug(display: str) -> str | None:
+    want = re.sub(r"[^a-z0-9]", "", display.lower())
+    for slug, item in ITEMS.items():
+        if re.sub(r"[^a-z0-9]", "", item.get("name", "").lower()) == want:
+            return None if item.get("removedIn") else slug
+    return None
+
+
+def _core_rows(rec: dict, pool: set | None) -> list[dict]:
+    """Item cores whose every item is live and, when a pool is given, legal
+    for this champion -- a core with an item the pool withholds is either a
+    capture error or a build the request rules out."""
+    out = []
+    for row in _official_rows(rec, "items", 6):
+        slugs = [_item_slug(e) for e in row.get("entities") or []]
+        if not slugs or any(s is None for s in slugs):
+            continue
+        if pool is not None and any(s not in pool for s in slugs):
+            continue
+        out.append(row)
+    return out
+
+
+#: Below this pick-weighted share of core items that our own EU/NA ladder
+#: also builds, the official page is flagged rather than trusted. Measured
+#: 2026-11-28 over 176 lane pages: Ahri mid 0% (Trinity Force + Black
+#: Cleaver on a mage -- the app really shows that, it is not a misread),
+#: Nami support 0%, Gragas baron 33% on 2 rows. Swain support 19% and
+#: Wukong baron 28% look like a real regional tank meta, which is why this
+#: labels instead of dropping. scripts/check_loadouts.py reports the list.
+MIN_LADDER_OVERLAP = 0.35
+_LADDER_ITEMS: dict | None = None
+
+
+def _ladder_items(key: str) -> set[str]:
+    global _LADDER_ITEMS
+    if _LADDER_ITEMS is None:
+        _LADDER_ITEMS = {}
+        for f in ("ladder_builds.json", "ladder_builds_na.json"):
+            path = ROOT / "web-next" / "src" / "data" / f
+            try:
+                data = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:
+                continue
+            for champ, rec in data.items():
+                k = re.sub(r"[^a-z0-9]", "", champ.lower())
+                _LADDER_ITEMS.setdefault(k, set()).update(
+                    i["slug"] for i in (rec.get("items") or [])[:10] if i.get("slug"))
+    return _LADDER_ITEMS.get(key, set())
+
+
+def ladder_overlap(name: str, rec: dict) -> float | None:
+    """Pick-weighted share of the official cores' items that our EU/NA top
+    players also build. None when there is nothing to compare."""
+    key = re.sub(r"[^a-z0-9]", "", name.split(" (")[0].lower())
+    ladder = _ladder_items(key)
+    rows = ((rec.get("tabs") or {}).get("items") or {}).get("rows") or []
+    if not ladder or not rows:
+        return None
+    total = hit = 0.0
+    for row in rows:
+        weight = row.get("pickRate") or 0
+        for ent in row.get("entities") or []:
+            slug = _item_slug(ent)
+            if slug:
+                total += weight
+                hit += weight if slug in ladder else 0
+    return hit / total if total else None
+
+
+def official_core_slugs(name: str, role: str = "", pool=None) -> list[str]:
+    """Every item in the shown official cores: the REQUIRED CANDIDATES the
+    validator enforces, replacing ladder_core_slugs."""
+    rec = _official_record(name, role)
+    if not rec:
+        return []
+    out: list[str] = []
+    for row in _core_rows(rec, set(pool) if pool is not None else None):
+        for ent in row.get("entities") or []:
+            slug = _item_slug(ent)
+            if slug and slug not in out:
+                out.append(slug)
+    return out
+
+
+def official_builds_block(name: str, role: str = "", pool=None) -> str:
+    """Official high-elo item cores, rune pages, boots and spells, with win
+    and pick rates. Empty when the champion has no official data."""
+    rec = _official_record(name, role)
+    if not rec:
+        return ""
+    def fmt(row: dict, live) -> str | None:
+        ents = [e for e in row.get("entities") or [] if live(e)]
+        if not ents:
+            return None
+        return (f"  {' + '.join(ents)} -- win {row.get('winRate', 0):.1f}%, "
+                f"pick {row.get('pickRate', 0):.1f}%")
+    live_item = lambda e: _item_slug(e) is not None  # noqa: E731
+    live_rune = lambda e: not (runemeta.BY_NAME.get(e) or {}).get("removedIn")  # noqa: E731
+    sections = []
+    boots_date = str(((rec.get("tabs") or {}).get("boots") or {}).get("date") or "")
+    boots_title = "boots"
+    if len(boots_date) == 8 and not _tab_fresh(rec, (rec.get("tabs") or {}).get("boots") or {}):
+        month = ["January", "February", "March", "April", "May", "June", "July", "August",
+                 "September", "October", "November", "December"][int(boots_date[4:6]) - 1]
+        boots_title = (f"boots (OLDER DATA: measured {month} {boots_date[:4]}, before the "
+                       "current patch cycle -- weigh it less than the rows above)")
+    for tab, title, limit, live in (("items", "item cores (3 items)", 6, live_item),
+                                    ("boots", boots_title, 3, lambda e: True),
+                                    ("runes", "rune pages", 4, live_rune),
+                                    ("spells", "summoner spells", 2, lambda e: True)):
+        rows = (_core_rows(rec, set(pool) if pool is not None else None)
+                if tab == "items" else _official_rows(rec, tab, limit))
+        lines = [x for x in (fmt(r, live) for r in rows) if x]
+        if lines:
+            sections.append(f"{title}:\n" + "\n".join(lines))
+    if not sections:
+        return ""
+    lane = rec.get("lane", "")
+    overlap = ladder_overlap(name, rec)
+    caution = ""
+    if overlap is not None and overlap < MIN_LADDER_OVERLAP:
+        caution = (f"CAUTION: these item cores share only {overlap:.0%} of their items with "
+                   "what EU/NA top players build on this champion. It may be a regional "
+                   "meta or a thin sample -- trust the kit analysis over these cores.\n")
+    return (
+        f"OFFICIAL HIGH-ELO BUILDS ({lane} lane, China server, Legendary ranked, "
+        "previous patch; sorted by pick rate):\n" + caution + "\n".join(sections) + "\n"
+        "These are evidence, not the answer. A win rate on a low pick rate is noise; "
+        "a high pick rate shows what works reliably. Every item named in the cores must "
+        "be in the candidate list you score, judged like any other candidate. None has "
+        "to reach your final build -- for any that does not, state why it lost to what "
+        "you chose. Weigh the request (playstyle, power curve, enemies) over popularity."
+    )
+
+
+def ladder_items_block(name: str) -> str:
+    """Item candidates only, from the EU/NA ladder consensus.
+
+    The fallback for a champion whose official page has runes and spells but
+    no usable item cores -- missing (Cho'Gath, Hwei, Yunara were not in the
+    capture at all; they get the full ladder block instead) or dropped by the
+    guardrails (Ahri mid: 2 rows of bruiser cores). Same wording rules as
+    ladder_consensus_block: no counts, no source, candidates to judge."""
+    if consensus_predates_patch():
+        return ""
+    rec = _consensus_store().get(name.split(" (")[0])
+    core = [i for i in (rec or {}).get("items") or []
+            if i.get("name") and not (ITEMS.get(i.get("slug")) or {}).get("removedIn")]
+    if not core:
+        return ""
+    return ("REQUIRED ITEM CANDIDATES (no usable official item cores for this champion; "
+            "these must be in the candidate list you score, judged like every other "
+            "candidate, and any that misses your build needs a reason):\n  items: "
+            + ", ".join(sorted(i["name"] for i in core)))
+
+
+# --------------------------------------------------------------------------
+# Tank boots (fixed 2026-11-28)
+# --------------------------------------------------------------------------
+#
+# With no enemy team -- the default Build Studio request -- defensive boots
+# were banned as MAIN boots for every class ("no threat to itemise against"),
+# and the validator rejected them for Bruisers outright. The ladder disagrees
+# near-unanimously for tanks and many bruisers: Steelcaps / Armored Advance
+# on Ornn 28/30, Leona 29/30, Malphite 30/30, Darius 19/30; Mercury's /
+# Chainlaced on Amumu 29/30. The model took Ionian Boots of Lucidity on Ornn
+# even with "Steelcaps 82% pick" in front of it, because the boots rule
+# forbade the answer. Defensive boots are now allowed as main when the class
+# is Tank OR the champion's measured boot is defensive.
+
+#: A measured boot family counts as the champion's boot at this share.
+MEASURED_BOOT_SHARE = 0.4
+
+
+def _boot_family(slug: str) -> str | None:
+    """The tier-2 boot a boot slug belongs to (a tier-3 maps to its tier-2)."""
+    item = ITEMS.get(slug) or {}
+    if item.get("bootsTier") == 2:
+        return slug
+    for s, it in ITEMS.items():
+        if it.get("bootsTier") == 2 and it.get("upgradesTo") == slug:
+            return s
+    return None
+
+
+def measured_boot(name: str, role: str = "") -> dict | None:
+    """The tier-2 boot high-elo players mostly buy on this champion.
+
+    EU/NA ladder first (current, counts tier-2 and its tier-3 together),
+    then the official boots row (frozen at July 2026, so second). None when
+    no family reaches MEASURED_BOOT_SHARE."""
+    rec = _consensus_store().get(name.split(" (")[0]) or {}
+    families: dict[str, float] = {}
+    total = 0
+    for item in rec.get("items") or []:
+        fam = _boot_family(item.get("slug") or "")
+        if fam and item.get("of"):
+            families[fam] = families.get(fam, 0) + item["count"]
+            total = max(total, item["of"])
+    if families and total:
+        fam, count = max(families.items(), key=lambda kv: kv[1])
+        if count / total >= MEASURED_BOOT_SHARE:
+            return {"slug": fam, "share": count / total,
+                    "evidence": f"{int(count)} of {total} EU/NA top players"}
+    off = _official_record(name, role)
+    rows = ((off or {}).get("tabs") or {}).get("boots", {}).get("rows") or [] if off else []
+    if rows:
+        top = max(rows, key=lambda r: r.get("pickRate") or 0)
+        slug = _item_slug((top.get("entities") or [""])[0])
+        fam = _boot_family(slug) if slug else None
+        if fam and (top.get("pickRate") or 0) / 100 >= MEASURED_BOOT_SHARE:
+            return {"slug": fam, "share": top["pickRate"] / 100,
+                    "evidence": f"{top['pickRate']:.0f}% pick in China Legendary (July data)"}
+    return None
+
+
+def defensive_boots_allowed(name: str, role: str, champion_class: str) -> bool:
+    """Defensive boots may be MAIN boots without an enemy team."""
+    if champion_class == "Tank":
+        return True
+    measured = measured_boot(name, role)
+    return bool(measured and measured["slug"] in DEFENSIVE_BOOTS)
+
+
+def boots_champion_note(name: str, role: str, champion_class: str,
+                        enemies_known: bool) -> str:
+    """The per-champion boots line: what players buy, and whether the
+    defensive-boots policy above is lifted for this champion."""
+    measured = measured_boot(name, role)
+    lines = []
+    if measured:
+        lines.append(f"BOOTS FOR THIS CHAMPION: {measured['slug']} (and its upgrade) is the "
+                     f"boot {measured['evidence']} buy.")
+    if not enemies_known and defensive_boots_allowed(name, role, champion_class):
+        why = ("this champion's measured boot is defensive"
+               if measured and measured["slug"] in DEFENSIVE_BOOTS else "it is a Tank")
+        lines.append(
+            f"DEFENSIVE BOOTS ARE ALLOWED AS MAIN BOOTS HERE because {why}: for a frontline "
+            "champion the armor or magic-resist boot is a sixth defensive item, not a "
+            "reaction to a known threat. The 'situationalBoots ONLY' rule above does not "
+            "apply. Pick the boot that serves the build; for a tank with no enemy team "
+            "that is usually the measured defensive boot, and a haste or mana boot needs a "
+            "specific reason in bootsReason.")
+    return "\n".join(lines)
