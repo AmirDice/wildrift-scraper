@@ -16,7 +16,7 @@ def build_prompt(champion="Hecarim", role="Jungle", enemies=(), **kwargs) -> str
     """Assemble the real user message by intercepting the model call."""
     captured = {}
 
-    def capture(_key, text):
+    def capture(_key, text, **_kwargs):
         captured["prompt"] = text
         raise SystemExit(0)
 
