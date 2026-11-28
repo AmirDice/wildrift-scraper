@@ -1,6 +1,7 @@
 "use client";
 
 import { T } from "@/components/t";
+import { useT } from "@/components/i18n-provider";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { rankByBalance, recommendedRow, tabAverage } from "@/lib/loadout-score";
@@ -384,7 +385,11 @@ function PartnersPanel({ champion, lane, queues }: { champion: string; lane: str
   );
 }
 
-export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champion: string; loadouts: ChampionLoadoutLane[]; partners?: PartnerQueue[] }) {
+/** Localized hrefs of the champion's lane, runes and counters pages. */
+export type ChampionPageLinks = { lanes: Record<string, string>; runes?: string; counters?: string };
+
+export function ChampionLoadouts({ champion, loadouts, partners = [], pageLinks, displayName }: { champion: string; loadouts: ChampionLoadoutLane[]; partners?: PartnerQueue[]; pageLinks?: ChampionPageLinks; displayName?: string }) {
+  const t = useT();
   const [laneIndex, setLaneIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<TabKey | "partners">("items");
   const [expanded, setExpanded] = useState(false);
@@ -413,6 +418,15 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
   // The loadout tab the table views read; Duo partners renders its own view.
   const tabKey: TabKey = activeTab === "partners" ? "items" : activeTab;
   const tab = lane.tabs[tabKey];
+  // The page that goes deeper on this tab, linked in place of a separate nav.
+  const laneHref = pageLinks?.lanes[lane.lane];
+  const deepLink = activeTab === "runes" && pageLinks?.runes
+    ? { href: pageLinks.runes, label: t("All {name} rune pages", { name: displayName ?? champion }) }
+    : activeTab === "versus" && lane.versusKind !== "partners" && pageLinks?.counters
+      ? { href: pageLinks.counters, label: t("How to counter {name}", { name: displayName ?? champion }) }
+      : (activeTab === "items" || activeTab === "boots" || activeTab === "spells") && laneHref
+        ? { href: laneHref, label: t("Full {name} {lane} build", { name: displayName ?? champion, lane: t(LANE_LABEL[lane.lane] ?? lane.lane) }) }
+        : null;
   const since = formatCaptureDate(lane.previousCapturedAt);
   const week = activeTab !== "versus" && tab.week && tab.week.captures > 1 ? tab.week : null;
   const patchView = activeTab !== "versus" && tab.patches && tab.patches.order.length > 1 ? tab.patches : null;
@@ -501,6 +515,11 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
           <div>
             <h3 className="text-sm font-semibold text-text"><T>{tabs.find((item) => item.key === activeTab)?.label ?? ""}</T></h3>
             <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">{activeTab === "versus" ? versusCopy : TAB_COPY[tabKey as Exclude<TabKey, "versus">]}</p>
+            {deepLink && (
+              <Link href={deepLink.href} className="mt-1.5 inline-block text-xs font-semibold text-accent hover:underline">
+                {deepLink.label}<span aria-hidden className="ml-1">&rarr;</span>
+              </Link>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-[0.62rem] font-semibold">
             <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{tab.recognizedRows}/{tab.sourceRows} <T>{"rows verified"}</T></span>

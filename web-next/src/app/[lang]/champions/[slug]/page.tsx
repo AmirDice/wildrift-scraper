@@ -51,8 +51,8 @@ import { WinRateHistory } from "@/components/win-rate-history";
 import { getWinRateHistory } from "@/lib/wr-history";
 import { CollectionSchedule } from "@/components/collection-schedule";
 import { CURRENT_PATCH } from "@/lib/patch";
-import { championFaq, championSubpages } from "@/lib/champion-seo";
-import { ChampionPageLinks, FaqSection } from "@/components/champion-seo-parts";
+import { championFaq, championSubpages, lanePages } from "@/lib/champion-seo";
+import { FaqSection } from "@/components/champion-seo-parts";
 
 /** One server choice on the champion page: its board record, its players
  *  and its best-player ranking. */
@@ -186,6 +186,13 @@ export default async function ChampionPage(props: PageProps<"/[lang]/champions/[
   const summary = championSummary(champion.slug, lang);
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
   const subpages = championSubpages(champion);
+  // The subpages are linked from inside the matching loadout tab, not from a
+  // second tab bar (owner, 2026-11-28: the page had too many nav toggles).
+  const pageLinks = {
+    lanes: Object.fromEntries(lanePages(champion.slug).map((l) => [l.lane, lp(lang, `/champions/${champion.slug}/${l.lane}`)])),
+    runes: subpages.some((x) => x.href.endsWith("/runes")) ? lp(lang, `/champions/${champion.slug}/runes`) : undefined,
+    counters: subpages.some((x) => x.href.endsWith("/counters")) ? lp(lang, `/champions/${champion.slug}/counters`) : undefined,
+  };
   const wrHistory = getWinRateHistory(champion.slug, champion.name);
 
   // One view per server choice. Every region-dependent card on the page reads
@@ -253,7 +260,7 @@ export default async function ChampionPage(props: PageProps<"/[lang]/champions/[
   const pendingOverview = (
     <div className="space-y-6">
       {serverBuildCard}
-      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} />
+      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} pageLinks={pageLinks} displayName={displayName(champion.name, lang)} />
       <Card className="p-5 sm:p-6">
         <h2 className="text-lg font-semibold"><T vars={{ name: displayName(champion.name, lang) }}>{"{name} stats are pending"}</T></h2>
         <p className="mt-2 leading-relaxed text-muted">
@@ -272,7 +279,7 @@ export default async function ChampionPage(props: PageProps<"/[lang]/champions/[
   const overview = (
     <div className="space-y-4">
       {serverBuildCard}
-      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} />
+      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} pageLinks={pageLinks} displayName={displayName(champion.name, lang)} />
       {/* Top 3 this season, right under China's Legendary data (owner,
           2026-11-28); the separate "Best X player" card is gone. */}
       {views.map(({ key, podium }) => {
@@ -471,8 +478,6 @@ export default async function ChampionPage(props: PageProps<"/[lang]/champions/[
             </div>
           </div>
         </section>
-
-        {subpages.length > 0 && <ChampionPageLinks slug={champion.slug} name={champion.name} links={subpages} current={`/champions/${champion.slug}`} lang={lang} />}
 
         <AgentPromptChips champion={champion.name} />
 
