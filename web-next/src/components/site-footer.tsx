@@ -20,6 +20,7 @@ const FOOTER_LINKS = [
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/methodology", label: "Methodology" },
   { href: "/about", label: "About" },
+  { href: "/wild-rift-op-gg-u-gg", label: "OP.GG & U.GG for Wild Rift" },
   { href: "/contact", label: "Contact" },
   { href: "/terms", label: "Terms" },
   { href: "/impressum", label: "Impressum" },
