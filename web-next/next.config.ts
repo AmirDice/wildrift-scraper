@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 /**
  * Caching policy for everything Next does not fingerprint itself.
@@ -93,4 +94,22 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/**
+ * Sentry wraps the config for ONE job: uploading source maps after
+ * `next build`, so production stack traces show src/ lines instead of
+ * minified chunks. Error capture itself lives in src/instrumentation.ts.
+ *
+ * Without SENTRY_AUTH_TOKEN (local builds, previews) the upload is skipped
+ * and the build is otherwise unchanged. The token is created in Sentry and
+ * set in the site's Vercel env by the owner; never commit it.
+ */
+export default withSentryConfig(nextConfig, {
+  org: "wrtruemeta",
+  project: "wrtruemeta-server",
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  // Server-side only today, so keep the release out of the client chunks:
+  // injecting it would change every chunk's hash on every deploy.
+  release: { inject: false },
+  telemetry: false,
+  silent: !process.env.CI,
+});
