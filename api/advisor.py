@@ -146,6 +146,12 @@ def _clean_list(value, limit: int = 5) -> list[str]:
     return [c for c in (_clean(v) for v in value) if c][:limit]
 
 
+def _language(value) -> str:
+    """Whitelisted output language; anything else is English."""
+    value = value if isinstance(value, str) else ""
+    return value if value in {"zh", "vi", "tr", "fr", "pl", "ko", "es"} else "en"
+
+
 def _slug(value, limit: int = 60) -> str:
     if not isinstance(value, str):
         return ""
@@ -351,6 +357,7 @@ def build_from_request(body: dict) -> tuple[int, dict]:
             locked_items=_clean_list(body.get("lockedItems"), limit=3),
             locked_runes=_clean_list(body.get("lockedRunes"), limit=2),
             unrestricted_mode=body.get("unrestrictedMode") is True,
+            language=_language(body.get("language")),
         )
     except SystemExit as exc:               # missing API key, unknown champion
         return 500, {"error": str(exc)}

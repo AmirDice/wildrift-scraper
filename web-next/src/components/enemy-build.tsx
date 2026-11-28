@@ -1,5 +1,6 @@
 "use client";
 
+import { LANGUAGE_LABEL, SUPPORTED, clientLanguage, saveLanguage, type SiteLanguage } from "@/lib/preferred-language";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { rosterList, type RosterChampion } from "@/lib/threat";
@@ -1050,6 +1051,10 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
   const [lockedRunes, setLockedRunes] = useState<string[]>([]);
   /** Deliberate opt-out from curated identity, archetype and item guidance. */
   const [unrestrictedMode, setUnrestrictedMode] = useState(false);
+  // Language of the build's explanations (2026-11-28): the visitor's saved
+  // choice, else their browser language. Item and rune names stay as shown.
+  const [outputLanguage, setOutputLanguage] = useState<SiteLanguage>("en");
+  useEffect(() => { setOutputLanguage(clientLanguage()); }, []);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [elapsed, setElapsed] = useState(0);
@@ -1261,6 +1266,7 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
           allies: isCounter ? selectedAllies : [],
           lockedItems, lockedRunes,
           unrestrictedMode,
+          language: outputLanguage,
         }),
       });
       setProgress(100);
@@ -1718,6 +1724,21 @@ export function EnemyBuildAdvisor({ presetChampion, presetForm, initialChampion,
             className="rounded-lg border border-line px-4 py-2 text-sm font-medium text-muted transition hover:text-text disabled:opacity-40">
             Reset
           </button>
+          <label className="ml-auto flex items-center gap-1.5 text-xs text-muted" title="Language of the explanations. Item and rune names stay in English.">
+            <span>Language</span>
+            <select
+              value={outputLanguage}
+              disabled={loading}
+              onChange={(e) => {
+                const value = e.target.value as SiteLanguage;
+                setOutputLanguage(value);
+                saveLanguage(value);
+              }}
+              className="rounded-md border border-line bg-surface px-2 py-1 text-xs text-text"
+            >
+              {SUPPORTED.map((code) => <option key={code} value={code}>{LANGUAGE_LABEL[code]}</option>)}
+            </select>
+          </label>
           {quota && !outOfBudget && (
             <span className="text-xs text-faint">
               {quota.unlimited ? (

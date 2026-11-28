@@ -37,6 +37,9 @@ export const BUILD_CACHE_ENABLED =
   process.env.ENABLE_LOCAL_BUILD_CACHE === "true";
 
 export interface BuildRequestKey {
+  /** Language of the explanations; joins the key only when not English, so
+   *  every existing English entry keeps its key. */
+  language?: string;
   champion: string;
   role: string;
   playstyle: string;
@@ -98,6 +101,7 @@ export function buildCacheKey(request: BuildRequestKey): string {
     skillLevel: request.skillLevel ?? "average",
     enemies: [...request.enemies].map((e) => e.toLowerCase()).sort(),
     allies: [...request.allies].map((a) => a.toLowerCase()).sort(),
+    ...(request.language && request.language !== "en" ? { language: request.language } : {}),
     lockedItems: [...(request.lockedItems ?? [])].map((s) => s.toLowerCase()).sort(),
     lockedRunes: [...(request.lockedRunes ?? [])].map((s) => s.toLowerCase()).sort(),
     unrestrictedMode: request.unrestrictedMode === true,

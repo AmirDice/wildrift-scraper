@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { languageAlternates } from "@/lib/i18n";
 import Link from "next/link";
 import { site, getChampions, regionBoard } from "@/lib/data";
 import { getCnChampions, cnRoles, CN_META, cnChampionsWithoutData } from "@/lib/cn";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
   title: "Wild Rift Champions | Stats & Win Rates",
   description:
     "Every Wild Rift champion ranked by the real win rates of its top players on EU and NA. Search and filter by role, then open a champion for full stats and its best player.",
-  alternates: { canonical: "/champions" },
+  alternates: { canonical: "/champions", languages: languageAlternates("/champions") },
 };
 
 export default function ChampionsPage() {

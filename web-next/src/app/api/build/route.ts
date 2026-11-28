@@ -133,6 +133,8 @@ const TIMEOUT_MS = Number.isFinite(configuredTimeout) && configuredTimeout >= 0
 
 /** The Build Bias slider's five stops. Anything else collapses to balanced. */
 const BIAS_VALUES = new Set(["max_durability", "durability", "balanced", "damage", "max_damage"]);
+/** Languages a build's explanations can be written in (lib/i18n.ts LOCALES). */
+const OUTPUT_LANGUAGES = new Set(["zh", "vi", "tr", "fr", "pl", "ko", "es"]);
 
 type Body = {
   champion?: string;
@@ -155,6 +157,8 @@ type Body = {
   buildBias?: string;
   lockedItems?: string[];
   lockedRunes?: string[];
+  /** Language for the build's explanations (2026-11-28); "en" when absent. */
+  language?: string;
   unrestrictedMode?: boolean;
   /** How many times to sample the model before answering. Set by this route on
    *  a cache miss, never by the client. */
@@ -342,6 +346,8 @@ function spawnAdvisor(b: Body): Promise<AdvisorResult> {
       (b.lockedItems ?? []).join(","),
       "--locked-runes",
       (b.lockedRunes ?? []).join(","),
+      "--language",
+      b.language ?? "en",
       "--runs",
       String(b.runs ?? 1),
     ];
@@ -483,6 +489,8 @@ async function handlePost(request: Request) {
     lockedItems: cleanList(body.lockedItems),
     lockedRunes: cleanList(body.lockedRunes),
     unrestrictedMode: body.unrestrictedMode === true,
+    // Closed set, like buildBias: anything else is English.
+    language: typeof body.language === "string" && OUTPUT_LANGUAGES.has(body.language) ? body.language : "en",
   };
 
   // Cache first, and before the quota is touched. Somebody else already paid

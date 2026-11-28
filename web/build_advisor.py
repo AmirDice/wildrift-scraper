@@ -1809,6 +1809,28 @@ def _ladder_rune_page(record: dict, authored: list[dict], champion: str,
     return None, "unavailable"
 
 
+#: Languages a build's explanations can be written in (2026-11-28). Matches
+#: the site's translated pages (web-next/src/lib/i18n.ts) plus English.
+OUTPUT_LANGUAGES = {
+    "zh": "Simplified Chinese", "vi": "Vietnamese", "tr": "Turkish", "fr": "French", "pl": "Polish",
+    "ko": "Korean", "es": "Spanish",
+}
+
+
+def _language_block(language: str) -> str:
+    """Write the explanations in the visitor's language. Slugs and rune,
+    summoner and item NAMES stay exactly as supplied: the validator checks
+    them and the page renders its own localized labels from the slugs."""
+    name = OUTPUT_LANGUAGES.get((language or "").lower())
+    if not name:
+        return ""
+    return (f"OUTPUT LANGUAGE: write every free-text field -- every reason, why, when, "
+            f"playGuide section, bootsReason, bootsUpgradeReason, runeReasons, "
+            f"summonerReason, buildScore.reason and counterSummary text -- in {name}. "
+            "Keep every slug, item name, rune name, keystone, tree and summoner spell name "
+            "EXACTLY as written in this prompt (English); they are identifiers, not prose.")
+
+
 def _shared_catalogue(unrestricted_mode: bool, pool_slugs: list[str]) -> list[str]:
     """Every completed item still in the game: one catalogue for every request,
     so it can lead the prompt and be cached. Unrestricted mode already uses
@@ -3628,6 +3650,7 @@ def advise(champion: str, role: str, enemies: list[str],
            engine_tournament: bool = False,
            unrestricted_mode: bool = False,
            damage_style: str = "auto",
+           language: str = "en",
            on_progress=None) -> dict:
     # on_progress(event) is called with {"stage": ...} as the generation moves.
     # It is optional and side-effect free: nothing about the build depends on
@@ -3984,6 +4007,7 @@ def advise(champion: str, role: str, enemies: list[str],
          if unrestricted_mode else ""),
         prompt_mod.unavailable_note(
             _shared_catalogue(unrestricted_mode, pool_slugs), pool_slugs, withheld),
+        _language_block(language),
         ("ON-HIT NOTE: this champion applies its own on-hit effect on every attack, so "
          "every item marked MULTIPLIES-ON-HIT also multiplies THIS CHAMPION'S OWN ON-HIT "
          "PASSIVE." if combat.get("repeatedOnHitReliance") == "high" else ""),
@@ -5336,6 +5360,7 @@ def main() -> None:
     ap.add_argument("--skill-level", choices=tuple(SKILL_LEVEL), default="average")
     ap.add_argument("--locked-items", default="", help="comma-separated item slugs to pin")
     ap.add_argument("--locked-runes", default="", help="comma-separated rune names to pin")
+    ap.add_argument("--language", default="en", help="language for explanations: en, zh, tr, fr, pl, ko, es")
     ap.add_argument("--unrestricted-mode", action="store_true",
                     help="experimental: bypass curated champion/archetype/item recommendations")
     ap.add_argument("--runs", type=int, default=1,
@@ -5366,6 +5391,7 @@ def main() -> None:
                  champion_form=args.champion_form, ahead_enemy=args.ahead_enemy,
                  locked_items=[s.strip() for s in args.locked_items.split(",") if s.strip()],
                  locked_runes=[s.strip() for s in args.locked_runes.split(",") if s.strip()],
+                 language=args.language,
                  unrestricted_mode=args.unrestricted_mode)
     print(json.dumps(res, ensure_ascii=False, indent=2))
 

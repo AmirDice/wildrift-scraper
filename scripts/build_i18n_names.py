@@ -23,7 +23,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 WEB_DATA = ROOT / "web-next" / "src" / "data"
 OUT = WEB_DATA / "i18n_names.json"
-LOCALES = {"zh": "zh_CN", "ko": "ko_KR", "tr": "tr_TR", "fr": "fr_FR", "pl": "pl_PL", "es": "es_ES"}
+LOCALES = {"zh": "zh_CN", "vi": "vi_VN", "ko": "ko_KR", "tr": "tr_TR", "fr": "fr_FR", "pl": "pl_PL", "es": "es_ES"}
 
 
 def get(url: str):

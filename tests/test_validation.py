@@ -83,9 +83,8 @@ class TestBaseline:
         assert report.ok, report.flat()
 
     def test_the_old_swap_shape_still_validates(self, build):
-        """Backward compatibility: `replaces` + `atPosition` without a
-        resultingOrder is under-specified, not wrong. Complete it, do not
-        reject it."""
+        """`replaces` + `atPosition` still validates; the position is now
+        ignored and the swap lands in the replaced item's slot."""
         build["situational"] = [{
             "item": "thornmail", "replaces": "guardian-angel", "atPosition": 2,
             "when": "against heavy attack-speed damage",
@@ -93,12 +92,11 @@ class TestBaseline:
         report = check(build)
         assert report.ok, report.flat()
         entry = build["situational"][0]
-        assert entry["resultingOrder"].count("thornmail") == 1
-        assert "guardian-angel" not in entry["resultingOrder"]
-        assert len(entry["resultingOrder"]) == 5
+        assert entry["resultingOrder"] == ["black-cleaver", "trinity-force", "deaths-dance",
+                                           "steraks-gage", "thornmail"]
         # The old field names survive so the existing frontend keeps rendering.
         assert entry["replaces"] == "guardian-angel"
-        assert entry["atPosition"] == 2
+        assert entry["atPosition"] == 5
 
 
 class TestActiveItemMutex:
@@ -233,7 +231,23 @@ class TestGuardianAngel:
 
 
 class TestSituationalSwaps:
-    def test_an_insertion_that_reorders_the_build_is_accepted(self, build):
+    """Swaps are one-for-one and IN PLACE (2026-11-28): the new item takes the
+    replaced item's slot and the other four keep their order, whatever
+    position or order the model writes."""
+
+    def test_the_minimal_shape_is_accepted_and_swapped_in_place(self, build):
+        build["situational"] = [{
+            "item": "thornmail", "replaces": "trinity-force",
+            "when": "against a comp with two healing attack-speed threats",
+        }]
+        report = check(build)
+        assert report.ok, report.flat()
+        entry = build["situational"][0]
+        assert entry["resultingOrder"] == ["black-cleaver", "thornmail", "deaths-dance",
+                                           "steraks-gage", "guardian-angel"]
+        assert entry["atPosition"] == 2 and entry["insertAtPosition"] == 2
+
+    def test_a_model_written_reordering_is_ignored(self, build):
         build["situational"] = [{
             "item": "thornmail", "insertAtPosition": 2, "removedItem": "guardian-angel",
             "resultingOrder": ["black-cleaver", "thornmail", "trinity-force",
@@ -242,55 +256,34 @@ class TestSituationalSwaps:
         }]
         report = check(build)
         assert report.ok, report.flat()
+        entry = build["situational"][0]
+        assert entry["resultingOrder"] == ["black-cleaver", "trinity-force", "deaths-dance",
+                                           "steraks-gage", "thornmail"]
+        assert entry["atPosition"] == 5
 
-    def test_a_resulting_order_that_is_not_five_items_is_rejected(self, build):
+    def test_a_late_swap_is_no_longer_rejected(self, build):
         build["situational"] = [{
-            "item": "thornmail", "insertAtPosition": 2, "removedItem": "guardian-angel",
-            "resultingOrder": ["black-cleaver", "thornmail", "trinity-force"],
+            "item": "thornmail", "replaces": "guardian-angel",
             "when": "against attack speed",
         }]
         report = check(build)
-        assert "exactly 5" in errors_in(report, "situational")
+        assert report.ok, report.flat()
 
-    def test_a_resulting_order_still_holding_the_removed_item_is_rejected(self, build):
+    def test_a_swap_breaking_hard_legality_is_rejected(self, build):
         build["situational"] = [{
-            "item": "thornmail", "insertAtPosition": 2, "removedItem": "guardian-angel",
-            "resultingOrder": ["black-cleaver", "thornmail", "trinity-force",
-                               "deaths-dance", "guardian-angel"],
-            "when": "against attack speed",
-        }]
-        report = check(build)
-        assert "still contains" in errors_in(report, "situational")
-
-    def test_a_position_disagreeing_with_the_order_is_rejected(self, build):
-        build["situational"] = [{
-            "item": "thornmail", "insertAtPosition": 2, "removedItem": "guardian-angel",
-            "resultingOrder": ["black-cleaver", "trinity-force", "thornmail",
-                               "deaths-dance", "steraks-gage"],
-            "when": "against attack speed",
-        }]
-        report = check(build)
-        assert "must agree" in errors_in(report, "situational")
-
-    def test_a_resulting_order_breaking_hard_legality_is_rejected(self, build):
-        build["situational"] = [{
-            "item": "terminus", "insertAtPosition": 2, "removedItem": "guardian-angel",
-            "resultingOrder": ["black-cleaver", "terminus", "trinity-force",
-                               "deaths-dance", "steraks-gage"],
+            "item": "terminus", "replaces": "guardian-angel",
             "when": "against stacked armour",
         }]
         report = check(build)
         assert "illegal" in errors_in(report, "situational")
 
-    def test_every_swap_parked_at_the_end_is_rejected(self, build):
+    def test_replacing_an_item_not_in_the_build_is_rejected(self, build):
         build["situational"] = [{
-            "item": "thornmail", "insertAtPosition": 5, "removedItem": "guardian-angel",
-            "resultingOrder": ["black-cleaver", "trinity-force", "deaths-dance",
-                               "steraks-gage", "thornmail"],
+            "item": "thornmail", "replaces": "infinity-edge",
             "when": "against attack speed",
         }]
         report = check(build)
-        assert "too late to matter" in errors_in(report, "situational")
+        assert "must be one of the five main items" in errors_in(report, "situational")
 
 
 class TestSituationalRunes:

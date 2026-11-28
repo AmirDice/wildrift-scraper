@@ -5,7 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useBuildToolsVisible } from "@/lib/use-build-tools";
 import { DRAFT_TOOL_LIVE, BUILD_STUDIO_VERSION } from "@/lib/flags";
-import { DiscordNavLink, DISCORD_URL, DiscordIcon } from "@/components/discord";
+import { DISCORD_URL, DiscordIcon } from "@/components/discord";
+import { LANGUAGE_LABEL, SUPPORTED, clientLanguage, isSiteLanguage, saveLanguage, type SiteLanguage } from "@/lib/preferred-language";
+import { localizedNavHref, navT } from "@/lib/nav-i18n";
 import { TIKTOK_URL, YOUTUBE_URL, TikTokIcon, YouTubeIcon } from "@/components/socials";
 import { SupportNavLink, BUYMEACOFFEE_URL, CoffeeIcon } from "@/components/support";
 import { AccountMenu } from "@/components/account-menu";
@@ -135,7 +137,7 @@ function SearchGlyph() {
   );
 }
 
-function NavSearch({ champions }: { champions: ComboItem[] }) {
+function NavSearch({ champions, lang }: { champions: ComboItem[]; lang: SiteLanguage }) {
   const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -154,7 +156,7 @@ function NavSearch({ champions }: { champions: ComboItem[] }) {
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
-        aria-label="Search champions"
+        aria-label={navT(lang, "Search champions")}
         aria-expanded={open}
         className={`grid h-10 w-10 place-items-center rounded-lg transition ${open ? "bg-white/[0.06] text-text" : "text-muted hover:bg-white/[0.06] hover:text-text"}`}
       >
@@ -164,10 +166,10 @@ function NavSearch({ champions }: { champions: ComboItem[] }) {
         <div className="fixed left-4 right-4 top-[4.5rem] z-[70] rounded-2xl border border-line bg-surface-2 p-3 shadow-2xl md:absolute md:left-auto md:right-0 md:top-full md:mt-2 md:w-80">
           <ChampionCombobox
             champions={champions}
-            placeholder="Search champions…"
+            placeholder={`${navT(lang, "Search champions")}…`}
             onSelect={(slug) => {
               setOpen(false);
-              router.push(`/champions/${slug}`);
+              router.push(lang === "en" ? `/champions/${slug}` : `/${lang}/champions/${slug}`);
             }}
           />
         </div>
@@ -176,9 +178,10 @@ function NavSearch({ champions }: { champions: ComboItem[] }) {
   );
 }
 
-function Wordmark() {
+function Wordmark({ lang }: { lang: SiteLanguage }) {
+  // No glass panel behind the logo (owner, 2026-11-28).
   return (
-    <Link href="/" className="brand-lens flex items-center rounded-xl px-2.5 py-2 transition hover:opacity-95" aria-label="WrTrueMeta home">
+    <Link href={localizedNavHref(lang, "/")} className="flex items-center rounded-xl px-1 py-2 transition hover:opacity-90" aria-label="WrTrueMeta home">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/logo.png"
@@ -186,6 +189,83 @@ function Wordmark() {
         style={{ height: "clamp(19px, 4vw, 24px)", width: "auto" }}
       />
     </Link>
+  );
+}
+
+/** English path of the current page: the /<lang> prefix removed. */
+function englishPath(pathname: string): string {
+  const seg = pathname.split("/")[1];
+  if (seg && seg !== "en" && isSiteLanguage(seg)) {
+    const rest = pathname.slice(seg.length + 1);
+    return rest || "/";
+  }
+  return pathname;
+}
+
+/** Pages that exist in every language (app/[lang]); lane, runes and counters
+ *  pages are mirrored too, gated by the same data. */
+function translatable(path: string): boolean {
+  return path === "/" || path === "/tier-list" || path === "/champions" || /^\/champions\/[^/]+(\/[^/]+)?$/.test(path);
+}
+
+function switchLanguage(pathname: string, next: SiteLanguage) {
+  saveLanguage(next);
+  const path = englishPath(pathname);
+  const target = next !== "en" && translatable(path) ? `/${next}${path === "/" ? "" : path}` : path;
+  // A full load, so the proxy also stores the choice and never redirects
+  // against it.
+  window.location.assign(`${target}?setlang=${next}`);
+}
+
+function GlobeGlyph() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+    </svg>
+  );
+}
+
+/** Desktop language picker: where the Discord icon used to be. */
+function LanguagePicker({ lang, pathname }: { lang: SiteLanguage; pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false); };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, [open]);
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-label={navT(lang, "Language")}
+        className={`flex h-10 items-center gap-1 rounded-lg px-2 text-xs font-semibold uppercase transition ${open ? "bg-white/[0.06] text-text" : "text-muted hover:bg-white/[0.06] hover:text-text"}`}
+      >
+        <GlobeGlyph />
+        {lang}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-[70] mt-2 w-44">
+          <div className="glass-menu rounded-xl p-1.5">
+            {SUPPORTED.map((code) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => switchLanguage(pathname, code)}
+                className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition hover:bg-white/[0.06] ${code === lang ? "font-semibold text-text" : "text-muted"}`}
+              >
+                {LANGUAGE_LABEL[code]}
+                <span className="text-[0.65rem] uppercase text-faint">{code}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -223,7 +303,7 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
       <button
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={`flex items-center gap-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
+        className={`flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition lg:px-3 ${
           active || open ? "text-text bg-white/[0.06]" : "text-muted hover:text-text hover:bg-white/[0.04]"
         }`}
       >
@@ -322,7 +402,18 @@ function MobileGroup({
 
 export function SiteNav({ champions }: { champions: ComboItem[] }) {
   const pathname = usePathname();
-  const NAV = navEntries(useBuildToolsVisible());
+  // Nav language (2026-11-28): a translated page's own language, known on the
+  // server; on English pages, the visitor's saved or browser language, read
+  // after mount.
+  const prefix = pathname.split("/")[1];
+  const pageLang: SiteLanguage | null = prefix && prefix !== "en" && isSiteLanguage(prefix) ? prefix : null;
+  const [visitorLang, setVisitorLang] = useState<SiteLanguage>("en");
+  useEffect(() => { setVisitorLang(clientLanguage()); }, []);
+  const lang: SiteLanguage = pageLang ?? visitorLang;
+  const t = (english: string) => navT(lang, english);
+  const translateItem = (it: NavItem): NavItem => ({ ...it, label: t(it.label), desc: it.desc && t(it.desc), href: localizedNavHref(lang, it.href) });
+  const NAV: NavEntry[] = navEntries(useBuildToolsVisible()).map((e) =>
+    isGroup(e) ? { ...e, label: t(e.label), items: e.items.map(translateItem) } : translateItem(e));
   const [open, setOpen] = useState(false);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
@@ -331,7 +422,7 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
   return (
     <header className="glass-bar sticky top-0 z-50 border-b border-line">
       <nav className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between px-5">
-        <Wordmark />
+        <Wordmark lang={lang} />
 
         <div className="hidden items-center gap-1 md:flex">
           {NAV.map((e) =>
@@ -341,7 +432,7 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
               <Link
                 key={e.href}
                 href={e.href}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
+                className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-medium transition lg:px-3 ${
                   isActive(e.href) ? "text-text bg-white/[0.06]" : "text-muted hover:text-text hover:bg-white/[0.04]"
                 }`}
               >
@@ -351,9 +442,9 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
             ),
           )}
           <CompactCollectionStatus />
-          <NavSearch champions={champions} />
+          <NavSearch champions={champions} lang={lang} />
           <span className="mx-1 h-5 w-px bg-line" />
-          <DiscordNavLink />
+          <LanguagePicker lang={lang} pathname={pathname} />
           <SupportNavLink />
           <AccountMenu />
         </div>
@@ -363,12 +454,12 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
             offer that only exists behind a hamburger. Discord gave up the slot
             for it and keeps its full entry in the drawer below. */}
         <div className="flex items-center gap-0.5 md:hidden">
-          <NavSearch champions={champions} />
+          <NavSearch champions={champions} lang={lang} />
           <AccountMenu />
           <button
             onClick={() => setOpen((v) => !v)}
             className="grid h-10 w-10 place-items-center rounded-lg text-muted transition hover:bg-white/[0.06] hover:text-text"
-            aria-label="Toggle menu"
+            aria-label={t("Toggle menu")}
             aria-expanded={open}
           >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
@@ -423,7 +514,7 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
               className="mt-2 flex items-center gap-2 rounded-lg bg-[#5865F2]/15 px-3 py-2.5 text-sm font-semibold text-[#98a0ff] transition hover:bg-[#5865F2]/25"
             >
               <DiscordIcon className="h-5 w-5" />
-              Join our Discord
+              {t("Join our Discord")}
             </Link>
             <Link
               href={TIKTOK_URL}
@@ -453,8 +544,23 @@ export function SiteNav({ champions }: { champions: ComboItem[] }) {
               className="mt-2 flex items-center gap-2 rounded-lg bg-[#FFDD00]/15 px-3 py-2.5 text-sm font-semibold text-gold transition hover:bg-[#FFDD00]/25"
             >
               <CoffeeIcon className="h-5 w-5" />
-              Buy me a coffee
+              {t("Buy me a coffee")}
             </Link>
+            <div className="mt-3 px-1">
+              <p className="px-2 pb-1 text-[0.6rem] font-bold uppercase tracking-wide text-faint">{t("Language")}</p>
+              <div className="flex flex-wrap gap-1.5">
+                {SUPPORTED.map((code) => (
+                  <button
+                    key={code}
+                    type="button"
+                    onClick={() => switchLanguage(pathname, code)}
+                    className={`rounded-full px-2.5 py-1 text-xs transition ${code === lang ? "bg-white/10 font-semibold text-text" : "text-muted hover:text-text"}`}
+                  >
+                    {LANGUAGE_LABEL[code]}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="mt-2">
               <AccountMenu compact />
             </div>

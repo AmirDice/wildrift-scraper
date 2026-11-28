@@ -35,9 +35,10 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
       <button
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
+        aria-label={user ? `Account: ${user.name}` : undefined}
         className={
           user
-            ? "flex items-center gap-2 rounded-full border border-line p-0.5 pr-2.5 text-sm font-medium text-muted transition hover:border-accent/50 hover:text-text"
+            ? "flex items-center rounded-full border border-line p-0.5 text-sm font-medium text-muted transition hover:border-accent/50 hover:text-text"
             : `rounded-lg bg-accent/15 px-3 py-2 text-sm font-semibold text-accent transition hover:bg-accent/25 ${compact ? "w-full" : ""}`
         }
       >
@@ -50,7 +51,8 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
                 {user.name.slice(0, 1).toUpperCase()}
               </span>
             )}
-            <span className="hidden max-w-[9rem] truncate sm:inline">{user.name}</span>
+            {/* Avatar only (owner, 2026-11-28); the name is in the menu. */}
+            <span className="sr-only">{user.name}</span>
           </>
         ) : (
           "Sign in"

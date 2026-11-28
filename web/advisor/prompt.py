@@ -162,24 +162,12 @@ SYSTEM = (
     "Expensive scaling items and finishers go last. Cost is a signal but not the rule: "
     "justify any order where a cheaper item follows a more expensive one.\n"
 
-    "SITUATIONAL SWAPS ARE REORDERINGS, NOT ONE-FOR-ONE TRADES. A real adaptation often "
-    "inserts an item EARLY and pushes the rest back, rather than substituting in place. "
-    "Each entry names the item, the position it is inserted at, the item it removes from "
-    "the build, and the resulting five-item order in full. `resultingOrder` must contain "
-    "exactly five legal non-boots items, must contain `item` at `insertAtPosition`, must "
-    "not contain `removedItem`, and must obey hard legality. Most matchup problems have "
-    "to be answered by the 2nd or 3rd purchase, because a swap that only happens at item "
-    "5 arrives after the game is decided. Return an empty list rather than inventing "
-    "swaps that do not matter.\n"
-
-    # Stated as the acceptance test, because it IS one: the validator rejects a
-    # list where every swap lands at 4 or 5, and the model was writing exactly
-    # that and then paying a repair round trip to re-time it.
-    "  HARD RULE ON TIMING: if you return any situational swaps at all, at least one "
-    "MUST have insertAtPosition 2 or 3. A list where every swap lands at position 4 or "
-    "5 will be rejected -- those answer a threat after it has already decided the game. "
-    "Either re-time the swap that matters most to the purchase where the threat actually "
-    "bites, or return an empty list.\n"
+    "SITUATIONAL SWAPS ARE ONE-FOR-ONE: each entry names an item NOT in your five, "
+    "the item of your five it `replaces`, and `when` it is correct. The new item takes "
+    "the replaced item's place and the other four keep their order, so do not reorder "
+    "the build or give positions. Pick the item it replaces by what the threat makes "
+    "least useful, not by slot. Return an empty list rather than inventing swaps that "
+    "do not matter.\n"
 
     "SITUATIONAL RUNES: when a rune answers a matchup better than an item does, return "
     "it in `situationalRunes`. Two forms are allowed. replacesType 'rune' swaps one of "
@@ -188,8 +176,7 @@ SYSTEM = (
     "(the flex never joins the primary tree), and the keystone only by "
     "another keystone. replacesType 'item' means the rune covers a need well enough that "
     "one of your five items is no longer required -- and because that leaves a hole, you "
-    "MUST also name `freedSlotItem`, the item that now takes the slot, and give the full "
-    "`resultingItems` five-item build. A swap that empties a slot without filling it is "
+    "MUST also name `freedSlotItem`, the item that takes that same slot. A swap that empties a slot without filling it is "
     "an incomplete build, not advice. Say in `when` exactly what makes the swap correct. "
     "Empty list when nothing applies.\n"
 
@@ -259,14 +246,11 @@ SYSTEM = (
     '"bootsReason":"one line: why these boots for this kit and matchup",'
     '"runeReasons":{"keystone":"one line","minors":["one line","one line","one line"],'
     '"flex":"one line"},'
-    '"situational":[{"item":"<slug>","insertAtPosition":1-5,"removedItem":"<slug>",'
-    '"resultingOrder":["<slug>","<slug>","<slug>","<slug>","<slug>"],"when":"..."}],'
+    '"situational":[{"item":"<slug>","replaces":"<slug of one of your five>","when":"..."}],'
     '"situationalRunes":[{"rune":"<name>","replacesType":"rune"|"item",'
     '"replaces":"<rune name or item slug>","freedSlotItem":"<slug, item form only>",'
-    '"atPosition":1-5,"resultingItems":["<slug>","<slug>","<slug>","<slug>","<slug>"],'
     '"when":"..."}],'
-    '"snowballSwap":null or {"item":"<slug>","replaces":"<slug>","atPosition":1-5,'
-    '"resultingOrder":["<slug>","<slug>","<slug>","<slug>","<slug>"],"when":"..."},'
+    '"snowballSwap":null or {"item":"<slug>","replaces":"<slug>","when":"..."},'
     '"playGuide":{"earlyGame":"...","powerSpike":"...","midGame":"...","lateGame":"...",'
     '"teamfight":"...","pitfall":"...","laneMatchup":"... (only with a lane opponent)"},'
     '"why":["3 short bullets"]}'

@@ -15,18 +15,18 @@
  */
 import names from "@/data/i18n_names.json";
 
-export const LOCALES = ["zh", "tr", "fr", "pl", "ko", "es"] as const;
+export const LOCALES = ["zh", "vi", "tr", "fr", "pl", "ko", "es"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const hasLocale = (value: string): value is Locale => (LOCALES as readonly string[]).includes(value);
 
 /** BCP 47 codes for hreflang and the lang attribute. */
 export const HREFLANG: Record<Locale, string> = {
-  zh: "zh-Hans", tr: "tr", fr: "fr", pl: "pl", ko: "ko", es: "es",
+  zh: "zh-Hans", vi: "vi", tr: "tr", fr: "fr", pl: "pl", ko: "ko", es: "es",
 };
 
 export const NATIVE_NAME: Record<Locale | "en", string> = {
-  en: "English", zh: "简体中文", tr: "Türkçe", fr: "Français", pl: "Polski", ko: "한국어", es: "Español",
+  en: "English", zh: "简体中文", vi: "Tiếng Việt", tr: "Türkçe", fr: "Français", pl: "Polski", ko: "한국어", es: "Español",
 };
 
 type NameTable = Record<string, Partial<Record<Locale, string>>>;
@@ -71,6 +71,7 @@ export function fmtPct(lang: Locale, n: number): string {
   switch (lang) {
     case "tr": return `%${v.replace(".", ",")}`;
     case "fr": return `${v.replace(".", ",")} %`;
+    case "vi":
     case "pl":
     case "es": return `${v.replace(".", ",")}%`;
     default: return `${v}%`;

@@ -502,6 +502,12 @@ CLEANSE_ITEMS = frozenset(
            for line in (itemmeta.ITEMS[slug].get("passives") or [])))
 
 
+def _in_place(main_items: list[str], removed: str, add: str) -> tuple[int, list[str]]:
+    """A swap that takes the replaced item's slot: (1-based position, order)."""
+    position = main_items.index(removed) + 1
+    return position, [add if slug == removed else slug for slug in main_items]
+
+
 def validate(
     res: dict,
     *,
@@ -849,36 +855,18 @@ def validate(
                         f"situational '{add}' removes {entry.get('removedItem') or entry.get('replaces')!r}, "
                         "which must be one of the five main items")
             continue
-        position = entry.get("insertAtPosition") or entry.get("atPosition")
-        try:
-            position = int(position)
-        except (TypeError, ValueError):
-            position = main_items.index(removed) + 1
-        if not 1 <= position <= 5:
-            report.fail("situational", f"situational '{add}' insertAtPosition must be 1-5, "
-                                       f"got {position}")
+        # IN PLACE (owner decision, 2026-11-28): the swap takes the replaced
+        # item's slot and the other four keep their order. Swaps used to be
+        # "reorderings" with a model-chosen insert position, so Shieldbow
+        # replacing Infinity Edge at slot 5 was inserted at slot 3 and
+        # reshuffled the build. Any position or order the model writes is
+        # ignored; the order is derived here.
+        position, resolved_order = _in_place(main_items, removed, add)
+        violation = hard_exclusive_violation(resolved_order)
+        if violation:
+            report.fail("situational", f"situational '{add}': the build it produces is "
+                                       f"illegal -- {violation}")
             continue
-
-        order = entry.get("resultingOrder")
-        if order is None:
-            # Derive it: drop the removed item, insert the new one at the stated
-            # position. A build that omitted resultingOrder is under-specified,
-            # not wrong, so we complete it rather than rejecting it.
-            rest = [s for s in main_items if s != removed]
-            rest.insert(min(position - 1, len(rest)), add)
-            resolved_order = rest[:5]
-            violation = hard_exclusive_violation(resolved_order)
-            if violation:
-                report.fail("situational", f"situational '{add}': the build it produces is "
-                                           f"illegal -- {violation}")
-                continue
-        else:
-            resolved_order = _resulting_order(
-                report, "situational", f"situational '{add}'", order,
-                must_contain=add, at_position=position, must_not_contain=removed,
-                resolve=resolve)
-            if resolved_order is None:
-                continue
 
         seen.add(add)
         situational.append({
@@ -888,11 +876,8 @@ def validate(
             "replaces": removed, "atPosition": position,
         })
     res["situational"] = situational
-    if situational and all(s["atPosition"] >= 4 for s in situational):
-        report.fail("situational",
-                    "every situational swap lands on the 4th or 5th item, which is too late to "
-                    "matter in a 15-20 minute game -- re-time at least one to the slot where the "
-                    "threat actually needs answering (usually the 2nd or 3rd purchase), or drop it")
+    # The "at least one swap at slot 2 or 3" rule is gone with the in-place
+    # change: it is what forced swaps to reorder the build.
 
     # ---- rune page ----------------------------------------------------------
     page = res.get("runes") or {}
@@ -967,29 +952,15 @@ def validate(
                             f"freedSlotItem {freed} is already in the main five; the freed slot "
                             "needs an item the build does not already have")
                 continue
-            position = entry.get("atPosition")
-            try:
-                position = int(position)
-            except (TypeError, ValueError):
-                position = main_items.index(replaced) + 1
-            order = entry.get("resultingItems")
-            if order is None:
-                rest = [s for s in main_items if s != replaced]
-                rest.insert(min(max(position, 1) - 1, len(rest)), freed)
-                resolved_order = rest[:5]
-                violation = hard_exclusive_violation(resolved_order)
-                if violation:
-                    report.fail("situationalRunes",
-                                f"situational rune {rune}: the build it produces is illegal "
-                                f"-- {violation}")
-                    continue
-            else:
-                resolved_order = _resulting_order(
-                    report, "situationalRunes", f"situational rune {rune}", order,
-                    must_contain=freed, at_position=position, must_not_contain=replaced,
-                    resolve=resolve)
-                if resolved_order is None:
-                    continue
+            # In place, like situational items: the freed item takes the
+            # replaced item's slot.
+            position, resolved_order = _in_place(main_items, replaced, freed)
+            violation = hard_exclusive_violation(resolved_order)
+            if violation:
+                report.fail("situationalRunes",
+                            f"situational rune {rune}: the build it produces is illegal "
+                            f"-- {violation}")
+                continue
             resolved_entry = {
                 "rune": rune, "replaces": replaced, "replacesType": "item",
                 "replacesLabel": (ITEMS.get(replaced) or {}).get("name", replaced),
@@ -1027,20 +998,11 @@ def validate(
                             "first item completed well ahead of its normal timing, or a specific "
                             "shutdown you are carrying.")
             else:
-                position = snowball.get("atPosition")
-                try:
-                    position = int(position)
-                except (TypeError, ValueError):
-                    position = main_items.index(removed) + 1
-                order = snowball.get("resultingOrder")
-                if order is None:
-                    rest = [s for s in main_items if s != removed]
-                    rest.insert(min(max(position, 1) - 1, len(rest)), add)
-                    resolved_order = rest[:5]
-                else:
-                    resolved_order = _resulting_order(
-                        report, "snowball", "snowballSwap", order, must_contain=add,
-                        at_position=position, must_not_contain=removed, resolve=resolve)
+                position, resolved_order = _in_place(main_items, removed, add)
+                if hard_exclusive_violation(resolved_order):
+                    report.fail("snowball", f"snowballSwap: the build it produces is illegal "
+                                            f"-- {hard_exclusive_violation(resolved_order)}")
+                    resolved_order = None
                 if resolved_order is not None:
                     snowball.update({
                         "item": add, "replaces": removed, "atPosition": position,

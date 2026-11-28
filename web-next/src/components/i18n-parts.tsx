@@ -41,7 +41,9 @@ export function LanguageSwitcher({ path, current, label }: { path: string; curre
       {all.map((l) => (
         <Link
           key={l}
-          href={localizedPath(l, path)}
+          // ?setlang saves the choice (src/proxy.ts), so picking English
+          // stops the automatic redirect to the visitor's language.
+          href={`${localizedPath(l, path)}?setlang=${l}`}
           hrefLang={l === "zh" ? "zh-Hans" : l}
           className={`rounded-full px-2 py-0.5 transition ${l === current ? "bg-white/10 font-semibold text-text" : "text-muted hover:text-text"}`}
         >

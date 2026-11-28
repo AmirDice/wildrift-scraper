@@ -103,6 +103,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const translatable = [
     { path: "/", lastModified: collected, priority: 0.8 },
     { path: "/tier-list", lastModified: collected, priority: 0.8 },
+    { path: "/champions", lastModified: collected, priority: 0.7 },
     ...getChampions().filter((c) => !c.statsPending).flatMap((c) => [
       { path: `/champions/${c.slug}`, lastModified: collected, priority: 0.7 },
       ...lanePages(c.slug).map((l) => ({ path: `/champions/${c.slug}/${l.lane}`, lastModified: collected, priority: 0.6 })),
