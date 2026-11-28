@@ -21,8 +21,8 @@ the best-of runner's worker threads (started with copy_context().run) land
 inside the request's trace without being passed anything.
 
 Inert unless LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY are set, and an
-optional import, so local runs and tests need nothing new. LANGFUSE_HOST
-defaults to the EU region (cloud.langfuse.com). Observability must never
+optional import, so local runs and tests need nothing new. LANGFUSE_BASE_URL
+(or LANGFUSE_HOST) defaults to the EU region (cloud.langfuse.com). Observability must never
 break a generation: every Langfuse call here is wrapped.
 
 Privacy: build prompts are game data. Site agent questions are free text a
@@ -63,7 +63,10 @@ def _get():
             _client = Langfuse(
                 public_key=_PUBLIC,
                 secret_key=_SECRET,
-                host=os.environ.get("LANGFUSE_HOST") or "https://cloud.langfuse.com",
+                # LANGFUSE_BASE_URL is the SDK's current name, LANGFUSE_HOST the
+                # older one; either wins over the EU default.
+                base_url=(os.environ.get("LANGFUSE_BASE_URL") or os.environ.get("LANGFUSE_HOST")
+                          or "https://cloud.langfuse.com"),
                 environment=(os.environ.get("VERCEL_ENV") or "development"),
                 release=(os.environ.get("VERCEL_GIT_COMMIT_SHA") or "")[:12] or None,
             )
