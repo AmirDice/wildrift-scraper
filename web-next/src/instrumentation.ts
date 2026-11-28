@@ -38,9 +38,11 @@ export async function register() {
       urlQueryParams: false,
       genAI: { inputs: false, outputs: false },
     },
-    // Errors only. Performance tracing is Vercel Speed Insights' job, and
-    // tracing every request would burn the free quota in a day.
-    tracesSampleRate: 0,
+    // Every trace locally, a tenth in production: enough to see which
+    // routes are slow without spending the span quota on every page view.
+    tracesSampleRate: process.env.VERCEL_ENV === "production" ? 0.1 : 1.0,
+    // Logs: in SDK v11 Sentry.logger.* is on by default; the enableLogs
+    // flag from v9/v10 no longer exists.
     beforeSend(event) {
       if (event.request) {
         delete event.request.cookies;

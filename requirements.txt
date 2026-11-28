@@ -15,7 +15,8 @@ google-genai>=1.0.0
 
 # Error tracking for the deployed function (api/advisor.py). Small, pure
 # Python, and a no-op without SENTRY_DSN.
-sentry-sdk>=2.20.0
+# Pinned to 3.x: 3.0 renamed the privacy options api/advisor.py passes.
+sentry-sdk>=3.0,<4
 
 # LLM observability: one trace per advisor request, one generation per model
 # call (web/observability.py). A no-op without the LANGFUSE_* keys.

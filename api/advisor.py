@@ -45,9 +45,13 @@ from web import observability  # noqa: E402
 # a copy. Inert without SENTRY_DSN, and optional as an import so local runs
 # (the site spawns this file as a subprocess) need nothing new installed.
 #
-# include_local_variables is off: frame locals here hold the prompt, the model
-# response and, one frame down, the provider API key.
+# sentry-sdk 3 replaced send_default_pii / include_local_variables with
+# data_collection (passing the old names raises at init, which would have
+# taken the whole function down). Everything automatic is off: frame
+# variables hold the prompt, the model response and, one frame down, the
+# provider API key; headers carry ADVISOR_SECRET.
 SENTRY_DSN = os.environ.get("SENTRY_DSN", "")
+_PRODUCTION = os.environ.get("VERCEL_ENV") == "production"
 try:
     import sentry_sdk  # noqa: E402
 except ImportError:  # pragma: no cover - local runs without the package
@@ -57,9 +61,18 @@ if SENTRY_DSN and sentry_sdk is not None:
         dsn=SENTRY_DSN,
         environment=os.environ.get("VERCEL_ENV", "development"),
         release=os.environ.get("VERCEL_GIT_COMMIT_SHA") or None,
-        send_default_pii=False,
-        include_local_variables=False,
-        traces_sample_rate=0,
+        data_collection={
+            "user_info": False,
+            "cookies": {"mode": "off"},
+            "http_headers": {"request": {"mode": "allowlist", "terms": ["user-agent", "content-type"]}},
+            "http_bodies": [],
+            "url_query_params": {"mode": "off"},
+            "gen_ai": {"inputs": False, "outputs": False},
+            "stack_frame_variables": False,
+        },
+        # Every trace locally, a tenth in production. Prompts and outputs are
+        # Langfuse's job (web/observability.py), so gen_ai capture stays off.
+        traces_sample_rate=0.1 if _PRODUCTION else 1.0,
     )
 
 
