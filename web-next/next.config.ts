@@ -25,6 +25,14 @@ const nextConfig: NextConfig = {
     root: __dirname,
   },
 
+  // Browser error reporting (lib/client-errors.ts). A DSN is public by design
+  // (it can only send events), so the server variable is inlined at build
+  // time instead of keeping a second copy as NEXT_PUBLIC_SENTRY_DSN.
+  env: {
+    NEXT_PUBLIC_SENTRY_DSN: process.env.SENTRY_DSN ?? "",
+    NEXT_PUBLIC_SENTRY_ENV: process.env.VERCEL_ENV ?? "development",
+  },
+
   async redirects() {
     return [
       {
@@ -107,8 +115,8 @@ export default withSentryConfig(nextConfig, {
   org: "wrtruemeta",
   project: "wrtruemeta-server",
   authToken: process.env.SENTRY_AUTH_TOKEN,
-  // Server-side only today, so keep the release out of the client chunks:
-  // injecting it would change every chunk's hash on every deploy.
+  // Keep the release out of the client chunks: injecting it would change
+  // every chunk's hash on every deploy. Browser errors are grouped without it.
   release: { inject: false },
   telemetry: false,
   silent: !process.env.CI,

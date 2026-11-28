@@ -10,9 +10,8 @@ import type { Instrumentation } from "next";
  * Inert without SENTRY_DSN: local dev and preview builds without the variable
  * report nothing, so this cannot break a build or spam the project.
  *
- * Server only, on purpose. The browser SDK adds about 70KB to every page of an
- * ad-funded site; client errors can be added later if server errors turn out
- * not to be the whole story.
+ * Server side. Browser errors are reported by src/instrumentation-client.ts,
+ * which loads the SDK only when an error happens (lib/client-errors.ts).
  *
  * Privacy: no PII. Cookies, auth headers and IPs are stripped before anything
  * leaves the function (the session cookie identifies a signed-in account).
