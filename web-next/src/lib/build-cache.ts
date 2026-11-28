@@ -441,7 +441,10 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v89: patch 7.3g. Vayne, Irelia, Garen, Smolder and Sylas changed;
   // Immortal Shieldbow, Berserker's and Gunmetal Greaves, Ardent Censer,
   // Harmonic Echo, Guinsoo's Rageblade and Absolute Focus moved.
-  return `build:v89:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v90: Build Studio v5. Gemini 4 Hydrogen at low thinking, official
+  // high-elo builds as evidence, and the tank/bruiser boots fix (cached Ornn
+  // builds still carried Ionian Boots of Lucidity).
+  return `build:v90:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

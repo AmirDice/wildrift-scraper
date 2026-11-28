@@ -30,7 +30,7 @@ const buildsEntry = (live: boolean): NavEntry => (live
   ? {
       label: "Builds",
       items: [
-        { href: "/build", label: "Build Studio", badges: ["new", BUILD_STUDIO_VERSION], desc: "Generate by playstyle or craft with live stats" },
+        { href: "/build", label: "Build Studio", badges: ["hot", BUILD_STUDIO_VERSION], desc: "Generate by playstyle or craft with live stats" },
         { href: "/build?tab=counter", label: "Build vs Enemy Team", badges: [BUILD_STUDIO_VERSION], desc: "The build that beats their exact five picks" },
         // held back while the draft flow is tested against real lobbies
         ...(DRAFT_TOOL_LIVE
@@ -60,7 +60,7 @@ const buildsEntry = (live: boolean): NavEntry => (live
 // The data pages that used to be orphaned -- Global, Consistency, News, Patch,
 // Recap -- are all linked.
 const navEntries = (buildToolsLive: boolean): NavEntry[] => [
-  { href: "/tier-list", label: "Tier List" },
+  { href: "/tier-list", label: "Tier List", badges: ["hot"] },
   { href: "/champions", label: "Champions" },
   // PLAYERS is its own group, not a corner of Meta. Everything else on this
   // site is about champions; these three are about people, and they were
@@ -70,7 +70,7 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
   {
     label: "Players",
     items: [
-      { href: "/leaderboard", label: "Leaderboards", desc: "The top players on every champion" },
+      { href: "/leaderboard", label: "Leaderboards", badges: ["hot"], desc: "The top players on every champion" },
       { href: "/player", label: "Player Search", desc: "Find a player and every champion they rank on" },
     ],
   },
@@ -104,14 +104,19 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
 ];
 
 function NavBadge({ text }: { text: string }) {
-  const cls = text === "new"
+  // "hot" marks three pages only: Tier List and Leaderboards (most visited)
+  // and Build Studio (v5). More than three and nothing stands out.
+  const cls = text === "hot"
+    ? "bg-red-500/20 text-red-300"
+    : text === "new"
     ? "bg-emerald-400/20 text-emerald-300"
     : text === "beta" || text === "alpha"
       ? "bg-gold/20 text-gold"
       : "bg-accent/20 text-accent";
   return (
     <span className={`rounded px-1 py-0.5 text-[0.55rem] font-bold uppercase leading-none tracking-wide ${cls}`}>
-      {text}
+      {/* Owner's call (2026-11-28): the one emoji on the site, on the hot badge. */}
+      {text === "hot" ? <><span aria-hidden>🔥</span> hot</> : text}
     </span>
   );
 }
@@ -223,6 +228,9 @@ function DesktopGroup({ group, active }: { group: NavGroup; active: boolean }) {
         }`}
       >
         {group.label}
+        {/* A closed dropdown hides its items' badges, so a group holding a
+            hot page shows the badge on its own label. */}
+        {group.items.some((it) => (it.badges ?? []).includes("hot")) && <NavBadge text="hot" />}
         <Caret open={open} />
       </button>
       {open && (

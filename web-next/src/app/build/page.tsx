@@ -1,3 +1,4 @@
+import { HotTag } from "@/components/hot-tag";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { BuildStudio } from "@/components/build-studio";
@@ -59,7 +60,7 @@ export default async function BuildPage(props: PageProps<"/build">) {
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-accent">Build engine</span>
-                <span className="rounded-full border border-emerald-300/20 bg-emerald-300/10 px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-emerald-300">New</span>
+                <HotTag />
                 <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.6rem] font-bold uppercase tracking-[0.12em] text-muted">{BUILD_STUDIO_VERSION}</span>
               </div>
               <h1 className="mt-3 text-4xl leading-[0.95] tracking-[-0.05em] sm:text-[3.65rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>Build Studio</h1>

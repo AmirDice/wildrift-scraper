@@ -80,8 +80,11 @@ export const OVERLAY_VERSION = "3.2-alpha";
  *                 Lab imports.
  * v3  2026-09-18  Beginner and Advanced modes, the Fun / experimental build,
  *                 most-built-by-server, runes drawn as icons.
+ * v5  2026-11-28  Gemini 4 Hydrogen (about twice as fast), official high-elo
+ *                 builds as evidence, tank and bruiser boots fixed, shorter
+ *                 explanations. (Owner chose v5.)
  */
-export const BUILD_STUDIO_VERSION = "v3";
+export const BUILD_STUDIO_VERSION = "v5";
 
 /**
  * Champions whose Recommended Builds tab is open.

@@ -1,3 +1,4 @@
+import { HotTag } from "@/components/hot-tag";
 import type { Metadata } from "next";
 import { site, getChampions, getChampionsNa } from "@/lib/data";
 import { LeaderboardView, type SlimChampion } from "@/components/leaderboard-view";
@@ -142,6 +143,7 @@ export default function LeaderboardPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-accent">Current season · top players</span>
                 {site.collectedOn && <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.62rem] font-semibold text-muted">Updated {site.collectedOn}</span>}
+                <HotTag />
               </div>
               <h1 className="mt-3 text-4xl leading-[0.98] tracking-[-0.045em] sm:text-[3.35rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>Player Leaderboards</h1>
               <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">Champion specialists ranked by real performance, sample confidence, ladder strength and mastery.</p>
