@@ -16,7 +16,7 @@ tally per request. Each generation carries:
   - latency, and every failed attempt as an ERROR-level generation, so
     retries and 429 backoff show up instead of hiding inside one slow call.
 
-Langfuse v3 is built on OpenTelemetry, so the trace context is a ContextVar:
+Langfuse (SDK v5) is built on OpenTelemetry, so the trace context is a ContextVar:
 the best-of runner's worker threads (started with copy_context().run) land
 inside the request's trace without being passed anything.
 
@@ -50,6 +50,11 @@ _STAGE: contextvars.ContextVar[str] = contextvars.ContextVar("advisor_stage", de
 
 _client = None
 _client_failed = False
+
+
+def propagate_attributes(**kwargs: Any):
+    from langfuse import propagate_attributes as _propagate
+    return _propagate(**kwargs)
 
 
 def _get():
@@ -105,9 +110,6 @@ class _Null:
     def update(self, **_: Any) -> None:
         return None
 
-    def update_trace(self, **_: Any) -> None:
-        return None
-
 
 @contextlib.contextmanager
 def request_trace(name: str, *, input: Any = None, tags: list[str] | None = None,
@@ -119,12 +121,21 @@ def request_trace(name: str, *, input: Any = None, tags: list[str] | None = None
     if client is None:
         yield _Null()
         return
+    # SDK v4+ is observations-first: there is no trace object to update.
+    # Trace name, tags and metadata are PROPAGATED onto every observation
+    # opened inside this block (so each generation can be filtered by
+    # champion or mode on its own), and the trace's input/output are the
+    # root observation's, set here and via span.update() by the caller.
+    stack = contextlib.ExitStack()
     try:
-        cm = client.start_as_current_span(name=name, input=input, metadata=metadata)
-        span = cm.__enter__()
-        span.update_trace(name=name, tags=tags or [], input=input, metadata=metadata)
+        stack.enter_context(propagate_attributes(
+            trace_name=name, tags=tags or [], metadata=_string_metadata(metadata)))
+        span = stack.enter_context(client.start_as_current_observation(
+            as_type="span", name=name, input=input, metadata=metadata))
     except Exception as exc:  # noqa: BLE001
         print(f"[observability] trace start failed: {exc}", file=sys.stderr)
+        with contextlib.suppress(Exception):
+            stack.close()
         yield _Null()
         return
     exc_info = (None, None, None)
@@ -137,7 +148,19 @@ def request_trace(name: str, *, input: Any = None, tags: list[str] | None = None
         raise
     finally:
         with contextlib.suppress(Exception):
-            cm.__exit__(*exc_info)
+            stack.__exit__(*exc_info)
+
+
+def _string_metadata(metadata: dict | None) -> dict[str, str]:
+    """Propagated metadata must be dict[str, str] with values <= 200 chars
+    (SDK v4+ drops oversized values with a warning). Lists are joined."""
+    out: dict[str, str] = {}
+    for key, value in (metadata or {}).items():
+        if value is None or value == "" or value == []:
+            continue
+        text = ", ".join(map(str, value)) if isinstance(value, (list, tuple)) else str(value)
+        out[str(key)] = text[:200]
+    return out
 
 
 def flush() -> None:
@@ -160,7 +183,8 @@ def generation(*, model: str, prompt: str, system: str = "", thinking_level: str
         return
     name = current_stage()
     try:
-        cm = client.start_as_current_generation(
+        cm = client.start_as_current_observation(
+            as_type="generation",
             name=name,
             model=model,
             input=[

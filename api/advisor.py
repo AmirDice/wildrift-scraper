@@ -436,14 +436,14 @@ class handler(BaseHTTPRequestHandler):
             status, payload = build_from_request(body)
             if isinstance(payload, dict) and usage["calls"]:
                 payload["usage"] = usage
+            # The root observation's output IS the trace output in SDK v4+.
             trace.update(
-                output={"status": status,
+                output={"status": status, "calls": usage["calls"],
+                        "tokens": {k: usage.get(k, 0) for k in ("input", "output", "thoughts")},
                         "error": payload.get("error") if isinstance(payload, dict) else None},
                 level="ERROR" if status >= 500 else ("WARNING" if status >= 400 else None),
                 metadata={"status": status, "calls": usage["calls"]},
             )
-            trace.update_trace(output={"status": status, "calls": usage["calls"],
-                                       "tokens": {k: usage.get(k, 0) for k in ("input", "output", "thoughts")}})
         self._send(status, payload)
         # After the response, never before it: see observability.flush.
         observability.flush()

@@ -20,7 +20,9 @@ sentry-sdk>=3.0,<4
 
 # LLM observability: one trace per advisor request, one generation per model
 # call (web/observability.py). A no-op without the LANGFUSE_* keys.
-langfuse>=3.15,<4
+# 5.x: Langfuse Cloud refuses the v3 ingestion path since 2026-11-16 (SDK
+# must be >= 4.7), and web/observability.py uses the v4+ observation API.
+langfuse>=5.2,<6
 
 # Everything else the repo needs -- scrapers, OCR, the legacy Streamlit app --
 # is in requirements-scrape.txt:
