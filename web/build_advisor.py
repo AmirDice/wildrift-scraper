@@ -612,6 +612,17 @@ def _record_usage(model: str, response, level: str = "") -> None:
         by["thoughts"] += n("thoughts_token_count")
 
 
+def _is_terminal_gemini_error(text: str) -> bool:
+    """True for Gemini failures a retry cannot fix: billing (402, depleted
+    prepaid credits) and authentication (401/403, bad or revoked key)."""
+    lowered = text.lower()
+    return (text.startswith(("402", "401", "403"))
+            or "prepayment credits" in lowered
+            or "billing" in lowered and "429" not in text
+            or "api key not valid" in lowered
+            or "permission_denied" in lowered)
+
+
 def _staged(name: str, fn):
     """Run fn with every model call inside it labelled as stage `name`, for
     the Langfuse trace (see web/observability.py)."""
@@ -675,6 +686,12 @@ def _gemini_call(prompt: str, model: str = "", system: str = "",
         except Exception as exc:                       # noqa: BLE001
             last = exc
             text = str(exc)
+            if _is_terminal_gemini_error(text):
+                # Billing and auth failures do not heal in seconds. They used
+                # to fall into the RESOURCE_EXHAUSTED branch below (a 402
+                # "prepayment credits are depleted" carries that status too),
+                # so every visitor waited 15+30+45s for a guaranteed failure.
+                raise RuntimeError(f"gemini unavailable (not retried): {text[:300]}") from exc
             if "RESOURCE_EXHAUSTED" in text or "429" in text:
                 # The free tier throttles hard and recovers in minutes, so wait
                 # rather than failing a generation the player is watching.

@@ -56,6 +56,14 @@ try:
     import sentry_sdk  # noqa: E402
 except ImportError:  # pragma: no cover - local runs without the package
     sentry_sdk = None
+def _disabled_integrations() -> list:
+    try:
+        from sentry_sdk.integrations.google_genai import GoogleGenAIIntegration
+        return [GoogleGenAIIntegration()]
+    except Exception:  # noqa: BLE001 - older SDK without the integration
+        return []
+
+
 if SENTRY_DSN and sentry_sdk is not None:
     sentry_sdk.init(
         dsn=SENTRY_DSN,
@@ -73,6 +81,11 @@ if SENTRY_DSN and sentry_sdk is not None:
         # Every trace locally, a tenth in production. Prompts and outputs are
         # Langfuse's job (web/observability.py), so gen_ai capture stays off.
         traces_sample_rate=0.1 if _PRODUCTION else 1.0,
+        # The auto-enabled Gemini integration reported EVERY failed attempt as
+        # its own error, so one failed request became 4 events (and 4x the
+        # alert email). Langfuse already traces Gemini; Sentry gets one event
+        # per failed request, from _report().
+        disabled_integrations=_disabled_integrations(),
     )
 
 
