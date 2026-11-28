@@ -3729,7 +3729,17 @@ def advise(champion: str, role: str, enemies: list[str],
     # ladder as the build evidence on 2026-11-28. They follow the same on/off
     # switch (unrestricted mode and objective=best turn them off) but NOT the
     # ladder's staleness check: they carry their own dates and patch label.
-    official_anchor = ladder_anchor
+    #
+    # And ONLY for the default request (owner decision, 2026-11-28). A player
+    # who asks for max damage, a playstyle, a damage path or a counter build is
+    # asking for something other than the popular build; measured, max-damage
+    # Graves copied the #1 official core and rune page (Fleet Footwork) where
+    # the same request without it took Electrocute. Non-default requests keep
+    # the older unranked ladder candidates, which they always had.
+    official_anchor = (ladder_anchor and mode == "studio"
+                       and playstyle in ("standard", "adaptive")
+                       and build_bias == "balanced" and objective == "balanced"
+                       and damage_path == "standard" and damage_style == "auto")
     if ladder_anchor and prompt_mod.consensus_predates_patch():
         ladder_anchor = False
     risk_tolerance = risk_tolerance if risk_tolerance in RISK_TOLERANCE else "medium"

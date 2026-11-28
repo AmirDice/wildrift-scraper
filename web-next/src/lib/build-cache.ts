@@ -444,7 +444,9 @@ export function buildCacheKey(request: BuildRequestKey): string {
   // v90: Build Studio v5. Gemini 4 Hydrogen at low thinking, official
   // high-elo builds as evidence, and the tank/bruiser boots fix (cached Ornn
   // builds still carried Ionian Boots of Lucidity).
-  return `build:v90:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
+  // v91: the official evidence went unranked (no rates, no complete pages)
+  // and default-requests-only; v90 max-damage builds could copy the #1 core.
+  return `build:v91:${crypto.createHash("sha256").update(shape).digest("hex").slice(0, 32)}`;
 }
 
 export async function readCachedBuild(key: string): Promise<Record<string, unknown> | null> {

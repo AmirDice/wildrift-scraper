@@ -1612,54 +1612,71 @@ def official_core_slugs(name: str, role: str = "", pool=None) -> list[str]:
 
 
 def official_builds_block(name: str, role: str = "", pool=None) -> str:
-    """Official high-elo item cores, rune pages, boots and spells, with win
-    and pick rates. Empty when the champion has no official data."""
+    """Official high-elo usage as an UNRANKED candidate list.
+
+    The first version (2026-11-28 morning) printed ranked rows with win and
+    pick rates and complete rune pages. Measured the same day: max-damage
+    Graves came back as the #1 core verbatim (Collector + Stormrazor + LDR)
+    and the #1 rune page verbatim, Fleet Footwork included, where the same
+    request without the block took Electrocute. A ranked list with rates is an
+    instruction whatever the wording says -- the ladder block found the same
+    in September. So: no rates, no order, no complete pages, no source. The
+    items, keystones, minors, boots and spells arrive as candidates that must
+    be scored and argued away, which improves the search without handing over
+    an answer. Rows under MIN_OFFICIAL_PICK still never make it in. Called
+    only for default requests (see official_anchor in build_advisor.advise)."""
     rec = _official_record(name, role)
     if not rec:
         return ""
-    def fmt(row: dict, live) -> str | None:
-        ents = [e for e in row.get("entities") or [] if live(e)]
-        if not ents:
-            return None
-        return (f"  {' + '.join(ents)} -- win {row.get('winRate', 0):.1f}%, "
-                f"pick {row.get('pickRate', 0):.1f}%")
-    live_item = lambda e: _item_slug(e) is not None  # noqa: E731
+    pool_set = set(pool) if pool is not None else None
     live_rune = lambda e: not (runemeta.BY_NAME.get(e) or {}).get("removedIn")  # noqa: E731
-    sections = []
-    boots_date = str(((rec.get("tabs") or {}).get("boots") or {}).get("date") or "")
-    boots_title = "boots"
-    if len(boots_date) == 8 and not _tab_fresh(rec, (rec.get("tabs") or {}).get("boots") or {}):
-        month = ["January", "February", "March", "April", "May", "June", "July", "August",
-                 "September", "October", "November", "December"][int(boots_date[4:6]) - 1]
-        boots_title = (f"boots (OLDER DATA: measured {month} {boots_date[:4]}, before the "
-                       "current patch cycle -- weigh it less than the rows above)")
-    for tab, title, limit, live in (("items", "item cores (3 items)", 6, live_item),
-                                    ("boots", boots_title, 3, lambda e: True),
-                                    ("runes", "rune pages", 4, live_rune),
-                                    ("spells", "summoner spells", 2, lambda e: True)):
-        rows = (_core_rows(rec, set(pool) if pool is not None else None)
-                if tab == "items" else _official_rows(rec, tab, limit))
-        lines = [x for x in (fmt(r, live) for r in rows) if x]
-        if lines:
-            sections.append(f"{title}:\n" + "\n".join(lines))
-    if not sections:
+    items: set[str] = set()
+    for row in _core_rows(rec, pool_set):
+        for ent in row.get("entities") or []:
+            slug = _item_slug(ent)
+            if slug:
+                items.add(ITEMS[slug]["name"])
+    keystones: set[str] = set()
+    minors: set[str] = set()
+    for row in _official_rows(rec, "runes", 4):
+        for ent in row.get("entities") or []:
+            if not live_rune(ent):
+                continue
+            (keystones if _is_keystone(ent) else minors).add(ent)
+    boots = {e for row in _official_rows(rec, "boots", 3) for e in row.get("entities") or []}
+    spells = {" + ".join(row.get("entities") or [])
+              for row in _official_rows(rec, "spells", 2) if row.get("entities")}
+    lines = []
+    if items:
+        lines.append("  items: " + ", ".join(sorted(items)))
+    if boots:
+        lines.append("  boots: " + ", ".join(sorted(boots)))
+    if keystones:
+        lines.append("  keystones: " + ", ".join(sorted(keystones)))
+    if minors:
+        lines.append("  minor runes: " + ", ".join(sorted(minors)))
+    if spells:
+        lines.append("  summoner spells: " + ", ".join(sorted(spells)))
+    if not lines:
         return ""
-    lane = rec.get("lane", "")
     overlap = ladder_overlap(name, rec)
     caution = ""
     if overlap is not None and overlap < MIN_LADDER_OVERLAP:
-        caution = (f"CAUTION: these item cores share only {overlap:.0%} of their items with "
-                   "what EU/NA top players build on this champion. It may be a regional "
-                   "meta or a thin sample -- trust the kit analysis over these cores.\n")
+        caution = ("  CAUTION: this item list is unusual for this champion (a thin or "
+                   "regional sample); trust the kit analysis over it.\n")
     return (
-        f"OFFICIAL HIGH-ELO BUILDS ({lane} lane, China server, Legendary ranked, "
-        "previous patch; sorted by pick rate):\n" + caution + "\n".join(sections) + "\n"
-        "These are evidence, not the answer. A win rate on a low pick rate is noise; "
-        "a high pick rate shows what works reliably. Every item named in the cores must "
-        "be in the candidate list you score, judged like any other candidate. None has "
-        "to reach your final build -- for any that does not, state why it lost to what "
-        "you chose. Weigh the request (playstyle, power curve, enemies) over popularity."
+        "REQUIRED CANDIDATES (must be in the initial candidate list you score; judge "
+        "them exactly like every other candidate; listed alphabetically, no ranking "
+        "implied):\n" + caution + "\n".join(lines) + "\n"
+        "  None of these has to reach your final build. For any that does not, state "
+        "why it lost to what you chose instead."
     )
+
+
+def _is_keystone(rune_name: str) -> bool:
+    meta = runemeta.BY_NAME.get(rune_name) or {}
+    return (str(meta.get("type", "")).lower() == "keystone"
+            or str(meta.get("tree", "")).lower() == "keystone")
 
 
 def ladder_items_block(name: str) -> str:
