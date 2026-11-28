@@ -104,19 +104,19 @@ const navEntries = (buildToolsLive: boolean): NavEntry[] => [
 ];
 
 function NavBadge({ text }: { text: string }) {
-  // "hot" marks three pages only: Tier List and Leaderboards (most visited)
-  // and Build Studio (v5). More than three and nothing stands out.
-  const cls = text === "hot"
-    ? "bg-red-500/20 text-red-300"
-    : text === "new"
+  // "hot" is a bare flame, no pill: a red box inside a nav label read as a
+  // hover highlight that never went away (owner, 2026-11-28).
+  if (text === "hot") {
+    return <span aria-label="hot" title="Popular right now" className="text-[0.7rem] leading-none">🔥</span>;
+  }
+  const cls = text === "new"
     ? "bg-emerald-400/20 text-emerald-300"
     : text === "beta" || text === "alpha"
       ? "bg-gold/20 text-gold"
       : "bg-accent/20 text-accent";
   return (
     <span className={`rounded px-1 py-0.5 text-[0.55rem] font-bold uppercase leading-none tracking-wide ${cls}`}>
-      {/* Owner's call (2026-11-28): the one emoji on the site, on the hot badge. */}
-      {text === "hot" ? <><span aria-hidden>🔥</span> hot</> : text}
+      {text}
     </span>
   );
 }

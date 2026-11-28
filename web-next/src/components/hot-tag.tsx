@@ -11,9 +11,9 @@
 export function HotTag({ className = "" }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center rounded-full border border-red-400/35 bg-red-500/15 px-2.5 py-1 text-[0.6rem] font-bold uppercase leading-none tracking-[0.12em] text-red-300 ${className}`}
+      className={`inline-flex items-center rounded-full border border-red-400/30 bg-red-500/10 px-1.5 py-0.5 text-[0.5rem] font-bold uppercase leading-none tracking-[0.1em] text-red-300 ${className}`}
     >
-      <span aria-hidden className="mr-1">🔥</span>Hot
+      <span aria-hidden className="mr-0.5">🔥</span>Hot
     </span>
   );
 }
