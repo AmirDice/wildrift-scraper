@@ -71,10 +71,12 @@ DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 # latency investigation measured DeepSeek at 272-293s per build, four times
 # Gemini's, and reported it as a production incident before anyone noticed that
 # production was never on DeepSeek. So the default is now what production runs.
-# 2026-11-01: the owner moved studio builds to gemini-3.5-flash-lite as well,
-# for speed; counter builds were already on it. Production reads ADVISOR_MODEL
-# from the advisor project's environment, which was changed with this.
-DEFAULT_MODEL = "gemini-3.5-flash-lite"
+# 2026-11-01: the owner moved studio builds to gemini-3.5-flash-lite in code,
+# but production kept ADVISOR_MODEL=gemini-3.8-flash in the advisor project.
+# 2026-11-28: Gemini 4 Hydrogen, in code and in ADVISOR_MODEL: 2x faster than
+# 3.8 Flash, no repair rounds in a 6+6 comparison, and cheaper once 3.8 Flash
+# doubles on 1 Jan 2027.
+DEFAULT_MODEL = "gemini-4-hydrogen"
 MODEL = os.environ.get("ADVISOR_MODEL", DEFAULT_MODEL).strip() or DEFAULT_MODEL
 IS_GEMINI = MODEL.lower().startswith("gemini")
 # The key the ACTIVE model needs. Checking DEEPSEEK_API_KEY on a Gemini run
@@ -112,6 +114,10 @@ COUNTER_MODEL = os.environ.get("ADVISOR_MODEL_COUNTER", "gemini-3.5-flash-lite")
 # 0.53-0.54 at every level for 55-209 s median. Studio keeps medium.
 RUNES_THINKING = os.environ.get("ADVISOR_RUNES_THINKING", "low").strip() or "low"
 COUNTER_ITEMS_THINKING = os.environ.get("ADVISOR_COUNTER_THINKING", "medium").strip() or "medium"
+# Studio authoring and repairs. "low" since 2026-11-28 (owner decision, cost):
+# thinking was ~a third of a build's cost at medium. The tournament judge
+# still asks for "high" explicitly.
+STUDIO_THINKING = os.environ.get("ADVISOR_STUDIO_THINKING", "low").strip() or "low"
 
 
 def _complex_champions() -> frozenset[str]:
@@ -3991,7 +3997,7 @@ def advise(champion: str, role: str, enemies: list[str],
         # Counter builds think harder by default (COUNTER_ITEMS_THINKING); an
         # explicit level (the tournament judge's) still wins.
         if not thinking_level:
-            thinking_level = COUNTER_ITEMS_THINKING if mode == "counter" else "medium"
+            thinking_level = COUNTER_ITEMS_THINKING if mode == "counter" else STUDIO_THINKING
         # Pass each keyword only when it deviates from the default, so the
         # signature every existing caller and test stub sees is unchanged --
         # stubs monkeypatch _call as (key, text). The chosen model covers the
