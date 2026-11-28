@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import { Card } from "@/components/ui";
 import { getNewChampions, type NewChampion } from "@/lib/new-champions";
 
@@ -25,14 +26,13 @@ export function NewChampions() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-xl font-semibold tracking-tight">
-            Just released
+            <T>{"Just released"}</T>
             <span className="ml-2 rounded bg-emerald-400/20 px-1.5 py-0.5 align-middle text-[0.6rem] font-bold uppercase tracking-wide text-emerald-300">
-              new
+              <T>{"new"}</T>
             </span>
           </h2>
           <p className="mt-1 max-w-2xl text-sm text-muted">
-            Live in Wild Rift, but not on any leaderboard we track yet. Win rates appear here as soon as
-            enough ranked games exist to mean anything.
+            <T>{"Live in Wild Rift, but not on any leaderboard we track yet. Win rates appear here as soon as enough ranked games exist to mean anything."}</T>
           </p>
         </div>
       </div>
@@ -85,11 +85,11 @@ function NewChampionCard({ champion }: { champion: NewChampion }) {
           </div>
           {soon ? (
             <span className="rounded-md bg-accent/15 px-2 py-1 text-[0.6rem] font-bold uppercase tracking-wide text-accent">
-              Coming soon
+              <T>{"Coming soon"}</T>
             </span>
           ) : (
             <span className="rounded-md bg-gold/10 px-2 py-1 text-[0.6rem] font-semibold text-gold">
-              Win rates pending
+              <T>{"Win rates pending"}</T>
             </span>
           )}
         </div>
@@ -104,7 +104,7 @@ function NewChampionCard({ champion }: { champion: NewChampion }) {
       {!soon && champion.abilities.length > 0 && (
         <details className="group border-t border-line/60">
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5 text-sm font-semibold">
-            {champion.name}&rsquo;s abilities
+            <T vars={{ name: champion.name }}>{"{name}’s abilities"}</T>
             <span aria-hidden className="text-accent transition group-open:rotate-180">⌄</span>
           </summary>
           <div className="space-y-3 border-t border-line/60 px-4 py-4">

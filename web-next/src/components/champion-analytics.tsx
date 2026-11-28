@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useMemo, useState, type CSSProperties, type ReactNode } from "react";
 
 export type AnalyticsPlayer = {
@@ -100,7 +101,7 @@ export function ChampionAnalytics({
         <div className="grid grid-cols-[auto_1fr] items-center gap-4 py-1">
           <div className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full border border-accent/25 bg-[conic-gradient(#72a7ff_var(--score),#a88dff_var(--score),rgba(255,255,255,.06)_0)] p-1.5 shadow-[0_0_22px_rgba(114,167,255,.14)]" style={{ "--score": `${stats.consistency}%` } as CSSProperties}>
             <div className="grid h-full w-full place-items-center rounded-full bg-[#09111e] text-center">
-              <div><strong className="block text-lg leading-none">{stats.consistency}</strong><span className="mt-1 block text-[0.48rem] uppercase tracking-[0.12em] text-faint">Cons.</span></div>
+              <div><strong className="block text-lg leading-none">{stats.consistency}</strong><span className="mt-1 block text-[0.48rem] uppercase tracking-[0.12em] text-faint"><T>{"Cons."}</T></span></div>
             </div>
           </div>
           <div className="space-y-3">
@@ -163,7 +164,7 @@ function Distribution({ players, min, max, median, average, selected, onSelect }
           return <circle key={`${player.r}-${player.p}`} cx={x(player.w)} cy={65 - (index % 4) * 12} r={selected?.r === player.r ? 5.5 : 4} fill={selected?.r === player.r ? "#ffffff" : color} opacity={selected && selected.r !== player.r ? .38 : .9} style={{ filter: `drop-shadow(0 0 ${selected?.r === player.r ? 7 : 3}px ${color})` }} onClick={() => onSelect(player)} className="cursor-pointer outline-none" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onSelect(player); }}><title>{`${player.p}: ${player.w.toFixed(1)}% over ${player.g} games`}</title></circle>;
         })}
       </svg>
-      <div className="flex gap-4 text-[0.62rem] uppercase tracking-[0.12em] text-faint"><span className="text-emerald-300">Median</span><span className="text-violet-300">Average</span></div>
+      <div className="flex gap-4 text-[0.62rem] uppercase tracking-[0.12em] text-faint"><span className="text-emerald-300"><T>{"Median"}</T></span><span className="text-violet-300"><T>{"Average"}</T></span></div>
     </div>
   );
 }
@@ -182,19 +183,19 @@ function Scatter({ players, selected, onSelect }: { players: AnalyticsPlayer[]; 
   return (
     <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full" role="img" aria-label="Win rate versus games played">
       {[0, .25, .5, .75, 1].map((step) => <line key={step} x1="38" x2={width - 20} y1={12 + step * (height - 42)} y2={12 + step * (height - 42)} stroke="rgba(255,255,255,.055)" />)}
-      <text x="38" y={height - 5} fill="#7e8da6" fontSize="10">games →</text>
+      <text x="38" y={height - 5} fill="#7e8da6" fontSize="10"><T>{"games →"}</T></text>
       {players.map((player, index) => { const color = ["#72a7ff", "#78e3d4", "#a88dff", "#f2ca72"][index % 4]; return <circle key={`${player.r}-${player.p}`} cx={x(player.g)} cy={y(player.w)} r={selected?.r === player.r ? 6 : 4.2} fill={selected?.r === player.r ? "#ffffff" : color} opacity={selected && selected.r !== player.r ? .35 : .82} style={{ filter: `drop-shadow(0 0 ${selected?.r === player.r ? 7 : 3}px ${color})` }} onClick={() => onSelect(player)} className="cursor-pointer" tabIndex={0} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onSelect(player); }}><title>{`${player.p}: ${player.w.toFixed(1)}% · ${player.g} games`}</title></circle>; })}
     </svg>
   );
 }
 
 function PlayerReadout({ player, fallback }: { player: AnalyticsPlayer | null; fallback: string }) {
-  return <p className="mt-2 min-h-5 truncate text-xs text-muted">{player ? <><span className="font-semibold text-text">#{player.r} {player.p}</span> · {player.w.toFixed(1)}% · {player.g} games</> : fallback}</p>;
+  return <p className="mt-2 min-h-5 truncate text-xs text-muted">{player ? <><span className="font-semibold text-text">#{player.r} {player.p}</span> · {player.w.toFixed(1)}% · {player.g} <T>{"games"}</T></> : fallback}</p>;
 }
 
 function RegionBars({ regions }: { regions: RegionPoint[] }) {
   const valid = regions.filter((region) => region.value != null) as { label: string; value: number }[];
-  if (!valid.length) return <p className="py-10 text-center text-sm text-muted">Regional samples are still being collected.</p>;
+  if (!valid.length) return <p className="py-10 text-center text-sm text-muted"><T>{"Regional samples are still being collected."}</T></p>;
   const max = Math.max(...valid.map((region) => region.value), 1);
   const min = Math.min(...valid.map((region) => region.value));
   const colors: Record<string, string> = { EU: "linear-gradient(90deg,#4f83ec,#72a7ff)", NA: "linear-gradient(90deg,#35b99f,#78e3d4)", CN: "linear-gradient(90deg,#d85f88,#a88dff)" };
@@ -217,5 +218,5 @@ function BandBars({ bands }: { bands: { label: string; value: number | null }[] 
 function Momentum({ current, delta }: { current: number; delta: number }) {
   const previous = current - delta;
   const up = delta >= 0;
-  return <div><svg viewBox="0 0 320 120" className="h-auto w-full" role="img" aria-label="Win rate change since the previous collection"><defs><linearGradient id="momentum" x1="0" x2="1"><stop stopColor="#657ce5"/><stop offset="1" stopColor={up ? "#73e3d1" : "#ff8293"}/></linearGradient></defs><line x1="18" x2="302" y1="94" y2="94" stroke="rgba(255,255,255,.08)"/><path d={`M24 ${up ? 76 : 38} C92 ${up ? 72 : 44} 130 ${up ? 60 : 58} 172 ${up ? 62 : 54} S250 ${up ? 32 : 74} 296 ${up ? 24 : 86}`} fill="none" stroke="url(#momentum)" strokeWidth="4" strokeLinecap="round"/><circle cx="24" cy={up ? 76 : 38} r="5" fill="#657ce5"/><circle cx="296" cy={up ? 24 : 86} r="6" fill={up ? "#73e3d1" : "#ff8293"}/></svg><div className="flex items-center justify-between text-xs"><span className="text-muted">Previous <b className="text-text">{previous.toFixed(1)}%</b></span><span className={up ? "text-emerald-300" : "text-bad"}>Current <b>{current.toFixed(1)}%</b></span></div></div>;
+  return <div><svg viewBox="0 0 320 120" className="h-auto w-full" role="img" aria-label="Win rate change since the previous collection"><defs><linearGradient id="momentum" x1="0" x2="1"><stop stopColor="#657ce5"/><stop offset="1" stopColor={up ? "#73e3d1" : "#ff8293"}/></linearGradient></defs><line x1="18" x2="302" y1="94" y2="94" stroke="rgba(255,255,255,.08)"/><path d={`M24 ${up ? 76 : 38} C92 ${up ? 72 : 44} 130 ${up ? 60 : 58} 172 ${up ? 62 : 54} S250 ${up ? 32 : 74} 296 ${up ? 24 : 86}`} fill="none" stroke="url(#momentum)" strokeWidth="4" strokeLinecap="round"/><circle cx="24" cy={up ? 76 : 38} r="5" fill="#657ce5"/><circle cx="296" cy={up ? 24 : 86} r="6" fill={up ? "#73e3d1" : "#ff8293"}/></svg><div className="flex items-center justify-between text-xs"><span className="text-muted"><T>{"Previous"}</T> <b className="text-text">{previous.toFixed(1)}%</b></span><span className={up ? "text-emerald-300" : "text-bad"}><T>{"Current"}</T> <b>{current.toFixed(1)}%</b></span></div></div>;
 }

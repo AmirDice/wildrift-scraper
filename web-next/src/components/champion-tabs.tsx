@@ -1,4 +1,5 @@
 "use client";
+import { T } from "@/components/t";
 
 import { useState, type ReactNode } from "react";
 
@@ -38,7 +39,7 @@ export function ChampionTabs({ panels, toolbar }: {
               onClick={() => setActive(tab.key)}
               className={`min-w-0 rounded-lg px-1 py-2.5 text-xs font-semibold transition sm:px-3 sm:text-sm ${active === tab.key ? "bg-accent/15 text-accent ring-1 ring-accent/20" : "text-muted hover:bg-white/[0.05] hover:text-text"}`}
             >
-              {tab.label}
+              <T>{tab.label}</T>
             </button>
           ))}
         </div>

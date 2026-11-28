@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { track } from "@/components/share-build";
 
@@ -162,7 +163,7 @@ export function BuildTour({
             : "border-accent/60 bg-accent text-black hover:opacity-90"
         }`}
       >
-        {seen ? label : "New here? Take the tour"}
+        {seen ? label : <><T>{"New here? Take the tour"}</T></>}
       </button>
 
       {open && step && (
@@ -298,17 +299,17 @@ function TourCard({
     <div ref={card} style={style} className="glass-menu rounded-2xl p-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-[0.6rem] font-bold uppercase tracking-wide text-faint">
-          Step {index + 1} of {total}
+          <T vars={{ n: index + 1, total }}>{"Step {n} of {total}"}</T>
         </p>
         <button onClick={onSkip} className="text-xs font-medium text-muted transition hover:text-text">
-          Skip tour
+          <T>{"Skip tour"}</T>
         </button>
       </div>
       <h3 className="mt-1.5 flex flex-wrap items-center gap-2 text-base font-bold text-text">
         {step.title}
         {step.optional && (
           <span className="rounded-full border border-line bg-white/[0.06] px-2 py-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-faint">
-            Optional
+            <T>{"Optional"}</T>
           </span>
         )}
       </h3>
@@ -316,11 +317,11 @@ function TourCard({
       <div className="mt-3 flex items-center gap-2">
         {index > 0 && (
           <button onClick={onBack} className="rounded-lg border border-line px-3 py-1.5 text-xs font-semibold text-muted transition hover:text-text">
-            Back
+            <T>{"Back"}</T>
           </button>
         )}
         <button onClick={onNext} className="ml-auto rounded-lg bg-accent px-4 py-1.5 text-xs font-bold text-black transition hover:opacity-90">
-          {index >= total - 1 ? "Got it" : "Next"}
+          {index >= total - 1 ? <><T>{"Got it"}</T></> : <><T>{"Next"}</T></>}
         </button>
       </div>
     </div>

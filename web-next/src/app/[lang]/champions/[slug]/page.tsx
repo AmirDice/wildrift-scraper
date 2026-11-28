@@ -1,139 +1,543 @@
+import { T } from "@/components/t";
+import { tc } from "@/lib/content-i18n";
+import { getT } from "@/lib/ui-i18n";
+import { displayName } from "@/lib/i18n";
 import type { Metadata } from "next";
+import { isPageLang, lp } from "@/lib/i18n";
+import { languageAlternates } from "@/lib/i18n";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getChampion, tierLabel } from "@/lib/data";
-import { getMatchups, hasCounterPage } from "@/lib/counters";
-import { CURRENT_PATCH } from "@/lib/patch";
-import { Container, Card, ChampionAvatar } from "@/components/ui";
+import { site, getChampion, getChampions, pendingChampions, championsInRole, tierText, tierLabel, regionBoard, type Champion, type BestPlayerPodium } from "@/lib/data";
+import { getCnBySlug, getGlobalBySlug } from "@/lib/cn";
+import { getMatchups, hasCounterPage, matchupsCapturedOn, type ResolvedMatchup } from "@/lib/counters";
+import { getSkewBySlug } from "@/lib/skew";
+import { getBuild, type Build } from "@/lib/builds";
+import { BUILD_TOOLS_LIVE, recommendedBuildsLive } from "@/lib/flags";
+import { roster, type RosterChampion } from "@/lib/threat";
+import { ChampionCombo } from "@/components/champion-combo";
+import { getChampionDetails, type AbilityCard } from "@/lib/champion-details";
+import { getChampionHistory } from "@/lib/champion-history";
+import { getPlaystyleProfile } from "@/lib/playstyle-profile";
+import { TierChip, ChampionAvatar, Card } from "@/components/ui";
+import { BracketCurve } from "@/components/bracket-curve";
+import { ChampionTabs } from "@/components/champion-tabs";
+import { ChampionHistory } from "@/components/champion-history";
+import { PlaystyleProfile } from "@/components/playstyle-profile";
+import { KaynAbilities, KaynFormGuide } from "@/components/kayn-forms";
+import { BuildLikeButton } from "@/components/build-like";
+import { ShareBuildButton } from "@/components/share-build";
+import { AdSlot } from "@/components/ad-slot";
+import { ToolsCta } from "@/components/tools-cta";
+import { MeasuredProfile } from "@/components/measured-profile";
+import { ServerBuilds } from "@/components/server-builds";
+import { ChampionAnalytics, type AnalyticsPlayer } from "@/components/champion-analytics";
+import { SERVER_GAP, toServerBuild } from "@/lib/server-build";
+import { buildsByServer, ladderBuildsCollected } from "@/lib/ladder-build";
+import { serverBuildInsights } from "@/lib/server-build-insights";
+import itemsCatalogue from "@/data/items.json";
 import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
-import { LANE_LABEL, hasRunesPage, ladderRunes, ladderTopItems, lanePages, type Faq, type Lane } from "@/lib/champion-seo";
-import { champName, fmtPct, hasLocale, itemName, languageAlternates, runeName, type Locale } from "@/lib/i18n";
-import { dict } from "@/lib/i18n-dict";
-import { FaqSection } from "@/components/champion-seo-parts";
-import { LanguageSwitcher } from "@/components/i18n-parts";
+import { AgentPromptChips, AskAgent } from "@/components/site-agent";
+import { ChampionLoadouts } from "@/components/champion-loadouts";
+import { getChampionLoadouts } from "@/lib/cn-loadouts";
+import { partnerQueues, partnersFor } from "@/lib/cn-partners";
+import { championSummary } from "@/lib/champion-summary";
+import { getChampionSkins } from "@/lib/skins";
+import { ChampionSkins } from "@/components/champion-skins";
+import { ForRegion, RegionProvider, RegionToggle } from "@/components/region-scope";
+import { REGION_LABEL, REGION_LONG, type Region } from "@/lib/region-labels";
+import { WinRateHistory } from "@/components/win-rate-history";
+import { getWinRateHistory } from "@/lib/wr-history";
+import { CollectionSchedule } from "@/components/collection-schedule";
+import { CURRENT_PATCH } from "@/lib/patch";
+import { championFaq, championSubpages } from "@/lib/champion-seo";
+import { ChampionPageLinks, FaqSection } from "@/components/champion-seo-parts";
 
-/**
- * Translated champion page (lib/i18n.ts). A compact version of the English
- * page: tier, win rate, what top players build and run, matchups, lanes and
- * the FAQ, all from the same data. Rendered on first request and cached, so
- * six languages add nothing to the build.
- */
-export const revalidate = 86400;
-export function generateStaticParams() {
-  return [];
+/** One server choice on the champion page: its board record, its players
+ *  and its best-player ranking. */
+type RegionView = { key: Region; board: Champion | undefined; players: AnalyticsPlayer[]; podium: BestPlayerPodium | null };
+
+/* eslint-disable @next/next/no-img-element */
+
+const ARCHETYPE_LABEL: Record<string, string> = { spellcaster: "Spell-caster", autoattacker: "Auto-attacker", weaver: "Weaver", onhitcaster: "On-hit caster" };
+const MECHANIC_LABEL: Record<string, string> = { cc: "Crowd control", dash: "Mobility", heal: "Healing", onHit: "On-hit", shield: "Shielding", poke: "Poke", stealth: "Stealth" };
+const SCALES_LABEL: Record<string, string> = { ad: "AD", ap: "AP", maxHp: "Max HP", attackSpeed: "Attack speed", crit: "Crit", mana: "Mana", abilityHaste: "Ability haste", lethality: "Lethality" };
+const pretty = (map: Record<string, string>, key: string) => map[key] ?? key;
+
+/** Data Dragon's `loading` art is the tall champion-card crop. The matching
+ *  `splash` URL is the full horizontal painting intended for wide heroes.
+ *  Local overrides (such as Hecarim's 2048×934 artwork) are already wide and
+ *  pass through unchanged. */
+function horizontalSplash(source: string): string {
+  return source.replace("/cdn/img/champion/loading/", "/cdn/img/champion/splash/");
 }
 
-type Props = PageProps<"/[lang]/champions/[slug]">;
+function loadAnalyticsPlayers(slug: string, server: "eu" | "na" = "eu"): AnalyticsPlayer[] {
+  try {
+    const file = path.join(process.cwd(), "public", "players", ...(server === "eu" ? [] : [server]), `${slug}.json`);
+    const parsed = JSON.parse(readFileSync(file, "utf8")) as { players?: AnalyticsPlayer[] };
+    return (parsed.players ?? []).filter((player) =>
+      Number.isFinite(player.r) && Number.isFinite(player.w) && Number.isFinite(player.g),
+    );
+  } catch {
+    return [];
+  }
+}
 
-export async function generateMetadata(props: Props): Promise<Metadata> {
+export function generateStaticParams({ params }: { params: { lang: string } }) {
+  // English is pre-built; the other languages render on first request.
+  if (params.lang !== "en") return [];
+  return [...getChampions(), ...pendingChampions()].map((champion) => ({ slug: champion.slug }));
+}
+
+export async function generateMetadata(props: PageProps<"/[lang]/champions/[slug]">): Promise<Metadata> {
   const { lang, slug } = await props.params;
   const champion = getChampion(slug);
-  if (!hasLocale(lang) || !champion || champion.statsPending) return { title: "Not found" };
-  const t = dict(lang);
-  const name = champName(champion.name, lang);
-  const title = { absolute: t.champTitle(name, CURRENT_PATCH ?? "") };
-  const description = t.champDescription(name, t.tierName(tierLabel(champion.tier)), fmtPct(lang, champion.wr));
+  if (!champion) return { title: "Champion not found" };
+  // Search Console shows these pages picking up "<champion> wild rift" and
+  // "<champion> counter wild rift", so both the name-first title and the word
+  // "counters" in the description are there to match real queries rather than
+  // to describe the page to ourselves.
+  // The patch follows the data (lib/patch.ts), so "fiora build 7.3b" style
+  // queries match without anyone editing a title on patch day.
+  const t = getT(lang);
+  const name = displayName(champion.name, lang);
+  const title = t("{name} Wild Rift Build Patch {patch}, Counters & Win Rate", { name, patch: CURRENT_PATCH ?? "" });
+  // Same blended figures the page itself shows, so the snippet in search
+  // results cannot quote a different tier from the one above the fold.
+  const meta = getGlobalBySlug(champion.slug) ?? champion;
+  const description = champion.statsPending
+    ? t("{name} in Wild Rift: full kit, ability numbers, base stats and item build. Win rate and tier arrive once there is a ranked sample to build them from.", { name })
+    : t("{name} is {tier} tier in Wild Rift with a {wr}% win rate across its 50 best players in EU and NA. Counters, matchups, abilities, runes, item build and full patch history.", { name, tier: tierLabel(meta.tier), wr: meta.wr.toFixed(1) });
+  const splash = horizontalSplash(champion.splash);
+  return { title, description, alternates: { canonical: lp(lang, `/champions/${champion.slug}`), languages: champion.statsPending ? undefined : languageAlternates(`/champions/${champion.slug}`) }, openGraph: { title, description, images: [splash] }, twitter: { card: "summary_large_image", title, description, images: [splash] } };
+}
+
+/** An item's name and icon for the per-server build card. Unknown slugs still
+ *  render, spelled out, rather than vanishing from a build. */
+const ITEM_CATALOGUE = new Map(
+  (itemsCatalogue as { slug: string; name: string; icon: string }[]).map((i) => [i.slug, i]),
+);
+function catalogueItem(slug: string) {
+  const hit = ITEM_CATALOGUE.get(slug);
   return {
-    title, description,
-    alternates: { canonical: `/${lang}/champions/${slug}`, languages: languageAlternates(`/champions/${slug}`) },
-    openGraph: { title: title.absolute, description, url: `https://wrtruemeta.com/${lang}/champions/${slug}` },
+    slug,
+    name: hit?.name ?? slug.replace(/-/g, " "),
+    icon: hit?.icon ?? `/items/${slug}.webp`,
   };
 }
 
-export default async function LocalizedChampionPage(props: Props) {
-  const { lang: rawLang, slug } = await props.params;
-  if (!hasLocale(rawLang)) notFound();
-  const lang: Locale = rawLang;
+export default async function ChampionPage(props: PageProps<"/[lang]/champions/[slug]">) {
+  const { lang, slug } = await props.params;
+  if (!isPageLang(lang)) notFound();
   const champion = getChampion(slug);
-  if (!champion || champion.statsPending) notFound();
-  const t = dict(lang);
-  const name = champName(champion.name, lang);
-  const tier = t.tierName(tierLabel(champion.tier));
-  const items = ladderTopItems(champion.name).slice(0, 6);
-  const runes = ladderRunes(champion.name);
-  const { strong, weak } = getMatchups(slug);
-  const lanes = lanePages(slug);
+  if (!champion) notFound();
+  const heroSplash = horizontalSplash(champion.splash);
 
-  const faq: Faq = [];
-  if (items.length >= 3) faq.push({ q: t.faqBuildQ(name), a: t.faqBuildA(name, items.slice(0, 5).map((i) => itemName(i, lang)).join(", ")) });
-  if (weak.length) faq.push({ q: t.faqCounterQ(name), a: t.faqCounterA(weak.slice(0, 3).map((m) => `${champName(m.champion.name, lang)} (${fmtPct(lang, m.winRate)})`).join(", ")) });
-  if (runes.keystones[0] && runes.players) faq.push({ q: t.faqRunesQ(name), a: t.faqRunesA(runeName(runes.keystones[0].name, lang), runes.keystones[0].count, runes.players) });
-  faq.push({ q: t.faqGoodQ(name), a: t.faqGoodA(name, tier, fmtPct(lang, champion.wr)) });
+  const cn = getCnBySlug(champion.slug);
+  const skew = getSkewBySlug(champion.slug);
+  const matchups = getMatchups(champion.slug);
+  // Ability names and text in the page language (lib/content-i18n.ts).
+  const localizeAbilities = <A extends { name: string; text: string }>(list: A[] | undefined) =>
+    list?.map((a) => ({ ...a, name: tc(lang, a.name), text: tc(lang, a.text) }));
+  const rawDetails = getChampionDetails(champion.slug);
+  const details = rawDetails ? { ...rawDetails, abilities: localizeAbilities(rawDetails.abilities) ?? [] } : rawDetails;
+  const kit = roster()[champion.name] as RosterChampion | undefined;
+  const built = getBuild(champion.slug);
+  const archetype = (built?.builds as { archetype?: { archetype: string; reason?: string } } | undefined)?.archetype;
+  const synergyNotes = (built?.builds.synergyNotes ?? []).map((note) => tc(lang, note));
+  const standardKey = built ? built.builds.variants.find((variant) => variant === "standard" || variant === "balanced") ?? built.builds.variants[0] : null;
+  const standardBuild = standardKey ? built!.builds.builds[standardKey] : null;
+  const playstyle = getPlaystyleProfile(champion);
+  const rawHistory = getChampionHistory(champion.name);
+  // Patch-note lines in the page language; English when not translated.
+  const history = lang === "en" ? rawHistory : {
+    ...rawHistory,
+    changes: rawHistory.changes.map((c) => ({
+      ...c,
+      summary: tc(lang, c.summary),
+      changes: c.changes.map((row) => ({ ...row, ability: tc(lang, row.ability), text: tc(lang, row.text) })),
+    })),
+  };
+  const naBoard = regionBoard("NA");
+  const na = naBoard.champions.find((c) => c.slug === champion.slug);
+  // The region comparison below is the EU and NA ladder boards. China's
+  // top-30 board was retired on 2026-11-24; Tencent's whole-ladder China
+  // rate is still on the page, in the bracket curve underneath, and is never
+  // set beside top-player numbers as if comparable.
+  // What each server's top 50 actually hold. Per server on purpose: see
+  // components/server-builds.tsx for why China is empty and stays empty.
+  const serverBuilds = buildsByServer(champion.name);
+  const cnLoadouts = getChampionLoadouts(champion.slug);
+  // Best duo partners per loadout lane (China's 最佳搭档 lists). Empty until
+  // a partner capture is published, and the panel then shows no Duos tab.
+  // One set per queue (Solo queue, Premade).
+  const partners = partnerQueues().map((q) => ({
+    ...q,
+    byLane: Object.fromEntries(cnLoadouts.map((lane) => [lane.lane, partnersFor(champion.slug, lane.lane, q.id)])),
+  }));
+  // Headline figures come from the EU + NA + CN blend so the top of the page
+  // agrees with the tier list. Falls back to EU when a champion is missing
+  // from a board, and the "Win rate by region" card below still shows each
+  // server on its own, so promoting the blend hides nothing.
+  const blended = getGlobalBySlug(champion.slug);
+  const headline = blended ?? champion;
+  const summary = championSummary(champion.slug, lang);
+  const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
+  const subpages = championSubpages(champion);
+  const wrHistory = getWinRateHistory(champion.slug, champion.name);
 
-  const sub = (path: string) => `/${lang}/champions/${slug}${path}`;
-  return (
-    <Container className="py-10 sm:py-14">
-      <JsonLd data={breadcrumbJsonLd([{ name, path: `/${lang}/champions/${slug}` }])} />
-      <LanguageSwitcher path={`/champions/${slug}`} current={lang} label={t.language} />
-      <div className="mt-5 flex items-center gap-4">
-        <ChampionAvatar champion={champion} size={72} showBadges={false} />
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{t.champH1(name)}</h1>
-          <p className="mt-1 text-sm text-muted">Wild Rift · {t.patch(CURRENT_PATCH ?? "")}</p>
-        </div>
+  // One view per server choice. Every region-dependent card on the page reads
+  // its numbers from the selected view, so the hero, the charts and the
+  // player cards always describe the same board (see components/region-scope).
+  const euPlayers = loadAnalyticsPlayers(champion.slug, "eu");
+  const naPlayers = loadAnalyticsPlayers(champion.slug, "na");
+  const views: RegionView[] = [
+    // Global ranks the three boards' players together by Champion Score, so
+    // its leaderboard bands describe one top-90 rather than three top-30s.
+    { key: "global", board: headline, players: [...euPlayers, ...naPlayers]
+        .sort((a, b) => (b.s ?? 0) - (a.s ?? 0) || b.w - a.w)
+        .map((player, index) => ({ ...player, r: index + 1 })),
+      podium: champion.globalBestPlayerPodium ?? champion.bestPlayerPodium ?? null },
+    { key: "eu", board: Number.isFinite(champion.wr) ? champion : undefined, players: euPlayers, podium: champion.bestPlayerPodium ?? null },
+    { key: "na", board: na && Number.isFinite(na.wr) ? na : undefined, players: naPlayers, podium: na?.bestPlayerPodium ?? null },
+  ];
+  const regionAvailable = Object.fromEntries(views.map((view) => [view.key, Boolean(view.board)])) as Record<Region, boolean>;
+  const heroStats = (board: Champion) => [
+    { label: "Tier", value: tierLabel(board.tier), className: tierText[board.tier] },
+    { label: "Win rate", value: `${board.wr.toFixed(1)}%`, className: "text-accent" },
+    { label: "Ceiling WR", value: board.maxWr != null ? `${board.maxWr.toFixed(1)}%` : "-", className: "text-gold" },
+    { label: "Median games", value: board.medianGames != null ? Math.round(board.medianGames).toLocaleString() : "-", className: "" },
+  ];
+  const signalOf = (board: Champion | undefined) => {
+    const movement = board?.wrDelta ?? 0;
+    return {
+      movement,
+      label: champion.statsPending ? "Collecting" : movement > 0.2 ? "Rising" : movement < -0.2 ? "Cooling" : "Stable",
+      tone: movement > 0.2 ? "text-emerald-300" : movement < -0.2 ? "text-rose-300" : "text-sky-300",
+      fresh: board?.wrDelta == null,
+    };
+  };
+  const regionBars = [
+    { label: "EU", value: Number.isFinite(champion.wr) ? champion.wr : null },
+    { label: "NA", value: na && Number.isFinite(na.wr) ? na.wr : null },
+  ];
+
+  // Put the fastest, most copyable answer directly below the hero. The
+  // personalized generator follows this evidence in the same card, rather
+  // than asking a visitor to scroll past several unrelated sections first.
+  const serverBuildCard = (
+    <Card className="rounded-[1.5rem] p-4 sm:p-5">
+      <div>
+        <ServerBuilds
+          champion={champion.name}
+          compact
+          personalizeHref={`/build?champion=${champion.slug}&tab=generate`}
+          builds={{
+            eu: toServerBuild(serverBuilds.eu, catalogueItem,
+              serverBuildInsights(champion.name, serverBuilds.eu)),
+            na: toServerBuild(serverBuilds.na, catalogueItem,
+              serverBuildInsights(champion.name, serverBuilds.na)),
+          }}
+          gaps={SERVER_GAP}
+          collected={{ eu: ladderBuildsCollected("eu") ?? site.collectedOn ?? undefined, na: naBoard.collectedOn ?? undefined }}
+        />
       </div>
+    </Card>
+  );
 
-      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <Card className="p-4"><p className="text-[0.65rem] uppercase tracking-wide text-faint">{t.tier}</p><p className="mt-1 text-xl font-bold">{tier}</p></Card>
-        <Card className="p-4"><p className="text-[0.65rem] uppercase tracking-wide text-faint">{t.winRate}</p><p className="mt-1 text-xl font-bold">{fmtPct(lang, champion.wr)}</p></Card>
-        <Card className="p-4"><p className="text-[0.65rem] uppercase tracking-wide text-faint">{t.role}</p><p className="mt-1 text-xl font-bold">{(champion.roles ?? [champion.role]).join(" / ")}</p></Card>
-      </div>
-      <p className="mt-2 text-xs text-faint">{t.sourceLadder}</p>
-
-      {items.length > 0 && (
-        <Card className="mt-6 p-5 sm:p-6">
-          <h2 className="text-lg font-semibold">{t.topItems}</h2>
-          <p className="mt-1 text-sm text-muted">{t.topItemsDesc(name)}</p>
-          <ol className="mt-3 flex flex-wrap gap-2">
-            {items.map((i, n) => <li key={i} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-sm"><span className="text-faint">{n + 1}.</span> {itemName(i, lang)}</li>)}
-          </ol>
-        </Card>
-      )}
-
-      {runes.keystones.length > 0 && (
-        <Card className="mt-4 p-5 sm:p-6">
-          <h2 className="text-lg font-semibold">{t.runesHeading}</h2>
-          <p className="mt-2 text-sm text-muted">
-            {runes.keystones.slice(0, 2).map((k) => `${runeName(k.name, lang)} (${t.ofPlayers(k.count, runes.players)})`).join(" · ")}
+  // Everything in the overview is leaderboard-derived, so a champion without
+  // one gets an honest placeholder instead: the kit, base stats and build tabs
+  // still carry real data and stay exactly as they are.
+  const pendingOverview = (
+    <div className="space-y-6">
+      {serverBuildCard}
+      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} />
+      <Card className="p-5 sm:p-6">
+        <h2 className="text-lg font-semibold"><T vars={{ name: displayName(champion.name, lang) }}>{"{name} stats are pending"}</T></h2>
+        <p className="mt-2 leading-relaxed text-muted">
+          {champion.name} <T>{"is live in Wild Rift but has no leaderboard here yet, and every ranking on this site is built from those players. Rather than publish a win rate we cannot stand behind, this page shows the kit and base stats now, and the rankings arrive with the first collected sample."}</T>
+        </p>
+        {kit?.primaryDamage && (
+          <p className="mt-3 text-sm text-muted">
+            <span className="font-medium text-text"><T>{"Damage type:"}</T></span> {kit.primaryDamage}
+            {kit.scalesWith?.length ? <> · <span className="font-medium text-text"><T>{"Scales with:"}</T></span> {kit.scalesWith.join(", ")}</> : null}
           </p>
-          {hasRunesPage(champion) && <Link href={sub("/runes")} className="mt-3 inline-block text-sm font-semibold text-accent">{t.runesH1(name)} &rarr;</Link>}
-        </Card>
-      )}
+        )}
+      </Card>
+    </div>
+  );
 
-      {(strong.length > 0 || weak.length > 0) && (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          {[{ title: t.strongAgainst(name), rows: strong, tone: "text-emerald-300" }, { title: t.weakAgainst(name), rows: weak, tone: "text-rose-300" }].map((block) => block.rows.length > 0 && (
-            <Card key={block.title} className="p-5">
-              <h2 className={`text-sm font-semibold ${block.tone}`}>{block.title}</h2>
-              <ul className="mt-3 space-y-1.5">
-                {block.rows.slice(0, 5).map((m) => (
-                  <li key={m.champion.slug} className="flex justify-between text-sm">
-                    <Link href={`/${lang}/champions/${m.champion.slug}`} className="hover:text-accent">{champName(m.champion.name, lang)}</Link>
-                    <span className="tabular-nums text-muted">{fmtPct(lang, m.winRate)}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          ))}
-        </div>
-      )}
-      {hasCounterPage(slug) && <Link href={sub("/counters")} className="mt-3 inline-block text-sm font-semibold text-accent">{t.countersH1(name)} &rarr;</Link>}
-
-      {lanes.length > 0 && (
-        <Card className="mt-6 p-5">
-          <h2 className="text-lg font-semibold">{t.lanesHeading}</h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {lanes.map((l) => (
-              <Link key={l.lane} href={sub(`/${l.lane}`)} className="rounded-full border border-white/12 px-3 py-1 text-sm font-semibold text-muted hover:text-text">
-                {t.laneH1(name, t.lanes[l.lane as Lane] ?? LANE_LABEL[l.lane as Lane])}
-              </Link>
+  const overview = (
+    <div className="space-y-4">
+      {serverBuildCard}
+      <ChampionLoadouts champion={champion.name} loadouts={cnLoadouts} partners={partners} />
+      {/* Top 3 this season, right under China's Legendary data (owner,
+          2026-11-28); the separate "Best X player" card is gone. */}
+      {views.map(({ key, podium }) => {
+        return (
+        <ForRegion key={key} region={key}>
+      {podium?.players?.length ? (
+        <Card className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-gold"><T>{"Top 3 this season"}</T></p>
+              <h2 className="mt-1 text-lg font-semibold"><T vars={{ name: displayName(champion.name, lang) }}>{"The best {name} players"}</T> {podium.scope === "global" ? <><T>{"globally"}</T></> : `in ${podium.server ?? "this region"}`}</h2>
+            </div>
+            <span className="text-xs text-faint">{podium.scope === "global" ? <><T>{"Global · EU + NA"}</T></> : `${podium.server ?? "Regional"} sample`}</span>
+          </div>
+          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+            {podium.players.slice(0, 3).map((player, index) => (
+              <div key={`${player.server ?? "?"}-${player.player}-${index}`} className={`rounded-xl border p-3 ${index === 0 ? "border-gold/30 bg-gold/5" : "border-line bg-white/[0.025]"}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`text-lg font-semibold ${index === 0 ? "text-gold" : "text-muted"}`}>#{index + 1}</span>
+                  {player.server && <span className="text-[0.65rem] font-semibold text-faint">{player.server}</span>}
+                </div>
+                <p className="mt-2 truncate font-medium" title={player.player}>{player.player}</p>
+                <p className="mt-1 text-xs text-muted">
+                  {player.winRate != null ? `${player.winRate.toFixed(1)}% WR` : "—"} · {player.games ?? "—"} <T>{"games"}</T>
+                  {player.score != null ? ` · ${player.score.toFixed(1)} score` : ""}
+                </p>
+              </div>
             ))}
           </div>
+          <p className="mt-3 text-xs leading-relaxed text-faint"><T>{"The score combines confidence-adjusted win rate, ladder strength, champion-board position, Champion Score and current-season games."}</T></p>
+        </Card>
+      ) : null}
+        </ForRegion>
+        );
+      })}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs text-faint"><T>{"Charts and player cards below show the selected server’s board."}</T></p>
+        <RegionToggle available={regionAvailable} />
+      </div>
+      {views.map((view) => view.board && (
+        <ForRegion key={view.key} region={view.key}>
+          <ChampionAnalytics
+            champion={champion.name}
+            players={view.players}
+            regions={regionBars}
+            winRate={view.board.wr}
+            winRateDelta={view.board.wrDelta}
+            winrateStd={view.board.winrateStd}
+            combined={view.key === "global"}
+          />
+        </ForRegion>
+      ))}
+      {wrHistory && <WinRateHistory champion={champion.name} history={wrHistory} />}
+      <CollectionSchedule />
+      {skew && (
+        <Card className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold"><T>{"Regular-ranked performance"}</T> <span className="text-sm font-normal text-faint"><T>{"· China, every ranked game"}</T></span></h2><Link href="/regions#brackets" className={`rounded-full px-2.5 py-1 text-xs font-semibold ${skew.climbing ? "bg-emerald-400/15 text-emerald-300" : skew.stomper ? "bg-rose-400/15 text-rose-300" : "bg-white/10 text-muted"}`}>{skew.climbing ? <><T>{"Improves at higher skill"}</T></> : skew.stomper ? <><T>{"Falls off up top"}</T></> : <><T>{"Stable across brackets"}</T></>}</Link></div>
+          <div className="mt-4 flex justify-center"><BracketCurve curve={skew.curve} skew={skew.skew} labeled width={460} height={150} className="h-auto w-full max-w-[460px]" /></div>
+          {skew.legendary && <p className="mt-3 text-center text-sm text-muted"><T>{"CN Legendary solo-queue benchmark:"}</T> <span className="font-semibold text-gold">{skew.legendary.wr.toFixed(1)}%</span></p>}
         </Card>
       )}
-
-      <FaqSection faq={faq} title={t.questions(name)} />
-      <p className="mt-10 text-sm"><Link href={`/champions/${slug}`} className="text-accent hover:underline">{t.englishPage}</Link></p>
-    </Container>
+      {(["eu", "na"] as const).map((server) => (
+        <ForRegion key={server} region={server}><MeasuredProfile slug={champion.slug} region={server} /></ForRegion>
+      ))}
+    </div>
   );
+
+  const playstylePanel = (
+    <div className="space-y-6">
+      {champion.name === "Kayn" && <Card className="p-5 sm:p-6"><KaynFormGuide /></Card>}
+      <Card className="p-5 sm:p-6"><PlaystyleProfile name={champion.name} profile={playstyle} /></Card>
+      {(kit || archetype) && (
+        <Card className="p-5 sm:p-6">
+          <h2 className="text-lg font-semibold"><T>{"Kit identity"}</T></h2>
+          <div className="mt-4 grid gap-5 sm:grid-cols-2">
+            {archetype && <div><p className="text-xs font-semibold uppercase tracking-wide text-faint"><T>{"Archetype"}</T></p><p className="mt-1 font-medium text-gold">{pretty(ARCHETYPE_LABEL, archetype.archetype)}</p>{archetype.reason && <p className="mt-1 text-sm text-muted">{archetype.reason}</p>}</div>}
+            {kit && <div><p className="text-xs font-semibold uppercase tracking-wide text-faint"><T>{"Damage & scaling"}</T></p><p className="mt-1 text-sm"><span className="font-medium">{kit.primaryDamage === "magic" ? <><T>{"Magic"}</T></> : <><T>{"Physical"}</T></>}</span><span className="text-muted"> <T>{"damage · scales with"}</T> </span>{kit.scalesWith.map((scale) => pretty(SCALES_LABEL, scale)).join(", ") || "-"}</p><div className="mt-2 flex flex-wrap gap-1.5">{kit.mechanics.map((mechanic) => <span key={mechanic} className="rounded-md bg-white/[0.06] px-2 py-0.5 text-xs text-muted">{pretty(MECHANIC_LABEL, mechanic)}</span>)}</div></div>}
+          </div>
+          {built?.builds.attackStyle?.buildHint && <p className="mt-4 border-t border-line/60 pt-3 text-sm text-muted"><span className="font-medium text-text"><T>{"Build around:"}</T></span> {built.builds.attackStyle.buildHint}.</p>}
+        </Card>
+      )}
+      {synergyNotes.length > 0 && <Card className="p-5 sm:p-6"><h2 className="text-lg font-semibold"><T>{"Kit synergies"}</T></h2><ul className="mt-4 space-y-2">{synergyNotes.map((note, index) => <li key={index} className="flex gap-2.5 text-sm text-muted"><span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent/70"/><span>{note}</span></li>)}</ul></Card>}
+      {/* Gated on recommendedBuildsLive as well as BUILD_TOOLS_LIVE. The studio
+          holds the curated catalogue back per champion while it is validated,
+          and this card serves the same pre-authored build -- so without the
+          second check a locked champion's build was simply readable here
+          instead, which is what the gate exists to prevent. */}
+      {BUILD_TOOLS_LIVE && recommendedBuildsLive(champion.name) && standardBuild && <Card className="p-5 sm:p-6"><div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-lg font-semibold"><T>{"Recommended build"}</T></h2><Link href={`/build?champion=${champion.slug}`} className="rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent"><T>{"Open Build Studio →"}</T></Link></div><BuildOrder build={standardBuild}/><div className="mt-4 flex flex-wrap items-center gap-2"><BuildLikeButton buildId={`${champion.slug}:${standardKey}`}/><ShareBuildButton path={`/build?champion=${champion.slug}&variant=${standardKey}`} title={`${champion.name} recommended build`} text={`${champion.name} recommended build on WrTrueMeta: full item order, boots timing and runes.`}/></div></Card>}
+      {BUILD_TOOLS_LIVE && champion.name === "Kayn" && <Card className="p-5 sm:p-6"><h2 className="text-lg font-semibold"><T>{"Form-specific build"}</T></h2><p className="mt-2 text-sm text-muted"><T>{"Kayn does not have one responsible standard build: Shadow Assassin and Rhaast value different fights, runes, and items."}</T></p><Link href="/build?champion=kayn&tab=generate" className="mt-4 inline-flex rounded-lg bg-accent px-4 py-2 text-sm font-bold text-black"><T>{"Choose a form and generate →"}</T></Link></Card>}
+      {(matchups.strong.length > 0 || matchups.weak.length > 0) && <div className="grid gap-4 sm:grid-cols-2"><Matchups title={`${champion.name} is strong against`} accent="text-accent" matchups={matchups.strong}/><Matchups title={`${champion.name} is weak against`} accent="text-bad" matchups={matchups.weak}/></div>}
+      {(matchups.strong.length > 0 || matchups.weak.length > 0) && <p className="-mt-1 text-xs leading-relaxed text-faint">{`${champion.name}'s win rate in each matchup in China Legendary ranked${matchupsCapturedOn(champion.slug) ? `, captured ${formatCaptured(matchupsCapturedOn(champion.slug)!)}` : ""}. Only matchups in at least 1% of ${champion.name}'s games are counted.`}{" "}{hasCounterPage(champion.slug) && <Link href={lp(lang, `/champions/${champion.slug}/counters`)} className="font-semibold text-accent hover:text-text">{`Every ${champion.name} counter`} <T>{"&rarr;"}</T></Link>}</p>}
+      {(matchups.strong.length > 0 || matchups.weak.length > 0) && cnLoadouts.length > 0 && <div className="-mt-1"><AskAgent question={`What are ${champion.name}'s matchups in China?`} label={`How ${champion.name}'s matchups go in China`} /></div>}
+    </div>
+  );
+
+  const abilities = (
+    <div className="space-y-6">
+      <ChampionCombo name={champion.name} slug={champion.slug} lang={lang} />
+      {details?.abilities.length ? (champion.name === "Kayn" ? <Card className="p-5 sm:p-6"><KaynAbilities shadowAbilities={details.abilities} rhaastAbilities={localizeAbilities(getChampionDetails("kayn-rhaast")?.abilities)} /></Card> : <Card className="p-5 sm:p-6"><div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-lg font-semibold"><T vars={{ name: displayName(champion.name, lang) }}>{"{name} abilities"}</T></h2>{details.skillPriority.length > 0 && <div className="flex items-center gap-1 text-xs text-muted"><span><T>{"Max:"}</T></span>{details.skillPriority.map((key, index) => <span key={key} className="flex items-center gap-1"><b className="grid h-6 w-6 place-items-center rounded-md bg-accent/20 text-accent">{key}</b>{index < details.skillPriority.length - 1 && <span>›</span>}</span>)}</div>}</div><div className="mt-5 space-y-4">{details.abilities.map((ability) => <Ability key={`${ability.slot}-${ability.name}`} ability={ability}/>)}</div></Card>) : null}
+      {details && Object.keys(details.baseStats).length > 0 && <Card className="p-5 sm:p-6"><h2 className="text-lg font-semibold"><T>{"Base stats"}</T></h2><p className="mt-1 text-sm text-muted"><T>{"Level 1 and level 15 values before items and runes."}</T></p><BaseStats stats={details.baseStats}/></Card>}
+    </div>
+  );
+
+  return (
+    <RegionProvider>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Champions", path: "/champions" },
+          { name: champion.name, path: `/champions/${champion.slug}` },
+        ])}
+      />
+      <div
+        className="no-plate min-h-screen overflow-x-clip"
+        style={{ backgroundImage: "radial-gradient(circle at 18% 8%, rgba(72,137,235,.22), transparent 29rem), radial-gradient(circle at 88% 34%, rgba(53,175,188,.1), transparent 24rem), linear-gradient(180deg,rgba(10,22,38,.86) 0%,rgba(8,19,33,.9) 50%,rgba(7,17,31,.94) 100%)" }}
+      >
+        <section className="relative overflow-hidden pt-7 sm:pt-9">
+          <div className="mx-auto max-w-[1280px] px-4 sm:px-6">
+            <Link href={lp(lang, "/champions")} className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted transition hover:text-text"><T>{"← Champion atlas"}</T></Link>
+            <div className="glass relative mt-4 grid overflow-hidden rounded-[1.75rem] border border-white/[0.11] shadow-[0_28px_100px_rgba(0,0,0,.34)] lg:grid-cols-[.88fr_1.12fr]">
+              <div className="relative z-10 order-2 flex flex-col justify-between p-6 lg:order-1 lg:min-h-[248px] lg:px-7 lg:py-6">
+                <div>
+                  <div className="flex items-center gap-4">
+                    <ChampionAvatar champion={champion} size={72} showBadges={false}/>
+                    <div className="min-w-0">
+                      <p className="text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-accent"><T>{"Champion profile"}</T></p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <h1 className="truncate text-4xl leading-[0.98] tracking-[-0.045em] sm:text-[3.2rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}>{displayName(champion.name, lang)}</h1>
+                        {champion.isOtp && <span className="rounded-md bg-orange-500/90 px-1.5 py-0.5 text-[10px] font-bold text-white"><T>{"OTP"}</T></span>}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2 text-xs font-medium text-muted">
+                    <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-3 py-1.5"><T>{champion.role}</T></span>
+                    <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-3 py-1.5"><T>{champion.class}</T></span>
+                    <span className={`rounded-full border border-white/[0.09] bg-white/[0.045] px-3 py-1.5 ${champion.isHard ? "text-rose-300" : ""}`}><T>{champion.difficultyLabel}</T></span>
+                  </div>
+                </div>
+                {!champion.statsPending ? (
+                  <div className="mt-5">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      {views.map((view) => (
+                        <ForRegion key={view.key} region={view.key}>
+                          <p className="text-[0.62rem] font-semibold uppercase tracking-[0.16em] text-faint"><T vars={{ region: REGION_LONG[view.key] }}>{"{region} board"}</T></p>
+                        </ForRegion>
+                      ))}
+                      <RegionToggle available={regionAvailable} />
+                    </div>
+                    {views.map((view) => (
+                      <ForRegion key={view.key} region={view.key}>
+                        {view.board ? (
+                          <div className="mt-2 grid grid-cols-2 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15 sm:grid-cols-4 lg:grid-cols-4">
+                            {heroStats(view.board).map((stat, index) => (
+                              <div key={stat.label} className={`p-3.5 sm:p-4 ${index % 2 ? "border-l border-white/[0.07]" : ""} ${index > 1 ? "border-t border-white/[0.07] sm:border-t-0 lg:border-t xl:border-t-0" : ""}`}>
+                                <p className="text-[0.58rem] font-semibold uppercase tracking-[0.14em] text-faint"><T>{stat.label}</T></p>
+                                <p className={`mt-1.5 text-lg font-semibold ${stat.className}`}>{stat.value}</p>
+                              </div>
+                            ))}
+                          </div>
+                        ) : <p className="mt-3 text-sm text-muted">{`No ${REGION_LONG[view.key]} board for ${champion.name} yet.`}</p>}
+                      </ForRegion>
+                    ))}
+                  </div>
+                ) : <p className="mt-8 text-sm text-muted"><T>{"Leaderboard sample pending."}</T></p>}
+              </div>
+
+              <div className="relative order-1 min-h-[260px] overflow-hidden lg:order-2 lg:min-h-[248px]">
+                {/* Anchored top AND right: the champion usually stands right of
+                    centre, and the card below moved left so it no longer
+                    covers them (Nilah's splash was hidden behind it). */}
+                <img src={heroSplash} alt="" className="absolute inset-0 h-full w-full object-cover object-[right_top]" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07101d] via-transparent to-black/10 lg:bg-gradient-to-r lg:from-[#08101d] lg:via-transparent lg:to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07101d]/80 via-transparent to-transparent lg:hidden" />
+                {views.map((view) => {
+                  const signal = signalOf(view.board);
+                  return (
+                <ForRegion key={view.key} region={view.key}>
+                <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/[0.13] bg-[#07101d]/75 p-4 shadow-2xl backdrop-blur-xl sm:bottom-5 sm:left-5 sm:right-auto sm:w-[16.5rem]">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="text-[0.58rem] font-semibold uppercase tracking-[0.18em] text-faint"><T vars={{ region: REGION_LABEL[view.key] }}>{"Meta signal · {region}"}</T></p>
+                      <p className={`mt-1 text-lg font-semibold ${signal.tone}`}>{view.board ? <T>{signal.label}</T> : <><T>{"No board"}</T></>}</p>
+                    </div>
+                    <svg viewBox="0 0 98 38" className="w-24" role="img" aria-label={`${signal.label} collection trend`}>
+                      <path d={signal.movement < -0.2 ? "M3 8 C20 10 29 14 44 13 S69 25 95 30" : signal.movement > 0.2 ? "M3 30 C20 29 28 23 43 24 S70 12 95 7" : "M3 21 C20 18 31 22 45 19 S70 20 95 17"} fill="none" stroke={signal.movement < -0.2 ? "#fb7185" : signal.movement > 0.2 ? "#6ee7c7" : "#7cb8ff"} strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between border-t border-white/[0.08] pt-3 text-[0.68rem] text-muted">
+                    <span><T vars={{ n: view.players.length }}>{"{n} tracked players"}</T></span>
+                    <span className={signal.tone}>{signal.fresh ? <><T>{"Fresh sample"}</T></> : `${signal.movement >= 0 ? "+" : ""}${signal.movement.toFixed(1)} pp`}</span>
+                  </div>
+                </div>
+                </ForRegion>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {subpages.length > 0 && <ChampionPageLinks slug={champion.slug} name={champion.name} links={subpages} current={`/champions/${champion.slug}`} lang={lang} />}
+
+        <AgentPromptChips champion={champion.name} />
+
+        {summary.length > 0 && (
+          <section className="mx-auto max-w-[1280px] px-4 pt-4 sm:px-6" aria-labelledby="at-a-glance">
+            <div className="glass rounded-[1.5rem] border border-white/[0.09] p-5 sm:p-6">
+              <h2 id="at-a-glance" className="text-lg font-semibold"><T vars={{ name: displayName(champion.name, lang) }}>{"{name} at a glance"}</T></h2>
+              <div className="mt-2 max-w-4xl space-y-2 text-sm leading-relaxed text-muted">
+                {summary.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <div className="mx-auto max-w-[1280px] px-4 pb-10 pt-4 sm:px-6 sm:pb-12 sm:pt-4">
+          <ChampionTabs
+            toolbar={champion.statsPending ? undefined : <RegionToggle available={regionAvailable} />}
+            panels={{ overview: champion.statsPending ? pendingOverview : overview, playstyle: playstylePanel, abilities, skins: <ChampionSkins champion={champion.name} slug={champion.slug} skins={getChampionSkins(champion.slug)} />, history: <>
+              {history.changes[0] && (
+                <div className="mb-4">
+                  <AskAgent question={`Did patch ${history.changes[0].patch} help ${champion.name}?`} />
+                </div>
+              )}
+              <ChampionHistory name={champion.name} changes={history.changes} summary={history.summary}/>
+            </> }}
+          />
+          <ToolsCta />
+          {/* In-content, after the champion's own material and before the
+              "other champions" grid: the seam where a reader has finished what
+              they came for. */}
+          {/* SEO subpages and FAQ (2026-11-28): each subpage answers one search
+              ("<champion> mid build", "<champion> runes") with numbers this
+              page does not show; the FAQ answers the question searches. */}
+          <FaqSection faq={championFaq(champion, { tierLabel: getT(lang)("{tier} tier", { tier: tierLabel(champion.tier) }), lang })} title={getT(lang)("{name} questions", { name: displayName(champion.name, lang) })} />
+          <AdSlot placement="inline" bare className="my-8" />
+          {related.length > 0 && <div className="mt-10"><h2 className="mb-4 text-lg font-semibold"><T vars={{ role: champion.role }}>{"Other {role} champions"}</T></h2><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{related.map((entry) => <Link key={entry.slug} href={lp(lang, `/champions/${entry.slug}`)} className="glass glass-hover flex flex-col items-center gap-2 rounded-xl p-3 text-center"><ChampionAvatar champion={entry} size={48}/><span className="w-full truncate text-sm font-medium">{entry.name}</span><div className="flex items-center gap-1.5"><TierChip tier={entry.tier}/><span className="text-xs font-semibold text-accent">{entry.wr.toFixed(1)}%</span></div></Link>)}</div></div>}
+        </div>
+      </div>
+    </RegionProvider>
+  );
+}
+
+function Ability({ ability }: { ability: AbilityCard }) {
+  return <div className="flex gap-3.5"><div className="relative shrink-0">{ability.icon ? <img src={ability.icon} alt={ability.name} width={48} height={48} className="rounded-lg ring-1 ring-white/10"/> : <span className="grid h-12 w-12 place-items-center rounded-lg bg-white/[0.06] text-sm font-bold text-faint">{ability.key}</span>}<span className="absolute -left-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-[#0e1322] px-1 text-[0.6rem] font-bold text-accent ring-1 ring-line">{ability.key}</span></div><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><span className="font-semibold">{ability.name}</span>{ability.cooldowns.length > 0 && <span className="text-[0.7rem] text-faint"><T>{"CD"}</T> {ability.cooldowns.join(" / ")}s</span>}</div>{ability.text && <p className="mt-1 text-sm leading-relaxed text-muted">{ability.text}</p>}</div></div>;
+}
+
+const BASE_STAT_ROWS: [string, string][] = [["hp", "Health"], ["ad", "Attack Damage"], ["armor", "Armor"], ["mr", "Magic Resist"], ["attackSpeed", "Attack Speed"], ["moveSpeed", "Move Speed"], ["mana", "Mana"], ["hpRegen", "HP Regen (5s)"], ["manaRegen", "Mana Regen (5s)"]];
+
+function BaseStats({ stats }: { stats: Record<string, { base: number; perLevel: number; lvl15?: number }> }) {
+  const format = (value: number) => Number.isInteger(value) ? value.toString() : value.toFixed(value < 3 ? 3 : 1);
+  return <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[320px] text-sm"><thead><tr className="text-left text-xs uppercase tracking-wide text-faint"><th className="pb-2"><T>{"Stat"}</T></th><th className="pb-2 text-right"><T>{"Level 1"}</T></th><th className="pb-2 text-right"><T>{"Level 15"}</T></th></tr></thead><tbody>{BASE_STAT_ROWS.filter(([key]) => stats[key]).map(([key, label]) => { const stat = stats[key]; const level15 = stat.lvl15 ?? stat.base + stat.perLevel * 14; return <tr key={key} className="border-t border-line/60"><td className="py-2 text-muted">{label}</td><td className="py-2 text-right font-medium">{format(stat.base)}</td><td className="py-2 text-right font-medium text-accent">{format(level15)}</td></tr>; })}</tbody></table></div>;
+}
+
+function BuildOrder({ build }: { build: Build }) {
+  return <div className="mt-4 flex flex-wrap items-center gap-2">{build.coreBuild.map((item, index) => <span key={item.slug} className="relative" title={item.reason ? `${item.name} · ${item.reason}` : item.name}><img src={item.icon} alt={item.name} width={44} height={44} className={`rounded-lg ${item.core ? "ring-2 ring-gold" : "ring-1 ring-white/10"}`}/><span className="absolute -left-1.5 -top-1.5 grid h-[18px] w-[18px] place-items-center rounded-full bg-[#0e1322] text-[0.6rem] font-bold text-accent ring-1 ring-line">{index + 1}</span></span>)}{build.boots && <img src={build.boots.icon} alt={build.boots.name} title={build.boots.name} width={40} height={40} className="rounded-lg ring-1 ring-gold/40"/>}</div>;
+}
+
+/** "20261013" -> "Oct 13, 2026". */
+function formatCaptured(value: string): string {
+  const date = new Date(Date.UTC(+value.slice(0, 4), +value.slice(4, 6) - 1, +value.slice(6, 8)));
+  return Number.isFinite(date.getTime())
+    ? date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" })
+    : value;
+}
+
+function Matchups({ title, accent, matchups }: { title: string; accent: string; matchups: ResolvedMatchup[] }) {
+  return <Card className="p-5"><h2 className={`text-sm font-semibold ${accent}`}>{title}</h2><div className="mt-4 space-y-2">{matchups.slice(0, 5).map(({ champion, reason, winRate }) => <div key={champion.slug} className="relative rounded-lg border border-transparent transition hover:border-line/60 hover:bg-white/[0.035]"><Link href={`/champions/${champion.slug}`} className="group flex items-center gap-3 py-2 pl-2 pr-11"><ChampionAvatar champion={champion} size={42} showBadges={false}/><span className="min-w-0 flex-1 truncate text-sm font-medium group-hover:text-accent">{champion.name}</span><span className={`shrink-0 text-sm font-semibold tabular-nums ${winRate >= 50 ? "text-emerald-300" : "text-rose-300"}`}>{winRate.toFixed(1)}%</span></Link>{reason && <><button type="button" aria-label={`Why ${champion.name} is in this list`} className="peer absolute right-2 top-2.5 grid h-7 w-7 place-items-center rounded-full border border-line bg-bg/80 text-xs font-bold text-muted transition hover:border-accent/50 hover:text-accent focus:border-accent/50 focus:text-accent focus:outline-none">i</button><span role="tooltip" className="pointer-events-none invisible absolute right-2 top-10 z-20 w-[min(260px,calc(100vw-4rem))] rounded-lg border border-line bg-[#111827] p-3 text-xs leading-relaxed text-muted opacity-0 shadow-2xl transition peer-hover:visible peer-hover:opacity-100 peer-focus:visible peer-focus:opacity-100">{reason}</span></>}</div>)}</div></Card>;
 }

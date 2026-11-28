@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useState } from "react";
 
 /** Fire-and-forget usage counter. Never blocks or fails the interaction. */
@@ -79,7 +80,7 @@ export function ShareBuildButton({
       className={`inline-flex items-center gap-1.5 rounded-lg border border-line bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-muted transition hover:border-accent/50 hover:text-text ${className}`}
     >
       <ShareIcon />
-      {state === "copied" ? "Link copied" : state === "failed" ? "Copy failed" : label}
+      {state === "copied" ? <><T>{"Link copied"}</T></> : state === "failed" ? <><T>{"Copy failed"}</T></> : label}
     </button>
   );
 }

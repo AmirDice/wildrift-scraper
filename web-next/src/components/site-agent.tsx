@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -194,7 +195,7 @@ export function SiteAgentProvider({
         className={`agent-launcher fixed right-3 z-[65] flex items-center gap-1.5 rounded-full border px-2.5 py-2 text-xs font-bold shadow-[0_14px_42px_rgba(0,0,0,.38)] backdrop-blur-xl transition hover:border-accent/60 hover:brightness-110 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:right-4 ${open ? "pointer-events-none opacity-0" : "border-white/15 bg-[#101c2b]/90 text-text"}`}
       >
         <AgentSpark className="h-4 w-4 text-accent" />
-        <span className="hidden sm:inline">Ask WRTrueMeta</span>
+        <span className="hidden sm:inline"><T>{"Ask WRTrueMeta"}</T></span>
       </button>
 
       <div
@@ -218,10 +219,10 @@ export function SiteAgentProvider({
                 </span>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="font-semibold tracking-[0.08em]">WRTrueMeta Agent</h2>
-                    <span className="rounded border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider text-accent">Beta</span>
+                    <h2 className="font-semibold tracking-[0.08em]"><T>{"WRTrueMeta Agent"}</T></h2>
+                    <span className="rounded border border-accent/30 bg-accent/10 px-1.5 py-0.5 text-[0.55rem] font-bold uppercase tracking-wider text-accent"><T>{"Beta"}</T></span>
                   </div>
-                  <p className="mt-0.5 text-xs text-muted">Grounded in the page you are viewing</p>
+                  <p className="mt-0.5 text-xs text-muted"><T>{"Grounded in the page you are viewing"}</T></p>
                 </div>
               </div>
               <button type="button" onClick={closeAgent} aria-label="Close agent" className="grid h-9 w-9 place-items-center rounded-full border border-white/10 text-muted transition hover:bg-white/[0.06] hover:text-text">
@@ -235,9 +236,9 @@ export function SiteAgentProvider({
               <div className="flex min-h-full flex-col justify-between gap-8">
                 <div>
                   <div className="rounded-[1.4rem] border border-white/10 bg-white/[0.035] p-5">
-                    <p className="text-[0.64rem] font-bold uppercase tracking-[0.18em] text-accent">Ask from this page</p>
-                    <h3 className="mt-2 text-xl font-semibold">{champion ? `Understand ${champion.name} faster` : "Turn the data into an answer"}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted">Current stats, builds, players, matchups and patch history answer instantly. Open-ended analysis uses your AI allowance.</p>
+                    <p className="text-[0.64rem] font-bold uppercase tracking-[0.18em] text-accent"><T>{"Ask from this page"}</T></p>
+                    <h3 className="mt-2 text-xl font-semibold">{champion ? `Understand ${champion.name} faster` : <><T>{"Turn the data into an answer"}</T></>}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted"><T>{"Current stats, builds, players, matchups and patch history answer instantly. Open-ended analysis uses your AI allowance."}</T></p>
                   </div>
                   <div className="mt-5 space-y-2">
                     {contextualSuggestions.map((prompt) => (
@@ -276,7 +277,7 @@ export function SiteAgentProvider({
               </button>
             </form>
             {!user && authConfigured && quota?.canUnlockBySigningIn && (
-              <p className="mt-2 text-center text-xs text-muted">Sign in from the account menu for {SIGNED_IN_DAILY_AGENT_QUESTIONS} AI questions per day.</p>
+              <p className="mt-2 text-center text-xs text-muted"><T vars={{ n: SIGNED_IN_DAILY_AGENT_QUESTIONS }}>{"Sign in from the account menu for {n} AI questions per day."}</T></p>
             )}
           </footer>
         </aside>
@@ -296,13 +297,13 @@ function AgentMessage({ message, onFollowUp }: { message: Message; onFollowUp: (
         {message.source && (
           <div className="mb-3 flex items-center gap-2 text-[0.62rem] font-bold uppercase tracking-[0.14em]">
             <span className={`h-1.5 w-1.5 rounded-full ${message.source === "data" ? "bg-emerald-300" : "bg-accent"}`} />
-            <span className={message.source === "data" ? "text-emerald-300" : "text-accent"}>{message.source === "data" ? "WRTrueMeta data" : "AI analysis"}</span>
+            <span className={message.source === "data" ? "text-emerald-300" : "text-accent"}>{message.source === "data" ? <><T>{"WRTrueMeta data"}</T></> : <><T>{"AI analysis"}</T></>}</span>
           </div>
         )}
         <p className="whitespace-pre-line text-sm leading-7 text-[#e8eef8]">{message.content}</p>
         {message.evidence && message.evidence.length > 0 && (
           <div className="mt-4 border-t border-white/8 pt-3">
-            <p className="text-[0.6rem] font-bold uppercase tracking-[0.14em] text-faint">Used for this answer</p>
+            <p className="text-[0.6rem] font-bold uppercase tracking-[0.14em] text-faint"><T>{"Used for this answer"}</T></p>
             <ul className="mt-2 space-y-1.5 text-xs leading-relaxed text-muted">
               {message.evidence.map((fact, index) => <li key={`${fact}-${index}`} className="flex gap-2"><span className="text-accent">•</span><span>{fact}</span></li>)}
             </ul>
@@ -316,12 +317,12 @@ function AgentMessage({ message, onFollowUp }: { message: Message; onFollowUp: (
       )}
       {!message.error && (
         <div className="flex items-center gap-1 text-faint">
-          <span className="mr-1 text-[0.65rem]">Helpful?</span>
+          <span className="mr-1 text-[0.65rem]"><T>{"Helpful?"}</T></span>
           {["Yes", "No"].map((label) => <button key={label} type="button" disabled={rated} onClick={() => {
             setRated(true);
             const path = message.source === "model" ? "model" : "data";
             track(label === "Yes" ? `agent_feedback_yes_${path}` : `agent_feedback_no_${path}`);
-          }} className="rounded-md px-2 py-1 text-[0.65rem] transition hover:bg-white/[0.06] hover:text-text disabled:opacity-40">{rated ? "Thanks" : label}</button>)}
+          }} className="rounded-md px-2 py-1 text-[0.65rem] transition hover:bg-white/[0.06] hover:text-text disabled:opacity-40">{rated ? <><T>{"Thanks"}</T></> : label}</button>)}
         </div>
       )}
       {message.followUps && message.followUps.length > 0 && (
@@ -339,7 +340,7 @@ function AgentThinking() {
       <div className="flex items-center gap-3">
         <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-accent/10"><AgentSpark className="h-4 w-4 animate-pulse text-accent" /></span>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-3 text-xs"><span className="font-semibold text-text">Reading this page's data</span><span className="text-faint">Analyzing</span></div>
+          <div className="flex items-center justify-between gap-3 text-xs"><span className="font-semibold text-text"><T>{"Reading this page's data"}</T></span><span className="text-faint"><T>{"Analyzing"}</T></span></div>
           <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.07]"><span className="block h-full w-2/3 animate-pulse rounded-full bg-gradient-to-r from-accent/40 to-accent" /></div>
         </div>
       </div>

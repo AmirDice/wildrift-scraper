@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import Link from "next/link";
 import { Card } from "@/components/ui";
 import pulseEu from "@/data/ladder_pulse.json";
@@ -39,15 +40,14 @@ export function MeasuredProfile({ slug, region = "eu" }: { slug: string; region?
   return (
     <Card className="p-5 sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">How the top players play {p.name}</h2>
+        <h2 className="text-lg font-semibold"><T>{"How the top players play"}</T> {p.name}</h2>
         <Link href={`/leaderboard?champion=${slug}`}
           className="rounded-full bg-white/10 px-2.5 py-1 text-xs font-semibold text-muted transition hover:text-text">
-          See the board
+          <T>{"See the board"}</T>
         </Link>
       </div>
       <p className="mt-1 text-sm text-muted">
-        Measured from their ranked match history; the marker is the average across all
-        freshly collected champions.
+        <T>{"Measured from their ranked match history; the marker is the average across all freshly collected champions."}</T>
       </p>
       <div className="mt-4 space-y-2.5">
         {BARS.map(({ key, label, fmt }) => {
@@ -71,11 +71,11 @@ export function MeasuredProfile({ slug, region = "eu" }: { slug: string; region?
         })}
       </div>
       <p className="mt-3 text-xs text-faint">
-        {p.kda != null && <>Average KDA {p.kda.toFixed(1)}. </>}
+        {p.kda != null && <><T>{"Average KDA"}</T> {p.kda.toFixed(1)}. </>}
         {p.legendaryTax != null && (
-          <>These players run {p.legendaryTax >= 0 ? `${p.legendaryTax.toFixed(1)}pp better` : `${Math.abs(p.legendaryTax).toFixed(1)}pp worse`} in Legendary Ranked. </>
+          <><T>{"These players run"}</T> {p.legendaryTax >= 0 ? `${p.legendaryTax.toFixed(1)}pp better` : `${Math.abs(p.legendaryTax).toFixed(1)}pp worse`} <T>{"in Legendary Ranked."}</T> </>
         )}
-        {p.pentas > 0 && <>{p.pentas} pentakills across the board this season.</>}
+        {p.pentas > 0 && <>{p.pentas} <T>{"pentakills across the board this season."}</T></>}
       </p>
     </Card>
   );

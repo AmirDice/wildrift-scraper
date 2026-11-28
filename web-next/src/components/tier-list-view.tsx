@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
@@ -295,7 +296,7 @@ export function TierListView({
               showRaw ? "bg-accent text-[#07121f]" : "glass glass-hover text-muted"
             }`}
           >
-            {showRaw ? "Showing raw win rates" : "Show raw win rates"}
+            {showRaw ? <><T>{"Showing raw win rates"}</T></> : <><T>{"Show raw win rates"}</T></>}
           </button>
         )}
         <a
@@ -310,14 +311,14 @@ export function TierListView({
             <circle cx="8.5" cy="8.5" r="1.5" />
             <path d="M21 15l-5-5L5 21" />
           </svg>
-          Share as image
+          <T>{"Share as image"}</T>
         </a>
       </div>
       </section>
       {showRaw && !isCN && (
         <details className="group mb-4 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-xs text-faint">
-          <summary className="cursor-pointer list-none font-semibold text-accent">Raw rates are on · tap for context</summary>
-          <p className="mt-2 leading-relaxed">These are the players&rsquo; un-centred results. Tiers and order still use the same relative scale, so only the printed percentage changes.</p>
+          <summary className="cursor-pointer list-none font-semibold text-accent"><T>{"Raw rates are on · tap for context"}</T></summary>
+          <p className="mt-2 leading-relaxed"><T>{"These are the players’ un-centred results. Tiers and order still use the same relative scale, so only the printed percentage changes."}</T></p>
         </details>
       )}
 
@@ -335,19 +336,18 @@ export function TierListView({
                   heading is what tells a reader (and a crawler reading the
                   page) which tier list they are looking at and for which patch. */}
               <h2 className="text-lg font-semibold tracking-tight">
-                Wild Rift China server tier list
-                {CURRENT_PATCH && <span className="text-muted"> · Patch {CURRENT_PATCH}</span>}
+                <T>{"Wild Rift China server tier list"}</T>
+                {CURRENT_PATCH && <span className="text-muted"> <T>{"· Patch"}</T> {CURRENT_PATCH}</span>}
               </h2>
               <p className="mt-1 text-sm text-muted">
-                Official China server win rates from{" "}
+                <T>{"Official China server win rates from"}</T>{" "}
                 <span className="text-text">{activeCnBracket.label}</span>
                 {activeCnBracket.kind === "legendary"
-                  ? ", a separate high-elo solo queue"
+                  ? <><T>{", a separate high-elo solo queue"}</T></>
                   : activeCnBracket.key === "3"
-                    ? ", Tencent's top regular-ranked sample"
-                    : ", a cumulative regular-ranked sample"}
-                . Source: lolm.qq.com. China usually plays the patch ahead of the West, so this list is the
-                earliest read on where the meta is going.
+                    ? <><T>{", Tencent's top regular-ranked sample"}</T></>
+                    : <><T>{", a cumulative regular-ranked sample"}</T></>}
+                <T>{". Source: lolm.qq.com. China usually plays the patch ahead of the West, so this list is the earliest read on where the meta is going."}</T>
               </p>
               <div className="mt-4 flex flex-wrap gap-2" role="tablist" aria-label="China skill bracket">
                 {cnSamples.map((option) => (
@@ -371,11 +371,9 @@ export function TierListView({
           )}
           {isGlobal && (
             <p className="mb-4 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-xs text-muted">
-              Combined <span className="text-text">EU + NA + China</span> ranking: each champion&rsquo;s
-              top 30 players on all three regional leaderboards, averaged. China&rsquo;s Tencent brackets
-              (Diamond+ to Legendary) are a different measurement and stay under the China tab.{" "}
+              <T>{"Combined"}</T> <span className="text-text"><T>{"EU + NA + China"}</T></span> <T>{"ranking: each champion’s top 30 players on all three regional leaderboards, averaged. China’s Tencent brackets (Diamond+ to Legendary) are a different measurement and stay under the China tab."}</T>{" "}
               <Link href="/regions" className="text-accent hover:underline">
-                Compare regions →
+                <T>{"Compare regions →"}</T>
               </Link>
             </p>
           )}
@@ -383,7 +381,7 @@ export function TierListView({
           {!isCN && (
             <div className="glass mb-2 rounded-2xl border border-white/[0.08] p-3" data-tour="tl-pool">
               <div className="flex flex-wrap items-center gap-2" role="tablist" aria-label="Player pool depth">
-                <span className="text-xs font-bold uppercase tracking-wide text-faint">Player pool</span>
+                <span className="text-xs font-bold uppercase tracking-wide text-faint"><T>{"Player pool"}</T></span>
                 {([["all", "All players"], ["25", "Top 25"], ["10", "Top 10"], ["5", "Top 5"]] as const).map(([key, label]) => (
                   <button
                     key={key}
@@ -401,7 +399,7 @@ export function TierListView({
               </div>
               <p className="mt-1.5 text-[0.68rem] text-faint">
                 {poolDepth === "all"
-                  ? "Full top-50 sample for every champion."
+                  ? <><T>{"Full top-50 sample for every champion."}</T></>
                   : `Only the top ${poolDepth} players per champion. Use this to spot elite-player gaps.`}
               </p>
             </div>
@@ -409,7 +407,7 @@ export function TierListView({
 
           {/* Role filter */}
           <div className="glass mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-white/[0.08] p-2" data-tour="tl-roles">
-            <span className="px-2 text-[0.62rem] font-bold uppercase tracking-[0.15em] text-faint">Role</span>
+            <span className="px-2 text-[0.62rem] font-bold uppercase tracking-[0.15em] text-faint"><T>{"Role"}</T></span>
             {options.map((o) => (
               <button
                 key={o}
@@ -443,7 +441,7 @@ export function TierListView({
                       {tierLabel(t)}
                     </div>
                     <div className="tier-board-content flex flex-1 items-center rounded-2xl p-2 text-sm text-faint sm:p-3">
-                      No champions in this tier
+                      <T>{"No champions in this tier"}</T>
                     </div>
                   </div>
                 );
@@ -584,15 +582,11 @@ export function TierListView({
           <div className="glass mt-6 rounded-xl p-4 text-sm text-muted">
             {isCN ? (
               <p>
-                <span className="font-medium text-text">CN tier cutoffs</span>: official CN win
-                rates centre on 50%, so tiers use a China-specific scale. GOD 53.5%+ · S 52–53.5% ·
-                A 50.8–52% · B 49.5–50.8% · C 48–49.5% · L under 48%.
+                <span className="font-medium text-text"><T>{"CN tier cutoffs"}</T></span><T>{": official CN win rates centre on 50%, so tiers use a China-specific scale. GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B 49.5–50.8% · C 48–49.5% · L under 48%."}</T>
               </p>
             ) : isGlobal ? (
               <p>
-                <span className="font-medium text-text">Global cutoffs</span>: the average of the
-                EU and NA win rates (both 50%-centred). GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B
-                49.5–50.8% · C 48–49.5% · L under 48%.
+                <span className="font-medium text-text"><T>{"Global cutoffs"}</T></span><T>{": the average of the EU and NA win rates (both 50%-centred). GOD 53.5%+ · S 52–53.5% · A 50.8–52% · B 49.5–50.8% · C 48–49.5% · L under 48%."}</T>
               </p>
             ) : role === "All roles" ? (
               (() => {
@@ -600,19 +594,15 @@ export function TierListView({
                 const c = (n: number) => (n + o).toFixed(1);
                 return (
                   <p>
-                    <span className="font-medium text-text">Win rate shown relative to average</span>:{" "}
-                    every champion here is carried by its top-board mains, so the pool naturally sits
-                    high; we centre it so 50% = the average champion and you can read the gap at a
-                    glance. Tier cutoffs: GOD {c(63)}%+ · S {c(61)}–{c(63)}% · A {c(59)}–{c(61)}% · B{" "}
-                    {c(57)}–{c(59)}% · C {c(56)}–{c(57)}% · L under {c(56)}%.
+                    <span className="font-medium text-text"><T>{"Win rate shown relative to average"}</T></span>:{" "}
+                    <T>{"every champion here is carried by its top-board mains, so the pool naturally sits high; we centre it so 50% = the average champion and you can read the gap at a glance. Tier cutoffs: GOD"}</T> {c(63)}%+ · S {c(61)}–{c(63)}% · A {c(59)}–{c(61)}% · B{" "}
+                    {c(57)}–{c(59)}% · C {c(56)}–{c(57)}<T>{"% · L under"}</T> {c(56)}%.
                   </p>
                 );
               })()
             ) : (
               <p>
-                <span className="font-medium text-text">Percentile cutoffs within {role}</span>: a
-                single role&rsquo;s win-rate range is narrower than the whole pool, so tiers adapt to
-                keep every tier populated.
+                <span className="font-medium text-text"><T>{"Percentile cutoffs within"}</T> {role}</span><T>{": a single role’s win-rate range is narrower than the whole pool, so tiers adapt to keep every tier populated."}</T>
               </p>
             )}
             {/* What the two movement marks mean, and why they can disagree.
@@ -621,20 +611,16 @@ export function TierListView({
                 can lose win rate and still rise a band because the rest of its
                 role lost more. Saying so here is cheaper than being asked. */}
             <p className="mt-3 border-t border-line pt-3">
-              <span className="font-medium text-text">The marks on each champion</span>: the{" "}
+              <span className="font-medium text-text"><T>{"The marks on each champion"}</T></span><T>{": the"}</T>{" "}
               <span className="font-semibold text-emerald-400">&#9650;</span>/
-              <span className="font-semibold text-bad">&#9660;</span> badge means the champion{" "}
-              <span className="font-medium text-text">changed tier</span> since{" "}
-              {isCN ? "the previous China scrape"
+              <span className="font-semibold text-bad">&#9660;</span> <T>{"badge means the champion"}</T>{" "}
+              <span className="font-medium text-text"><T>{"changed tier"}</T></span> <T>{"since"}</T>{" "}
+              {isCN ? <><T>{"the previous China scrape"}</T></>
                 : isGlobal ? `the previous EU (${site.movementSince ?? "collection"}) and NA (${siteNa.movementSince ?? "collection"}) collections`
-                : (isNA ? siteNa.movementSince : site.movementSince) ?? "the previous collection"}
-              {role === "All roles" ? "" : ` (within ${role})`}. The small{" "}
+                : (isNA ? siteNa.movementSince : site.movementSince) ?? <><T>{"the previous collection"}</T></>}
+              {role === "All roles" ? "" : ` (within ${role})`}<T>{". The small"}</T>{" "}
               <span className="font-semibold text-emerald-400">+</span>/
-              <span className="font-semibold text-bad">&minus;</span> after the win rate is how much
-              that win rate moved. They answer different questions, so they can disagree: a champion
-              can lose win rate and still gain a tier when the rest of its role lost more, and it can
-              gain win rate without moving band at all. Hover a champion for the exact before and
-              after.
+              <span className="font-semibold text-bad"><T>{"&minus;"}</T></span> <T>{"after the win rate is how much that win rate moved. They answer different questions, so they can disagree: a champion can lose win rate and still gain a tier when the rest of its role lost more, and it can gain win rate without moving band at all. Hover a champion for the exact before and after."}</T>
             </p>
           </div>
         </>

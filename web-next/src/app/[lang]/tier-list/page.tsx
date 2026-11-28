@@ -1,63 +1,106 @@
+import { T } from "@/components/t";
+import { getT } from "@/lib/ui-i18n";
+import { HotTag } from "@/components/hot-tag";
+import { isPageLang, lp } from "@/lib/i18n";
+import { notFound } from "next/navigation";
+import { languageAlternates } from "@/lib/i18n";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { TIER_ORDER, getChampions } from "@/lib/data";
+import { site, getChampions, regionBoard } from "@/lib/data";
+import { freshness } from "@/lib/patch-freshness";
+import { getCnChampionsBySample, getCnRolesBySample, CN_META, getGlobalChampions, globalRoles } from "@/lib/cn";
+import { AdSlot } from "@/components/ad-slot";
+import { TierListView } from "@/components/tier-list-view";
 import { CURRENT_PATCH } from "@/lib/patch";
-import { Container, ChampionAvatar, TierChip } from "@/components/ui";
-import { HREFLANG, champName, fmtPct, hasLocale, languageAlternates, type Locale } from "@/lib/i18n";
-import { dict } from "@/lib/i18n-dict";
-import { LanguageSwitcher } from "@/components/i18n-parts";
+import { NextStep } from "@/components/next-step";
+import { CollectionSchedule } from "@/components/collection-schedule";
+import { tierListUpdated } from "@/lib/updated-label";
 
-/** Translated tier list: every champion grouped by tier, from the EU/NA boards. */
-export const revalidate = 86400;
+// The patch belongs in the title: people search "wild rift tier list patch
+// 7.2a", and a tier list with no patch on it reads as undated to both a
+// searcher and a crawler. CURRENT_PATCH tracks the data, so this cannot drift.
+const UPDATED = tierListUpdated();
 
-type Props = PageProps<"/[lang]/tier-list">;
-
-export async function generateMetadata(props: Props): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[lang]/tier-list">): Promise<Metadata> {
   const { lang } = await props.params;
-  if (!hasLocale(lang)) return { title: "Not found" };
-  const t = dict(lang);
-  const title = { absolute: t.tierTitle(CURRENT_PATCH ?? "") };
+  const t = getT(lang);
   return {
-    title, description: t.tierDescription,
-    alternates: { canonical: `/${lang}/tier-list`, languages: languageAlternates("/tier-list") },
-    openGraph: { title: title.absolute, description: t.tierDescription, url: `https://wrtruemeta.com/${lang}/tier-list`, locale: HREFLANG[lang] },
-  };
+  title: t("Wild Rift Tier List Patch {patch} | EU, NA & China Win Rates", { patch: CURRENT_PATCH ?? "" }),
+  description:
+    t("The Wild Rift tier list for patch {patch}, combining real top-player win rates from EU and NA with official China server data from lolm.qq.com. Switch regions and filter by role from GOD to L tiers.", { patch: CURRENT_PATCH ?? "" }),
+  alternates: { canonical: lp(lang, "/tier-list"), languages: languageAlternates("/tier-list") },
+  openGraph: {
+    title: `Wild Rift Tier List Patch ${CURRENT_PATCH} | EU, NA & China Win Rates`,
+    description: `Every Wild Rift champion ranked for patch ${CURRENT_PATCH} by the real win rates of its best players across EU and NA, plus China's official rates.`,
+    url: "https://wrtruemeta.com/tier-list",
+  },
+};
 }
 
-export default async function LocalizedTierList(props: Props) {
-  const { lang: rawLang } = await props.params;
-  if (!hasLocale(rawLang)) notFound();
-  const lang: Locale = rawLang;
-  const t = dict(lang);
-  const champions = getChampions().filter((c) => !c.statsPending);
-  const groups = TIER_ORDER.map((tier) => ({
-    tier, rows: champions.filter((c) => c.tier === tier).sort((a, b) => b.wr - a.wr),
-  })).filter((g) => g.rows.length > 0);
+export default async function TierListPage(props: PageProps<"/[lang]/tier-list">) {
+  const { lang } = await props.params;
+  if (!isPageLang(lang)) notFound();
+  const champions = getChampions();
   return (
-    <Container className="py-10 sm:py-14">
-      <LanguageSwitcher path="/tier-list" current={lang} label={t.language} />
-      <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">{t.tierH1}</h1>
-      <p className="mt-2 max-w-2xl text-muted">{t.tierIntro}</p>
-      <p className="mt-1 text-sm text-faint">Wild Rift · {t.patch(CURRENT_PATCH ?? "")} · {t.sourceLadder}</p>
-      <div className="mt-8 space-y-6">
-        {groups.map((g) => (
-          <section key={g.tier}>
-            <h2 className="flex items-center gap-2 text-lg font-semibold"><TierChip tier={g.tier} /> <span className="text-sm text-muted">{g.rows.length}</span></h2>
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-              {g.rows.map((c) => (
-                <Link key={c.slug} href={`/${lang}/champions/${c.slug}`} className="glass glass-hover flex items-center gap-2 rounded-xl p-2.5">
-                  <ChampionAvatar champion={c} size={36} showBadges={false} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium">{champName(c.name, lang)}</span>
-                    <span className="text-xs tabular-nums text-accent">{fmtPct(lang, c.wr)}</span>
-                  </span>
-                </Link>
-              ))}
+    <div
+      className="tierlist-revamp no-plate min-h-screen overflow-x-clip"
+      style={{ background: "linear-gradient(180deg, rgba(8,19,33,.84), rgba(6,15,29,.92))" }}
+    >
+      <div className="mx-auto max-w-[1280px] px-4 pb-12 pt-8 sm:px-6 sm:pt-10">
+        <section className="glass relative overflow-hidden rounded-[1.75rem] border border-white/[0.11] px-5 py-6 shadow-[0_26px_90px_rgba(0,0,0,.32)] sm:px-7 sm:py-7">
+          <div aria-hidden className="absolute -right-24 -top-32 h-80 w-80 rounded-full bg-accent/10 blur-3xl" />
+          <div className="relative grid gap-7 lg:grid-cols-[1fr_auto] lg:items-end">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[0.62rem] font-bold uppercase tracking-[0.2em] text-accent"><T>{"Every champion · ranked"}</T></span>
+                {CURRENT_PATCH && <span className="rounded-full border border-white/[0.09] bg-white/[0.045] px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.12em] text-muted"><T>{"Patch"}</T> {CURRENT_PATCH}</span>}
+                <HotTag />
+              </div>
+              <h1 className="mt-3 text-4xl leading-[0.98] tracking-[-0.045em] sm:text-[3.35rem]" style={{ fontFamily: "var(--font-sans)", fontWeight: 800 }}><T>{"Wild Rift Tier List"}</T></h1>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted sm:text-base"><T>{"Real top-player performance across Global, EU and NA, plus Tencent’s official China rates. Switch server, role or player depth without leaving the board."}</T></p>
             </div>
-          </section>
-        ))}
+            <div className="grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-black/15">
+              <TierMetric label="Champions" value={champions.length.toString()} />
+              <TierMetric label="Regions" value="3" bordered />
+              <TierMetric label="Player pool" value="Top 30" bordered />
+            </div>
+          </div>
+          <div className="relative mt-5 grid gap-2 border-t border-white/[0.07] pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white/[0.025] px-3 py-2.5">
+              <div className="min-w-0"><p className="text-xs font-semibold text-text"><T>{"Mastery curves"}</T></p><p className="truncate text-[0.68rem] text-faint"><T>{"Diamond+ to Challenger performance."}</T></p></div>
+              <div className="flex items-center gap-3 text-xs font-semibold"><Link href="/regions#brackets" className="text-gold hover:text-text"><T>{"Ranks →"}</T></Link><Link href="/meta#consistency" className="text-accent hover:text-text"><T>{"Consistency →"}</T></Link></div>
+            </div>
+          </div>
+        </section>
+
+        <CollectionSchedule className="mt-5" />
+
+        <div className="mt-5">
+        <TierListView
+          champions={champions}
+          naChampions={regionBoard("NA").champions}
+          naRoles={regionBoard("NA").roles}
+          naUpdated={regionBoard("NA").collectedOn}
+          euFreshness={freshness(site.collectedOn)}
+          naFreshness={freshness(regionBoard("NA").collectedOn)}
+          roles={site.roles}
+          cnChampionsByBracket={getCnChampionsBySample()}
+          cnRolesByBracket={getCnRolesBySample()}
+          cnMeta={CN_META}
+          globalChampions={getGlobalChampions()}
+          globalRoles={globalRoles()}
+          initialRegion="Global"
+        />
+        </div>
+        {/* Below the board. The longest page on the site, so the layout's bottom
+            unit is thousands of pixels from anyone still reading here. */}
+        <AdSlot placement="inline" bare className="my-10" />
+        <NextStep steps={["build", "counter", "meta"]} />
       </div>
-    </Container>
+    </div>
   );
+}
+
+function TierMetric({ label, value, bordered = false }: { label: string; value: string; bordered?: boolean }) {
+  return <div className={`min-w-[5.5rem] px-3 py-3 sm:min-w-[7rem] sm:px-4 ${bordered ? "border-l border-white/[0.07]" : ""}`}><p className="text-[0.55rem] font-bold uppercase tracking-[0.14em] text-faint">{label}</p><p className="mt-1 text-base font-semibold text-text sm:text-lg">{value}</p></div>;
 }

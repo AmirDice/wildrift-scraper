@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
@@ -139,15 +140,13 @@ export function ChampionsExplorer({
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-1">
       {region === "EU" && (
         <p className="max-w-2xl text-sm text-muted">
-          Every champion tracked on EU, ranked by the win rates of each
-          champion&apos;s top {BOARD_DEPTH.EU} players.
+          <T vars={{ n: BOARD_DEPTH.EU ?? 30 }}>{"Every champion tracked on EU, ranked by the win rates of each champion's top {n} players."}</T>
         </p>
       )}
 
       {isNA && (
         <p className="max-w-2xl text-sm text-muted">
-          Every champion tracked on NA, ranked by the win rates of each
-          champion&apos;s top {BOARD_DEPTH.NA} players.
+          <T vars={{ n: BOARD_DEPTH.NA ?? 30 }}>{"Every champion tracked on NA, ranked by the win rates of each champion's top {n} players."}</T>
         </p>
       )}
 
@@ -162,8 +161,7 @@ export function ChampionsExplorer({
         <>
           {isCN && (
             <p className="mb-4 text-sm text-muted">
-              Official China server data ({cnMeta.bracket}, top regular-ranked sample): win, pick &amp; ban
-              rates.
+              <T>{"Official China server data ("}</T>{cnMeta.bracket}<T>{", top regular-ranked sample): win, pick & ban rates."}</T>
             </p>
           )}
 
@@ -211,18 +209,18 @@ export function ChampionsExplorer({
                 aria-label="Sort champions"
                 className="glass rounded-lg px-3 py-1.5 text-sm text-muted outline-none focus:border-accent/50"
               >
-                <option value="wr" className="bg-surface-2 text-text">Win rate</option>
-                <option value="name" className="bg-surface-2 text-text">Name</option>
+                <option value="wr" className="bg-surface-2 text-text"><T>{"Win rate"}</T></option>
+                <option value="name" className="bg-surface-2 text-text"><T>{"Name"}</T></option>
                 {isCN ? (
                   <>
-                    <option value="pickRate" className="bg-surface-2 text-text">Pick rate</option>
-                    <option value="banRate" className="bg-surface-2 text-text">Ban rate</option>
+                    <option value="pickRate" className="bg-surface-2 text-text"><T>{"Pick rate"}</T></option>
+                    <option value="banRate" className="bg-surface-2 text-text"><T>{"Ban rate"}</T></option>
                   </>
                 ) : (
                   <>
-                    <option value="maxWr" className="bg-surface-2 text-text">Skill ceiling</option>
-                    <option value="totalGames" className="bg-surface-2 text-text">Games</option>
-                    <option value="maxScore" className="bg-surface-2 text-text">Top mastery</option>
+                    <option value="maxWr" className="bg-surface-2 text-text"><T>{"Skill ceiling"}</T></option>
+                    <option value="totalGames" className="bg-surface-2 text-text"><T>{"Games"}</T></option>
+                    <option value="maxScore" className="bg-surface-2 text-text"><T>{"Top mastery"}</T></option>
                   </>
                 )}
               </select>
@@ -230,7 +228,7 @@ export function ChampionsExplorer({
           </div>
 
           <div className="mb-2 flex items-center justify-between gap-3">
-            <p className="text-sm text-faint">{rows.length} champions</p>
+            <p className="text-sm text-faint"><T vars={{ n: rows.length }}>{"{n} champions"}</T></p>
             <div className="glass-thin flex items-center gap-1 rounded-lg p-1" aria-label="Champion view">
               <button type="button" onClick={() => setView("grid")} aria-label="Grid view" aria-pressed={view === "grid"}
                 className={`grid h-8 w-8 place-items-center rounded-md transition ${view === "grid" ? "bg-white/[0.1] text-text" : "text-muted hover:text-text"}`}>
@@ -254,7 +252,7 @@ export function ChampionsExplorer({
                 ? `${missing.length} ${missing.length === 1 ? "has" : "have"} no recorded games at ${cnMeta.bracket} and ${missing.length === 1 ? "is" : "are"} not listed above: `
                 : `${missing.length} ${missing.length === 1 ? "has" : "have"} no ranked sample in this dataset yet and ${missing.length === 1 ? "is" : "are"} not listed above: `}
               <span className="text-muted">{missing.join(", ")}</span>
-              {isCN ? ". They are usually present at other ranks." : "."}
+              {isCN ? <><T>{". They are usually present at other ranks."}</T></> : "."}
             </p>
           )}
 
@@ -268,38 +266,38 @@ export function ChampionsExplorer({
                 <tr className="border-b border-line text-xs uppercase tracking-wide text-muted">
                   <Th className="w-12 text-center">#</Th>
                   <Th onClick={() => toggleSort("name")} active={sortKey === "name"} dir={dir}>
-                    Champion
+                    <T>{"Champion"}</T>
                   </Th>
-                  <Th>Role</Th>
-                  <Th>Class</Th>
+                  <Th><T>{"Role"}</T></Th>
+                  <Th><T>{"Class"}</T></Th>
                   <Th onClick={() => toggleSort("difficulty")} active={sortKey === "difficulty"} dir={dir}>
-                    Difficulty
+                    <T>{"Difficulty"}</T>
                   </Th>
-                  <Th className="text-center">Tier</Th>
+                  <Th className="text-center"><T>{"Tier"}</T></Th>
                   <Th onClick={() => toggleSort("wr")} active={sortKey === "wr"} dir={dir} right>
-                    Win rate
+                    <T>{"Win rate"}</T>
                   </Th>
                   {isCN ? (
                     <>
                       <Th onClick={() => toggleSort("pickRate")} active={sortKey === "pickRate"} dir={dir} right>
-                        Pick rate
+                        <T>{"Pick rate"}</T>
                       </Th>
                       <Th onClick={() => toggleSort("banRate")} active={sortKey === "banRate"} dir={dir} right>
-                        Ban rate
+                        <T>{"Ban rate"}</T>
                       </Th>
                     </>
                   ) : (
                     <>
                       <Th onClick={() => toggleSort("maxWr")} active={sortKey === "maxWr"} dir={dir} right>
-                        Ceiling
+                        <T>{"Ceiling"}</T>
                       </Th>
                       <Th onClick={() => toggleSort("totalGames")} active={sortKey === "totalGames"} dir={dir} right>
-                        Games
+                        <T>{"Games"}</T>
                       </Th>
                       <Th onClick={() => toggleSort("maxScore")} active={sortKey === "maxScore"} dir={dir} right>
-                        Top mastery
+                        <T>{"Top mastery"}</T>
                       </Th>
-                      <Th>Best player</Th>
+                      <Th><T>{"Best player"}</T></Th>
                     </>
                   )}
                 </tr>

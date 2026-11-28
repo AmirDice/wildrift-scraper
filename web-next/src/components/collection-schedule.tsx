@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import { site, regionBoard } from "@/lib/data";
 import { CURRENT_PATCH } from "@/lib/patch";
 import { currentPatchDate } from "@/lib/patch-freshness";
@@ -86,12 +87,12 @@ function StatusPill({ status, patch }: { status: Status | null; patch: string })
   if (status.kind === "collected") {
     // The patch, not the day: a board's date is its LAST session, so a few
     // recaptures on a Friday would read as the Monday collection slipping.
-    return <span title={`Last session ${fmt(status.on)}`} className="rounded-full bg-emerald-400/12 px-2 py-0.5 text-[0.65rem] font-semibold text-emerald-300">Collected for {patch}</span>;
+    return <span title={`Last session ${fmt(status.on)}`} className="rounded-full bg-emerald-400/12 px-2 py-0.5 text-[0.65rem] font-semibold text-emerald-300"><T>{"Collected for"}</T> {patch}</span>;
   }
   if (status.kind === "planned") {
-    return <span className="rounded-full bg-gold/12 px-2 py-0.5 text-[0.65rem] font-semibold text-gold">Next: {fmt(status.on)}</span>;
+    return <span className="rounded-full bg-gold/12 px-2 py-0.5 text-[0.65rem] font-semibold text-gold"><T>{"Next:"}</T> {fmt(status.on)}</span>;
   }
-  return <span className="rounded-full bg-white/[0.07] px-2 py-0.5 text-[0.65rem] font-semibold text-muted">Skips {patch}, back next patch</span>;
+  return <span className="rounded-full bg-white/[0.07] px-2 py-0.5 text-[0.65rem] font-semibold text-muted"><T>{"Skips"}</T> {patch}<T>{", back next patch"}</T></span>;
 }
 
 export function CollectionSchedule({ className = "" }: { className?: string }) {
@@ -99,10 +100,10 @@ export function CollectionSchedule({ className = "" }: { className?: string }) {
   return (
     <section id="schedule" aria-labelledby="schedule-title" className={`glass rounded-2xl border border-white/[0.09] p-4 sm:p-5 ${className}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 id="schedule-title" className="text-sm font-semibold text-text">Data update schedule</h2>
+        <h2 id="schedule-title" className="text-sm font-semibold text-text"><T>{"Data update schedule"}</T></h2>
         <p className="text-[0.7rem] text-faint">
-          Patches land on Tuesday. Leaderboards are collected the week after.
-          {patch && patchOn ? <> Patch {patch} went live {fmt(patchOn)}.</> : null}
+          <T>{"Patches land on Tuesday. Leaderboards are collected the week after."}</T>
+          {patch && patchOn ? <> <T>{"Patch"}</T> {patch} <T>{"went live"}</T> {fmt(patchOn)}.</> : null}
         </p>
       </div>
       <ol className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -114,7 +115,7 @@ export function CollectionSchedule({ className = "" }: { className?: string }) {
                 <span className="hidden text-[0.65rem] uppercase tracking-[0.12em] text-faint sm:inline">{row.cadence}</span>
               </div>
               <p className="text-xs text-muted">
-                {row.when} after the patch<span className="sm:hidden"> · {row.cadence.toLowerCase()}</span>
+                {row.when} <T>{"after the patch"}</T><span className="sm:hidden"> · {row.cadence.toLowerCase()}</span>
               </p>
             </div>
             <div className="shrink-0"><StatusPill status={row.status} patch={patch} /></div>
@@ -122,7 +123,7 @@ export function CollectionSchedule({ className = "" }: { className?: string }) {
         ))}
       </ol>
       <p className="mt-3 text-[0.65rem] leading-relaxed text-faint">
-        China&rsquo;s official win rates update every day and are not on this schedule.
+        <T>{"China’s official win rates update every day and are not on this schedule."}</T>
       </p>
     </section>
   );

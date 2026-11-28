@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import Link from "next/link";
 import { Card } from "@/components/ui";
 
@@ -51,7 +52,7 @@ export function InsightCard({
           href={href}
           className="mt-3 border-t border-line/60 pt-3 text-sm font-medium text-accent transition hover:opacity-80"
         >
-          View more →
+          <T>{"View more →"}</T>
         </Link>
       )}
     </Card>

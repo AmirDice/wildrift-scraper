@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import Link from "next/link";
 import { getChampion } from "@/lib/data";
 import { topWinners, topLosers, MOVERS_META, type Mover } from "@/lib/movers";
@@ -19,16 +20,16 @@ export function MoversHighlight() {
     >
       <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
         <div>
-          <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-accent">China · biggest movers</p>
+          <p className="text-[0.65rem] font-bold uppercase tracking-[0.18em] text-accent"><T>{"China · biggest movers"}</T></p>
           <h2 className="mt-1 text-xl font-black tracking-tight sm:text-2xl">
             {/* One string: the compiler drops the space after a JSX expression
                 here, and this heading rendered "Patch 7.3bBiggest Winners". */}
             {`Patch ${MOVERS_META.patch} Biggest Winners & Losers`}
           </h2>
-          <p className="mt-0.5 text-xs text-muted">{MOVERS_META.scope} win rate</p>
+          <p className="mt-0.5 text-xs text-muted">{MOVERS_META.scope} <T>{"win rate"}</T></p>
         </div>
         <Link href="/movers" className="rounded-lg border border-line bg-white/[0.04] px-3 py-1.5 text-sm font-semibold text-accent transition hover:border-accent/50">
-          See all movers →
+          <T>{"See all movers →"}</T>
         </Link>
       </div>
 

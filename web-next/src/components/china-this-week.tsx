@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import Link from "next/link";
 import { useState } from "react";
 import type { ChinaThisWeek as Data, Lane5, Ranked } from "@/lib/china-meta";
@@ -79,8 +80,8 @@ export function ChinaThisWeek({ data }: { data: Data }) {
       <div className="glass rounded-[1.5rem] border border-white/[0.09] p-5 sm:p-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-sky-200">China Legendary · this week</p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight">What China&rsquo;s top players are building</h2>
+            <p className="text-[0.65rem] font-bold uppercase tracking-[0.16em] text-sky-200"><T>{"China Legendary · this week"}</T></p>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight"><T>{"What China’s top players are building"}</T></h2>
             <p className="mt-1 max-w-2xl text-sm text-muted">{`Every champion's loadouts in China's Legendary queue, pooled over the ${span}. Shares are of each lane's games; China gives no game counts, so every lane counts once.`}</p>
           </div>
           <Pills value={tab} options={TABS.filter((t) => t.key !== "duos" || data.duos.length).map((t): [TabKey, string] => [t.key, t.label])} onChange={setTab} label="China this week" />
@@ -97,14 +98,14 @@ export function ChinaThisWeek({ data }: { data: Data }) {
           {tab === "rising" && (
             data.rising.length ? (
               <>
-                <p className="mb-3 text-xs text-faint">Cores and rune pages at 3%+ of a lane&rsquo;s games that at least doubled their share since the first capture we hold.</p>
+                <p className="mb-3 text-xs text-faint"><T>{"Cores and rune pages at 3%+ of a lane’s games that at least doubled their share since the first capture we hold."}</T></p>
                 <div className="grid gap-2 lg:grid-cols-2">
                   {data.rising.map((row) => (
                     <Link key={`${row.slug}-${row.lane}-${row.kind}-${row.entities.map((e) => e.name).join()}`} href={`/champions/${row.slug}`}
                       className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-black/15 p-2.5 transition hover:border-accent/30">
                       <img src={row.icon} alt="" className="h-10 w-10 shrink-0 rounded-full border border-white/10" loading="lazy" />
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold">{`${row.champion} · ${LANE_NAME[row.lane as Lane5] ?? row.lane}`}<span className="ml-1.5 text-[0.62rem] font-semibold uppercase tracking-wide text-faint">{row.kind === "items" ? "core" : "rune page"}</span></p>
+                        <p className="truncate text-sm font-semibold">{`${row.champion} · ${LANE_NAME[row.lane as Lane5] ?? row.lane}`}<span className="ml-1.5 text-[0.62rem] font-semibold uppercase tracking-wide text-faint">{row.kind === "items" ? <><T>{"core"}</T></> : <><T>{"rune page"}</T></>}</span></p>
                         <div className="mt-1 flex -space-x-1">
                           {row.entities.map((entity, i) => <img key={`${entity.name}-${i}`} src={entity.icon} alt={entity.name} title={entity.name} className="h-6 w-6 rounded-md border border-black/40 bg-black/30" loading="lazy" />)}
                         </div>
@@ -117,13 +118,13 @@ export function ChinaThisWeek({ data }: { data: Data }) {
                   ))}
                 </div>
               </>
-            ) : <p className="text-sm text-muted">Nothing has clearly taken off in the captures we hold yet.</p>
+            ) : <p className="text-sm text-muted"><T>{"Nothing has clearly taken off in the captures we hold yet."}</T></p>
           )}
-          {tab === "items" && <><p className="mb-3 text-xs text-faint">Share of games whose three-item core includes the item, averaged over lanes; the small number counts lanes where it is in 20%+ of cores.</p><RankedList rows={data.items[lane] ?? []} unit="as a core item" /></>}
-          {tab === "keystones" && <><p className="mb-3 text-xs text-faint">Share of games on each keystone, averaged over lanes; the small number counts lanes where it is run 20%+ of the time.</p><RankedList rows={data.keystones[lane] ?? []} unit="as a main pick" /></>}
+          {tab === "items" && <><p className="mb-3 text-xs text-faint"><T>{"Share of games whose three-item core includes the item, averaged over lanes; the small number counts lanes where it is in 20%+ of cores."}</T></p><RankedList rows={data.items[lane] ?? []} unit="as a core item" /></>}
+          {tab === "keystones" && <><p className="mb-3 text-xs text-faint"><T>{"Share of games on each keystone, averaged over lanes; the small number counts lanes where it is run 20%+ of the time."}</T></p><RankedList rows={data.keystones[lane] ?? []} unit="as a main pick" /></>}
           {tab === "duos" && (
             <>
-              <p className="mb-3 text-xs text-faint">The best pairs for each lane pairing, from China&rsquo;s best-partner lists. Win rates are pulled toward each list&rsquo;s average by how rarely the pair is seen.</p>
+              <p className="mb-3 text-xs text-faint"><T>{"The best pairs for each lane pairing, from China’s best-partner lists. Win rates are pulled toward each list’s average by how rarely the pair is seen."}</T></p>
               <div className="grid gap-3 lg:grid-cols-2">
                 {(queue?.groups ?? []).map((group) => (
                   <div key={group.lanes.join("+")} className="rounded-xl border border-white/[0.07] bg-black/15 p-3">
@@ -166,8 +167,8 @@ export function ChinaThisWeek({ data }: { data: Data }) {
               <>
                 <Link href={`/patch-impact/${data.patch.patch}`}
                   className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-sky-300/25 bg-sky-300/[0.06] px-4 py-3 text-sm transition hover:border-sky-300/45">
-                  <span><span className="font-semibold text-sky-200">{`Patch ${data.patch.patch} impact:`}</span> <span className="text-muted">every changed item and rune before and after, by role, and who moved most.</span></span>
-                  <span className="shrink-0 font-semibold text-sky-200">Read it →</span>
+                  <span><span className="font-semibold text-sky-200">{`Patch ${data.patch.patch} impact:`}</span> <span className="text-muted"><T>{"every changed item and rune before and after, by role, and who moved most."}</T></span></span>
+                  <span className="shrink-0 font-semibold text-sky-200"><T>{"Read it →"}</T></span>
                 </Link>
                 <p className="mb-3 text-xs text-faint">{`For the champions patch ${data.patch.patch} changed: the core that gained the most share of games since the ${day(data.patch.before)} capture, before the patch, and the one that lost the most. Moves under 2 points are left out.`}</p>
                 <div className="grid gap-2 lg:grid-cols-2">
@@ -182,7 +183,7 @@ export function ChinaThisWeek({ data }: { data: Data }) {
                   ))}
                 </div>
               </>
-            ) : <p className="text-sm text-muted">No capture from before the latest patch to compare against yet.</p>
+            ) : <p className="text-sm text-muted"><T>{"No capture from before the latest patch to compare against yet."}</T></p>
           )}
         </div>
       </div>

@@ -23,6 +23,10 @@ import itemsCatalogue from "@/data/items.json";
 import { getChampionLoadouts, type ChampionLoadoutLane, type LoadoutRow, type LoadoutTab } from "@/lib/cn-loadouts";
 import type { Champion } from "@/lib/data";
 import { getMatchups, hasCounterPage } from "@/lib/counters";
+import { getT } from "@/lib/ui-i18n";
+import { displayName, hasLocale, itemName as localItem, runeName as localRune, spellName as localSpell } from "@/lib/i18n";
+import { getChampionDetails } from "@/lib/champion-details";
+import { getChampionHistory } from "@/lib/champion-history";
 
 export const LANES = ["baron", "jungle", "mid", "dragon", "support"] as const;
 export type Lane = (typeof LANES)[number];
@@ -103,46 +107,94 @@ export type Faq = { q: string; a: string }[];
 const pct = (n: number) => `${n.toFixed(1)}%`;
 
 /** FAQ for the champion page, answered from the same data the page shows. */
-export function championFaq(champion: Champion, opts: { tierLabel: string; topItems?: string[] }): Faq {
+export function championFaq(champion: Champion, opts: { tierLabel: string; topItems?: string[]; lang?: string }): Faq {
+  // Every Q and A is a t() template (lib/ui-i18n.ts), so the FAQ reads
+  // naturally in each language; names come from the localized-names table.
+  const lang = opts.lang ?? "en";
+  const t = getT(lang);
   const faq: Faq = [];
-  const name = champion.name;
-  const topItems = opts.topItems ?? ladderTopItems(name);
+  const name = displayName(champion.name, lang);
+  const item = (n: string) => (hasLocale(lang) ? localItem(n, lang) : n);
+  const rune = (n: string) => (hasLocale(lang) ? localRune(n, lang) : n);
+  const champ = (n: string) => displayName(n, lang);
+  const topItems = opts.topItems ?? ladderTopItems(champion.name);
   if (topItems.length >= 3) {
     faq.push({
-      q: `What is the best ${name} build in Wild Rift?`,
-      a: `The items ${name}'s top players build most are ${topItems.slice(0, 5).join(", ")}. Build Studio can generate a build for your own playstyle and matchup.`,
+      q: t("What is the best {name} build in Wild Rift?", { name }),
+      a: t("The items {name}'s top players build most are {items}. Build Studio can generate a build for your own playstyle and matchup.", { name, items: topItems.slice(0, 5).map(item).join(", ") }),
     });
   }
   const { weak, strong } = getMatchups(champion.slug);
   if (weak.length > 0) {
     faq.push({
-      q: `Who counters ${name} in Wild Rift?`,
-      a: `${weak.slice(0, 3).map((m) => `${m.champion.name} (${name} wins ${pct(m.winRate)})`).join(", ")} are ${name}'s hardest matchups in China Legendary ranked.`,
+      q: t("Who counters {name} in Wild Rift?", { name }),
+      a: t("{list} are {name}'s hardest matchups in China Legendary ranked.", { name, list: weak.slice(0, 3).map((m) => t("{champ} ({name} wins {wr})", { champ: champ(m.champion.name), name, wr: pct(m.winRate) })).join(", ") }),
     });
   }
   if (strong.length > 0) {
     faq.push({
-      q: `Who is ${name} good against?`,
-      a: `${name} does best against ${strong.slice(0, 3).map((m) => `${m.champion.name} (${pct(m.winRate)})`).join(", ")}.`,
+      q: t("Who is {name} good against?", { name }),
+      a: t("{name} does best against {list}.", { name, list: strong.slice(0, 3).map((m) => `${champ(m.champion.name)} (${pct(m.winRate)})`).join(", ") }),
     });
   }
-  const runes = ladderRunes(name);
+  const runes = ladderRunes(champion.name);
   if (runes.keystones.length > 0 && runes.players > 0) {
     const k = runes.keystones[0];
     faq.push({
-      q: `What are the best runes for ${name}?`,
-      a: `${k.name} is the keystone ${k.count} of ${runes.players} top ${name} players run${runes.minors.length ? `, most often with ${runes.minors.slice(0, 3).map((m) => m.name).join(", ")}` : ""}.`,
+      q: t("What are the best runes for {name}?", { name }),
+      a: runes.minors.length
+        ? t("{keystone} is the keystone {count} of {players} top {name} players run, most often with {minors}.", { keystone: rune(k.name), count: k.count, players: runes.players, name, minors: runes.minors.slice(0, 3).map((m) => rune(m.name)).join(", ") })
+        : t("{keystone} is the keystone {count} of {players} top {name} players run.", { keystone: rune(k.name), count: k.count, players: runes.players, name }),
+    });
+  }
+  // Summoner spells: the most-played pair in China Legendary, any lane.
+  const spellRow = getChampionLoadouts(champion.slug)
+    .flatMap((l) => usableRows(l.tabs.spells, "spells"))
+    .sort((a, b) => b.pickRate - a.pickRate)[0];
+  if (spellRow) {
+    faq.push({
+      q: t("What summoner spells does {name} take?", { name }),
+      a: t("{spells}, picked in {pick} of {name}'s China Legendary games.", { spells: spellRow.entities.map((e) => (hasLocale(lang) ? localSpell(e.name, lang) : e.name)).join(" + "), pick: pct(spellRow.pickRate), name }),
+    });
+  }
+  const skill = getChampionDetails(champion.slug)?.skillPriority ?? [];
+  if (skill.length >= 2) {
+    faq.push({
+      q: t("What is {name}'s skill order?", { name }),
+      a: t("Max {order}, taking the ultimate whenever it is available.", { order: skill.join(" > ") }),
     });
   }
   faq.push({
-    q: `Is ${name} good in Wild Rift right now?`,
-    a: `${name} is ${opts.tierLabel} with a ${pct(champion.wr)} win rate across its best players in EU and NA${champion.roles && champion.roles.length > 1 ? `, played in ${champion.roles.join(" and ")}` : ` as a ${champion.role}`}.`,
+    q: t("Is {name} good in Wild Rift right now?", { name }),
+    a: t("{name} is {tier} with a {wr} win rate across its best players in EU and NA.", { name, tier: opts.tierLabel, wr: pct(champion.wr) }),
   });
+  if (champion.difficultyLabel) {
+    faq.push({
+      q: t("Is {name} hard to play?", { name }),
+      a: t("{name}'s difficulty is {difficulty}.", { name, difficulty: t(champion.difficultyLabel) }),
+    });
+  }
+  const lastChange = getChampionHistory(champion.name).changes.find((c) => !c.modeOnly);
+  if (lastChange) {
+    faq.push({
+      q: t("When was {name} last changed?", { name }),
+      a: t("{name} was last changed in patch {patch}.", { name, patch: lastChange.patch }),
+    });
+  }
+  const best = (champion.globalBestPlayerPodium ?? champion.bestPlayerPodium)?.players?.[0];
+  if (best?.player) {
+    faq.push({
+      q: t("Who is the best {name} player?", { name }),
+      a: best.server
+        ? t("{player} ({server}) tops the {name} ranking this season, combining win rate, ladder strength and games played.", { player: best.player, server: best.server, name })
+        : t("{player} tops the {name} ranking this season, combining win rate, ladder strength and games played.", { player: best.player, name }),
+    });
+  }
   const lanes = lanePages(champion.slug);
   if (lanes.length > 1) {
     faq.push({
-      q: `What lane is ${name} played in?`,
-      a: `${name} is played in ${lanes.map((l) => LANE_LABEL[l.lane as Lane]).join(", ")}. Each lane has its own build and matchups.`,
+      q: t("What lane is {name} played in?", { name }),
+      a: t("{name} is played in {lanes}. Each lane has its own build and matchups.", { name, lanes: lanes.map((l) => t(LANE_LABEL[l.lane as Lane])).join(", ") }),
     });
   }
   return faq;

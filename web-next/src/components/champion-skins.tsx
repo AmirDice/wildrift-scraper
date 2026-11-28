@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useEffect, useState } from "react";
 import type { ChampionSkin } from "@/lib/skins";
 
@@ -12,6 +13,9 @@ type VoteState = { counts: Record<string, number>; mine: string | null };
 
 /** Riot's CMS resizes on request; 640px WebP keeps a card under ~40 KB. */
 const sized = (url: string, width: number) => `${url}${url.includes("?") ? "&" : "?"}w=${width}&fm=webp`;
+
+/** Votes a champion needs before its counts and percentages are shown. */
+const SHOW_RESULTS_AT = 25;
 
 export function ChampionSkins({ champion, slug, skins }: { champion: string; slug: string; skins: ChampionSkin[] }) {
   const [votes, setVotes] = useState<VoteState | null>(null);
@@ -47,11 +51,15 @@ export function ChampionSkins({ champion, slug, skins }: { champion: string; slu
   }
 
   if (!skins.length) {
-    return <p className="glass rounded-2xl p-6 text-sm text-muted">No skins are listed for {champion} on the official site yet.</p>;
+    return <p className="glass rounded-2xl p-6 text-sm text-muted"><T vars={{ name: champion }}>{"No skins are listed for {name} on the official site yet."}</T></p>;
   }
 
   const total = votes ? Object.values(votes.counts).reduce((sum, count) => sum + count, 0) : 0;
-  const leader = votes && total > 0
+  // Counts stay hidden until a champion has enough votes to mean something
+  // (owner, 2026-11-28): "3 votes so far" on a new site reads as a dead page.
+  // Real votes only -- the results simply appear once there are enough.
+  const showResults = total >= SHOW_RESULTS_AT;
+  const leader = votes && showResults
     ? Object.entries(votes.counts).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null
     : null;
 
@@ -59,12 +67,12 @@ export function ChampionSkins({ champion, slug, skins }: { champion: string; slu
     <div>
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold">{champion} skins</h2>
+          <h2 className="text-lg font-semibold"><T vars={{ name: champion }}>{"{name} skins"}</T></h2>
           <p className="mt-1 max-w-2xl text-sm text-muted">
             {`All ${skins.length} ${champion} skins in Wild Rift, from the official site. Vote for your favourite: one vote per player, and you can change it any time.`}
           </p>
         </div>
-        <p className="text-xs text-faint">{votes ? `${total.toLocaleString("en-US")} ${total === 1 ? "vote" : "votes"} so far` : "Loading votes..."}</p>
+        <p className="text-xs text-faint">{!votes ? <T>{"Loading votes..."}</T> : showResults ? <T vars={{ n: total.toLocaleString("en-US") }}>{"{n} votes so far"}</T> : <T>{"Results appear once enough players have voted."}</T>}</p>
       </div>
       {error && <p className="mt-3 rounded-lg border border-bad/25 bg-bad/10 px-3 py-2 text-sm text-bad">{error}</p>}
 
@@ -80,24 +88,26 @@ export function ChampionSkins({ champion, slug, skins }: { champion: string; slu
                 <img src={sized(skin.image, 640)} alt={skin.name} loading="lazy" className="h-full w-full object-cover object-top" />
                 {leader === skin.key && (
                   <span className="absolute left-2 top-2 rounded-md bg-gold/90 px-2 py-0.5 text-[0.62rem] font-bold uppercase tracking-wide text-black">
-                    Community favourite
+                    <T>{"Community favourite"}</T>
                   </span>
                 )}
               </div>
               <div className="p-3">
                 <p className="truncate text-sm font-semibold text-text" title={skin.name}>{skin.name}</p>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
-                  <div className="h-full rounded-full bg-accent/70 transition-all" style={{ width: `${share}%` }} />
-                </div>
+                {showResults && (
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.06]">
+                    <div className="h-full rounded-full bg-accent/70 transition-all" style={{ width: `${share}%` }} />
+                  </div>
+                )}
                 <div className="mt-2 flex items-center justify-between gap-2">
                   <span className="text-xs tabular-nums text-faint">
-                    {votes ? `${share}% · ${count.toLocaleString("en-US")} ${count === 1 ? "vote" : "votes"}` : " "}
+                    {votes && showResults ? `${share}% · ${count.toLocaleString("en-US")} ${count === 1 ? "vote" : "votes"}` : " "}
                   </span>
                   <button type="button" onClick={() => void vote(skin.key)} disabled={busy !== null || !votes}
                     aria-pressed={mine}
                     title={mine ? "Your pick. Click again to take your vote back." : `Vote for ${skin.name}`}
                     className={`rounded-full px-3 py-1 text-xs font-semibold transition disabled:opacity-50 ${mine ? "bg-accent text-black" : "border border-white/[0.12] text-muted hover:border-accent/40 hover:text-text"}`}>
-                    {busy === skin.key ? "..." : mine ? "Your pick" : "Vote"}
+                    {busy === skin.key ? "..." : mine ? <><T>{"Your pick"}</T></> : <><T>{"Vote"}</T></>}
                   </button>
                 </div>
               </div>
@@ -106,7 +116,7 @@ export function ChampionSkins({ champion, slug, skins }: { champion: string; slu
         })}
       </div>
       <p className="mt-4 text-xs text-faint">
-        Skin names and art from wildrift.leagueoflegends.com. Wild Rift and its skins belong to Riot Games.
+        <T>{"Skin names and art from wildrift.leagueoflegends.com. Wild Rift and its skins belong to Riot Games."}</T>
       </p>
     </div>
   );

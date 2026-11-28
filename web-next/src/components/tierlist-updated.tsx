@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useEffect, useState } from "react";
 import type { Region } from "@/components/region-toggle";
 
@@ -48,7 +49,7 @@ export function ChinaUpdated() {
   return (
     <span className="glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-muted">
       <CalendarIcon />
-      Last updated{today && <> · <span className="text-text">{today}</span></>}
+      <T>{"Last updated"}</T>{today && <> · <span className="text-text">{today}</span></>}
     </span>
   );
 }
@@ -59,7 +60,7 @@ export function LastUpdated({ date }: { date?: string | null }) {
   return (
     <span className="glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-muted">
       <CalendarIcon />
-      Last updated · <span className="text-text">{date}</span>
+      <T>{"Last updated ·"}</T> <span className="text-text">{date}</span>
     </span>
   );
 }
@@ -112,13 +113,13 @@ export function RegionUpdated({
         // that passes no naDate is still comparing EU against China only
         // (/global, /rising) and gets the two it has.
         <>
-          Data updated
-          {eu && <><span className="text-faint">·</span><span className="text-text">EU {eu}</span></>}
-          {na && <><span className="text-faint">·</span><span className="text-text">NA {na}</span></>}
-          {cn && <><span className="text-faint">·</span><span className="text-text">CN {cn}</span></>}
+          <T>{"Data updated"}</T>
+          {eu && <><span className="text-faint">·</span><span className="text-text"><T>{"EU"}</T> {eu}</span></>}
+          {na && <><span className="text-faint">·</span><span className="text-text"><T>{"NA"}</T> {na}</span></>}
+          {cn && <><span className="text-faint">·</span><span className="text-text"><T>{"CN"}</T> {cn}</span></>}
         </>
       ) : (
-        <>Last updated <span className="text-faint">·</span> <span className="text-text">{region === "CN" ? cn : region === "NA" ? na : eu}</span></>
+        <><T>{"Last updated"}</T> <span className="text-faint">·</span> <span className="text-text">{region === "CN" ? cn : region === "NA" ? na : eu}</span></>
       )}
     </span>
   );

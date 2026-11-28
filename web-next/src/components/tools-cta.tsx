@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useBuildToolsVisible } from "@/lib/use-build-tools";
@@ -105,7 +106,7 @@ export function ToolsCta() {
             {/* The description is the first thing to go on a narrow screen. */}
             <p className="mt-1 hidden flex-1 text-xs text-muted sm:block">{t.body}</p>
             <span className={`mt-2 inline-flex items-center gap-1 text-xs font-semibold ${t.accent}`}>
-              Open <span className="transition-transform group-hover:translate-x-0.5">→</span>
+              <T>{"Open"}</T> <span className="transition-transform group-hover:translate-x-0.5">→</span>
             </span>
           </Link>
         ))}

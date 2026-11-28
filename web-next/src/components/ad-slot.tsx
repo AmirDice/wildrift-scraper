@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -176,7 +177,7 @@ export function AdSlot({ placement, className = "", bare = false }: {
             {/* Labelled, because an ad that reads as site content is both a
                 policy breach and a trick. */}
             <span className="pointer-events-none absolute -top-4 left-0 text-[0.6rem] uppercase tracking-wide text-faint">
-              Advertisement
+              <T>{"Advertisement"}</T>
             </span>
             <ins
               ref={ad}

@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import Link from "next/link";
 import { BUILD_TOOLS_LIVE } from "@/lib/flags";
 
@@ -75,7 +76,7 @@ export function NextStep({ steps }: { steps: (keyof typeof STEPS)[] }) {
 
   return (
     <section className="mt-12 border-t border-line/60 pt-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted">Where to next</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted"><T>{"Where to next"}</T></p>
       <div className={`mt-4 grid gap-3 ${picked.length > 1 ? "sm:grid-cols-2" : ""}`}>
         {picked.map((s) => (
           <Link

@@ -1,5 +1,7 @@
+import { T } from "@/components/t";
 import comboData from "@/data/champion_combos.json";
 import { getChampionDetails } from "@/lib/champion-details";
+import { tc } from "@/lib/content-i18n";
 
 /* eslint-disable @next/next/no-img-element */
 
@@ -21,20 +23,20 @@ const SLOT_LABEL: Record<string, string> = { P: "Passive", "1": "Q", "2": "W", "
  * highest-damage sequence with the tooltips in front of it, not from a guide, so
  * the page should not present them as authoritative.
  */
-export function ChampionCombo({ name, slug }: { name: string; slug: string }) {
+export function ChampionCombo({ name, slug, lang = "en" }: { name: string; slug: string; lang?: string }) {
   const entry = COMBOS.champions?.[name];
   if (!entry?.combo?.length) return null;
 
   const details = getChampionDetails(slug);
   const abilities = details?.abilities ?? [];
   const iconOf = new Map(abilities.map((a) => [String(a.slot), a.icon] as const));
-  const nameOf = new Map(abilities.map((a) => [String(a.slot), a.name] as const));
+  const nameOf = new Map(abilities.map((a) => [String(a.slot), tc(lang, a.name)] as const));
 
   return (
     <div className="glass rounded-2xl p-5 sm:p-6">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-lg font-semibold">Highest-damage combo</h2>
-        <span className="text-xs text-faint">suggested opener</span>
+        <h2 className="text-lg font-semibold"><T>{"Highest-damage combo"}</T></h2>
+        <span className="text-xs text-faint"><T>{"suggested opener"}</T></span>
       </div>
 
       <ol className="mt-4 flex flex-wrap items-center gap-x-1 gap-y-3">
@@ -55,10 +57,10 @@ export function ChampionCombo({ name, slug }: { name: string; slug: string }) {
                 </span>
               )}
               <span className="text-center text-[0.65rem] font-bold uppercase tracking-wide text-accent">
-                {step === "auto" ? "Attack" : SLOT_LABEL[step] ?? step}
+                {step === "auto" ? <><T>{"Attack"}</T></> : SLOT_LABEL[step] ?? step}
               </span>
               <span className="line-clamp-2 text-center text-[0.6rem] leading-tight text-faint">
-                {step === "auto" ? "basic" : nameOf.get(step) ?? ""}
+                {step === "auto" ? <><T>{"basic"}</T></> : nameOf.get(step) ?? ""}
               </span>
             </div>
           </li>
@@ -67,12 +69,11 @@ export function ChampionCombo({ name, slug }: { name: string; slug: string }) {
 
       {entry.why && (
         <p className="mt-4 border-t border-line/60 pt-3 text-sm leading-relaxed text-muted">
-          {entry.why}
+          {tc(lang, entry.why)}
         </p>
       )}
       <p className="mt-2 text-xs text-faint">
-        Ordered for damage against a single target, so it ignores safety and
-        positioning. Cooldowns and the situation decide the rest.
+        <T>{"Ordered for damage against a single target, so it ignores safety and positioning. Cooldowns and the situation decide the rest."}</T>
       </p>
     </div>
   );

@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { rankByBalance, recommendedRow, tabAverage } from "@/lib/loadout-score";
@@ -128,7 +129,7 @@ function movementNote(row: LoadoutRow, since: string | null): string | undefined
 
 function NewTag({ row, since }: { row: LoadoutRow; since: string | null }) {
   if (!since || !row.new || row.pickRate < NEW_MIN_PICK) return null;
-  return <span title={`Not in the ${since} capture`} className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-accent">New</span>;
+  return <span title={`Not in the ${since} capture`} className="rounded-md bg-accent/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-accent"><T>{"New"}</T></span>;
 }
 
 function Move({ delta, note }: { delta: number; note?: string }) {
@@ -213,8 +214,8 @@ function StandardRow({ row, kind, since, position, recommended = false, week, tr
           {/* Wraps: on a phone the Recommended and captures chips beside the
               label pushed "Three-item core" onto three lines and ran off the card. */}
           <p className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[0.64rem] text-faint">
-            <span className="whitespace-nowrap">{kind === "items" ? "Three-item core" : kind === "runes" ? "Full rune page" : kind === "boots" ? "Tier 2 boots" : kind === "spells" ? "Spell pair" : "Opponent"}</span>
-            {recommended && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold">Recommended</span>}
+            <span className="whitespace-nowrap">{kind === "items" ? <><T>{"Three-item core"}</T></> : kind === "runes" ? <><T>{"Full rune page"}</T></> : kind === "boots" ? <><T>{"Tier 2 boots"}</T></> : kind === "spells" ? <><T>{"Spell pair"}</T></> : <><T>{"Opponent"}</T></>}</span>
+            {recommended && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold"><T>{"Recommended"}</T></span>}
             {week && row.seen != null && (
               <span title={`Listed in ${row.seen} of the week's ${week} captures${row.bestIn ? `, and the day's pick in ${row.bestIn}` : ""}`}
                 className={`rounded-md px-1.5 py-0.5 text-[0.58rem] font-semibold ${row.seen === week ? "bg-white/[0.06] text-muted" : "bg-amber-300/10 text-amber-200"}`}>
@@ -227,7 +228,7 @@ function StandardRow({ row, kind, since, position, recommended = false, week, tr
               return rise && (
                 <span title={`${rise.from.toFixed(1)}% of games on ${rise.since}, ${rise.to.toFixed(1)}% now`}
                   className="rounded-md bg-sky-300/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-sky-200">
-                  Emerging in China
+                  <T>{"Emerging in China"}</T>
                 </span>
               );
             })()}
@@ -276,13 +277,13 @@ function PatchRowCard({ row, patches, position }: { row: LoadoutPatchRow; patche
                 </span>
               );
             })}
-            {row.flag === "proven" && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold" title="Beat the average last patch and is played far less now. Nothing in it was changed since.">Proven, rarely played now</span>}
+            {row.flag === "proven" && <span className="rounded-md bg-gold/15 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-gold" title="Beat the average last patch and is played far less now. Nothing in it was changed since."><T>{"Proven, rarely played now"}</T></span>}
             {row.flag === "outdated" && <span className="rounded-md bg-amber-300/10 px-1.5 py-0.5 text-[0.58rem] font-bold uppercase tracking-wide text-amber-200" title={`Strong last patch, but ${row.changed?.join(", ")} changed since, so those numbers describe a different build`}>{`${row.changed?.[0] ?? "Item"} changed`}</span>}
           </p>
         </div>
         <div className="shrink-0 border-l border-white/[0.07] pl-3 text-right">
           <p className={`text-sm font-bold tabular-nums ${row.score > 0 ? "text-emerald-300" : row.score < 0 ? "text-rose-300" : "text-text"}`}>{edgeText(row.score)}</p>
-          <p className="text-[0.57rem] font-semibold uppercase tracking-[0.12em] text-faint">vs avg</p>
+          <p className="text-[0.57rem] font-semibold uppercase tracking-[0.12em] text-faint"><T>{"vs avg"}</T></p>
         </div>
       </div>
     </article>
@@ -302,7 +303,7 @@ function MatchupPanel({ title, tone, rows, since }: { title: string; tone: "good
             {row.entities[0] && <EntityIcon entity={row.entities[0]} />}
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-semibold text-text">{row.entities[0]?.name}</p>
-              <p className="mt-0.5 text-[0.62rem] text-faint">{row.pickRate.toFixed(1)}% of listed matchups</p>
+              <p className="mt-0.5 text-[0.62rem] text-faint">{row.pickRate.toFixed(1)}<T>{"% of listed matchups"}</T></p>
             </div>
             <span className={`text-sm font-bold tabular-nums ${tone === "good" ? "text-emerald-300" : "text-rose-300"}`}>{row.winRate.toFixed(1)}%<WinRateMove row={row} since={since} /></span>
           </div>
@@ -319,12 +320,12 @@ function EmptyState({ champion }: { champion: string }) {
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.14em] text-amber-200">Collection pending</span>
-            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-faint">CN Legendary</span>
+            <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.14em] text-amber-200"><T>{"Collection pending"}</T></span>
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-faint"><T>{"CN Legendary"}</T></span>
           </div>
-          <h2 className="mt-3 text-lg font-semibold">Player loadouts for {champion}</h2>
+          <h2 className="mt-3 text-lg font-semibold"><T vars={{ name: champion }}>{"Player loadouts for {name}"}</T></h2>
           <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted">
-            This champion’s lane-by-lane item cores, runes, boots, spells and matchups are still being processed. The section will fill automatically with the next data refresh.
+            <T>{"This champion’s lane-by-lane item cores, runes, boots, spells and matchups are still being processed. The section will fill automatically with the next data refresh."}</T>
           </p>
         </div>
         <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-white/10 bg-white/[0.04] text-xl text-faint" aria-hidden="true">⌛</div>
@@ -445,11 +446,11 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-sky-200">CN server</span>
-              <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-faint">Legendary ranked</span>
+              <span className="rounded-full border border-sky-300/20 bg-sky-300/10 px-2.5 py-1 text-[0.62rem] font-bold uppercase tracking-[0.16em] text-sky-200"><T>{"CN server"}</T></span>
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.035] px-2.5 py-1 text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-faint"><T>{"Legendary ranked"}</T></span>
             </div>
-            <h2 className="mt-3 text-xl font-semibold tracking-tight">What top {champion} players are running</h2>
-            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted">Lane-specific loadouts from the CN server, with win rate and popularity kept side by side.</p>
+            <h2 className="mt-3 text-xl font-semibold tracking-tight"><T vars={{ name: champion }}>{"What top {name} players are running"}</T></h2>
+            <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted"><T>{"Lane-specific loadouts from the CN server, with win rate and popularity kept side by side."}</T></p>
           </div>
           {loadouts.length > 1 ? (
             <div className="flex max-w-full gap-1 overflow-x-auto rounded-xl border border-white/[0.08] bg-black/15 p-1" role="tablist" aria-label="Loadout lane">
@@ -484,7 +485,7 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
                 onClick={() => { setActiveTab(item.key); setExpanded(false); }}
                 className={`rounded-lg px-3 py-2 text-xs font-semibold transition sm:px-4 ${activeTab === item.key ? "bg-white/[0.09] text-text shadow-sm ring-1 ring-white/[0.08]" : "text-muted hover:bg-white/[0.04] hover:text-text"}`}
               >
-                <span className="sm:hidden">{item.short}</span><span className="hidden sm:inline">{item.label}</span>
+                <span className="sm:hidden"><T>{item.short}</T></span><span className="hidden sm:inline"><T>{item.label}</T></span>
               </button>
             ))}
           </div>
@@ -498,15 +499,15 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
 
         <div className="mt-4 flex flex-col gap-3 border-b border-white/[0.07] pb-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-text">{tabs.find((item) => item.key === activeTab)?.label}</h3>
+            <h3 className="text-sm font-semibold text-text"><T>{tabs.find((item) => item.key === activeTab)?.label ?? ""}</T></h3>
             <p className="mt-1 max-w-2xl text-xs leading-relaxed text-muted">{activeTab === "versus" ? versusCopy : TAB_COPY[tabKey as Exclude<TabKey, "versus">]}</p>
           </div>
           <div className="flex flex-wrap items-center gap-1.5 text-[0.62rem] font-semibold">
-            <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{tab.recognizedRows}/{tab.sourceRows} rows verified</span>
-            {tab.visibleCoverage > 0 && <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{Math.min(tab.visibleCoverage, 100).toFixed(1)}% visible pick share</span>}
+            <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{tab.recognizedRows}/{tab.sourceRows} <T>{"rows verified"}</T></span>
+            {tab.visibleCoverage > 0 && <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-muted">{Math.min(tab.visibleCoverage, 100).toFixed(1)}<T>{"% visible pick share"}</T></span>}
             {tab.stale
               ? <span className="rounded-full bg-amber-300/10 px-2.5 py-1 text-amber-200">{`China's data from ${formatDataDate(tab.date)}`}</span>
-              : <span className="rounded-full bg-emerald-300/10 px-2.5 py-1 text-emerald-200">Updated {formatCaptureDate(lane.capturedAt) ?? formatDataDate(tab.date)}</span>}
+              : <span className="rounded-full bg-emerald-300/10 px-2.5 py-1 text-emerald-200"><T>{"Updated"}</T> {formatCaptureDate(lane.capturedAt) ?? formatDataDate(tab.date)}</span>}
           </div>
         </div>
         {tab.stale && (
@@ -519,7 +520,7 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             {recommended && average != null ? (
               <p className="max-w-xl text-xs leading-relaxed text-muted">
-                <span className="font-semibold text-gold">{usingWeek ? "Recommended this week:" : "Recommended:"}</span>{" "}
+                <span className="font-semibold text-gold">{usingWeek ? <><T>{"Recommended this week:"}</T></> : <><T>{"Recommended:"}</T></>}</span>{" "}
                 <span className="font-semibold text-text">{recommended.entities.map((entity) => entity.name).join(" · ")}</span>
                 {usingWeek
                   ? `, the best balance of win rate and play rate across the ${week!.captures} captures from ${weekRange}: ${recommended.winRate.toFixed(1)}% over ${recommended.pickRate.toFixed(1)}% of games${recommended.bestIn ? `, and the day's pick in ${recommended.bestIn} of ${week!.captures}` : ""}.`
@@ -570,7 +571,7 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
             {patchView.rows.length > 6 && (
               <div className="mt-4 flex justify-center">
                 <button type="button" onClick={() => setExpanded((value) => !value)} className="rounded-full border border-white/[0.09] bg-white/[0.035] px-4 py-2 text-xs font-semibold text-muted transition hover:border-accent/25 hover:bg-accent/10 hover:text-accent">
-                  {expanded ? "Show fewer" : `Show all ${patchView.rows.length}`}
+                  {expanded ? <><T>{"Show fewer"}</T></> : `Show all ${patchView.rows.length}`}
                 </button>
               </div>
             )}
@@ -589,27 +590,27 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
               {rows.length > 6 && (
                 <div className="mt-4 flex justify-center">
                   <button type="button" onClick={() => setExpanded((value) => !value)} className="rounded-full border border-white/[0.09] bg-white/[0.035] px-4 py-2 text-xs font-semibold text-muted transition hover:border-accent/25 hover:bg-accent/10 hover:text-accent">
-                    {expanded ? "Show fewer" : `Show all ${rows.length}`}
+                    {expanded ? <><T>{"Show fewer"}</T></> : `Show all ${rows.length}`}
                   </button>
                 </div>
               )}
             </>
           )
         ) : (
-          <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-8 text-center text-sm text-muted">No verified rows are available for this tab yet.</div>
+          <div className="mt-4 rounded-2xl border border-dashed border-white/10 bg-black/10 px-4 py-8 text-center text-sm text-muted"><T>{"No verified rows are available for this tab yet."}</T></div>
         )}
 
         {!usingPatches && proven.length > 0 && (
           <button type="button" onClick={() => { setPeriod("patches"); setExpanded(false); }}
             className="mt-4 block w-full rounded-xl border border-gold/25 bg-gold/[0.05] px-3 py-2.5 text-left text-xs leading-relaxed text-muted transition hover:border-gold/40">
-            <span className="font-semibold text-gold">Older build worth a look: </span>
+            <span className="font-semibold text-gold"><T>{"Older build worth a look:"}</T> </span>
             {proven.map((row) => {
               const last = patchView!.order.filter((patch) => row.byPatch[patch]).slice(-1)[0];
               const prev = patchView!.order[patchView!.order.length - 2];
               const cell = row.byPatch[prev];
               return `${row.entities.map((entity) => entity.name).join(" · ")} beat ${prev}'s average (${cell?.wr.toFixed(1)}% over ${cell?.pick.toFixed(1)}% of games) and is ${last === prev ? "no longer listed" : "played far less"} now.`;
             }).join(" ")}
-            <span className="ml-1 font-semibold text-gold">See across patches →</span>
+            <span className="ml-1 font-semibold text-gold"><T>{"See across patches →"}</T></span>
           </button>
         )}
 
@@ -617,8 +618,8 @@ export function ChampionLoadouts({ champion, loadouts, partners = [] }: { champi
 
         {!showPartners && <div className="mt-4 flex flex-col gap-2 border-t border-white/[0.07] pt-3 text-[0.65rem] leading-relaxed text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>{usingWeek
-            ? "This week pools the captures by each row's share of games, since China gives no game counts. A higher row win rate does not prove the loadout caused the wins."
-            : "A higher row win rate does not prove the loadout caused the wins."}</p>
+            ? <><T>{"This week pools the captures by each row's share of games, since China gives no game counts. A higher row win rate does not prove the loadout caused the wins."}</T></>
+            : <><T>{"A higher row win rate does not prove the loadout caused the wins."}</T></>}</p>
           {since && !usingWeek && (
             <p className="shrink-0">
               {`Arrows: change since the ${since} capture, shown only for clear moves. Hover one for the numbers.`}

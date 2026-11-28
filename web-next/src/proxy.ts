@@ -2,25 +2,25 @@ import { NextResponse, type NextRequest } from "next/server";
 import { LANG_COOKIE, isSiteLanguage, parseAcceptLanguage, resolveLanguage } from "@/lib/preferred-language";
 
 /**
- * Language auto-detection (2026-11-28, owner request).
+ * Languages for the shared page tree (app/[lang]).
  *
- * A visitor landing on an English page that exists in their language is sent
- * to that version: home, tier list and champion pages. The language is their
- * saved choice (`wtm_lang` cookie), else their browser's language list, else
- * the country Vercel sees them in (lib/preferred-language.ts).
- *
- * Rules that keep this from hurting anyone:
- *  - Crawlers are never redirected. Google crawls without a language and must
- *    see every version at its own URL; hreflang tells it which is which.
- *  - An explicit choice wins forever: the language switcher links carry
- *    ?setlang=<code>, which saves the cookie here and strips the parameter.
- *    Choosing English stops the redirects.
- *  - Only pages that always exist in every language are matched, so a
- *    redirect can never land on a 404. Lane, runes and counters pages are
- *    reached through links from the translated champion page.
- *  - 307 (temporary): the English URL stays the canonical English page.
+ * 1. English lives at the unprefixed URLs: /, /tier-list, /champions,
+ *    /champions/<slug>[/<sub>] are REWRITTEN to /en/... so app/[lang]
+ *    renders them. /en/... itself redirects to the unprefixed URL, so there
+ *    is exactly one English URL per page.
+ * 2. Language auto-detection (owner request): a visitor on an English page is
+ *    sent to their language -- saved choice (`wtm_lang`), else browser
+ *    languages, else Vercel's country (lib/preferred-language.ts).
+ *    - Crawlers are never redirected; hreflang tells them which is which.
+ *    - ?setlang=<code> saves an explicit choice; choosing English stops it.
+ *    - 307, so the English URL stays the canonical English page.
  */
 const BOT = /bot|crawl|spider|slurp|bingpreview|facebookexternalhit|embedly|quora link|whatsapp|telegram|discord|lighthouse|headless|preview/i;
+
+/** English paths served from app/[lang] (the shared tree). */
+function isTreePath(path: string): boolean {
+  return path === "/" || path === "/tier-list" || path === "/champions" || /^\/champions\/[^/]+(\/[^/]+)?$/.test(path);
+}
 
 export function proxy(request: NextRequest) {
   const url = request.nextUrl;
@@ -33,26 +33,38 @@ export function proxy(request: NextRequest) {
     }
     return res;
   }
-  if (request.method !== "GET") return NextResponse.next();
-  if (BOT.test(request.headers.get("user-agent") ?? "")) return NextResponse.next();
+
+  const path = url.pathname;
+  // One English URL per page: /en/... -> /...
+  if (path === "/en" || path.startsWith("/en/")) {
+    const target = url.clone();
+    target.pathname = path === "/en" ? "/" : path.slice(3);
+    return NextResponse.redirect(target, 308);
+  }
+  if (!isTreePath(path)) return NextResponse.next();
+
+  const rewriteToEnglish = () => {
+    const target = url.clone();
+    target.pathname = path === "/" ? "/en" : `/en${path}`;
+    return NextResponse.rewrite(target);
+  };
+  if (request.method !== "GET" || BOT.test(request.headers.get("user-agent") ?? "")) return rewriteToEnglish();
 
   const lang = resolveLanguage({
     cookie: request.cookies.get(LANG_COOKIE)?.value ?? null,
     languages: parseAcceptLanguage(request.headers.get("accept-language")),
     country: request.headers.get("x-vercel-ip-country"),
   });
-  if (lang === "en") return NextResponse.next();
+  if (lang === "en") return rewriteToEnglish();
   const target = url.clone();
-  target.pathname = url.pathname === "/" ? `/${lang}` : `/${lang}${url.pathname}`;
+  target.pathname = path === "/" ? `/${lang}` : `/${lang}${path}`;
   return NextResponse.redirect(target, 307);
 }
 
 export const config = {
-  // Only English pages that exist in every language. /champions/<slug> but
-  // not deeper: a champion's lane/runes/counters pages exist only where they
-  // have data.
   matcher: [
-    "/", "/tier-list", "/champions", "/champions/:slug",
+    "/", "/tier-list", "/champions", "/champions/:slug", "/champions/:slug/:sub",
+    "/en", "/en/:path*",
     // A language choice (?setlang=) is honoured on any page.
     { source: "/:path*", has: [{ type: "query", key: "setlang" }] },
   ],

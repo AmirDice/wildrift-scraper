@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 /**
  * "Hot" marker, on three pages only (2026-11-28): Tier List and Leaderboards,
  * the most visited after the home page, and Build Studio (v5). The same pages
@@ -13,7 +14,7 @@ export function HotTag({ className = "" }: { className?: string }) {
     <span
       className={`inline-flex items-center rounded-full border border-red-400/30 bg-red-500/10 px-1.5 py-0.5 text-[0.5rem] font-bold uppercase leading-none tracking-[0.1em] text-red-300 ${className}`}
     >
-      <span aria-hidden className="mr-0.5">🔥</span>Hot
+      <span aria-hidden className="mr-0.5">🔥</span><T>{"Hot"}</T>
     </span>
   );
 }

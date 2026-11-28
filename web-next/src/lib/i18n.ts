@@ -77,3 +77,14 @@ export function fmtPct(lang: Locale, n: number): string {
     default: return `${v}%`;
   }
 }
+
+/** Every language a page can be rendered in, English included. */
+export type PageLang = Locale | "en";
+export const isPageLang = (value: string): value is PageLang => value === "en" || hasLocale(value);
+/** A site path in a page language: English stays unprefixed. */
+export const lp = (lang: string, path: string): string =>
+  lang === "en" || !hasLocale(lang) ? path : `/${lang}${path === "/" ? "" : path}`;
+
+/** A champion's name in a page language; English names stay as they are. */
+export const displayName = (name: string, lang: string): string =>
+  lang === "en" || !hasLocale(lang) ? name : champName(name, lang);

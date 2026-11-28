@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 export const REGIONS = ["EU", "NA", "CN"] as const;
 /** "Global" is not a server; it averages the EU and NA boards. "CN" is
  *  Tencent's published China rates (China's own top-30 board was retired
@@ -48,7 +49,7 @@ export function RegionToggle({
 }) {
   return (
     <div className="inline-flex items-center gap-3">
-      <span className="text-xs font-semibold uppercase tracking-wide text-faint">Region</span>
+      <span className="text-xs font-semibold uppercase tracking-wide text-faint"><T>{"Region"}</T></span>
       {/* liquid-glass, not the flat strip it was: this control decides what
           the whole page shows, and a quiet border on a dark ground was the
           most-missed element on the tier list. */}
@@ -65,7 +66,7 @@ export function RegionToggle({
             >
               {r}
               {!hasData && (
-                <span className="ml-1 text-[0.55rem] font-medium uppercase opacity-70">soon</span>
+                <span className="ml-1 text-[0.55rem] font-medium uppercase opacity-70"><T>{"soon"}</T></span>
               )}
             </button>
           );
@@ -78,10 +79,9 @@ export function RegionToggle({
 export function RegionComingSoon({ region }: { region: Region }) {
   return (
     <div className="glass rounded-2xl p-12 text-center">
-      <p className="text-lg font-semibold">{region} data is coming soon</p>
+      <p className="text-lg font-semibold"><T vars={{ region }}>{"{region} data is coming soon"}</T></p>
       <p className="mx-auto mt-2 max-w-md text-sm text-muted">
-        We&rsquo;re currently tracking <span className="text-text">EU</span>. {region} win rates and
-        leaderboards are on the way, check back after an upcoming update.
+        <T>{"We’re currently tracking"}</T> <span className="text-text"><T>{"EU"}</T></span>. {region} <T>{"win rates and leaderboards are on the way, check back after an upcoming update."}</T>
       </p>
     </div>
   );

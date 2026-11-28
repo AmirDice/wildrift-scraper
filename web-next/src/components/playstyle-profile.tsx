@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import { PLAYSTYLE_METRICS, playstyleLevel, type PlaystyleProfileData } from "@/lib/playstyle-profile";
 
 export function PlaystyleProfile({ name, profile }: { name: string; profile: PlaystyleProfileData }) {
@@ -5,11 +6,11 @@ export function PlaystyleProfile({ name, profile }: { name: string; profile: Pla
     <div>
       <div className="flex flex-wrap items-end justify-between gap-2">
         <div>
-          <h2 className="text-lg font-semibold">{name} playstyle profile</h2>
-          <p className="mt-1 text-sm text-muted">A practical view of how the kit wants to play, not a power ranking.</p>
+          <h2 className="text-lg font-semibold">{name} <T>{"playstyle profile"}</T></h2>
+          <p className="mt-1 text-sm text-muted"><T>{"A practical view of how the kit wants to play, not a power ranking."}</T></p>
         </div>
         <span className="rounded-full bg-white/[0.06] px-2.5 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-faint">
-          {profile.source === "kit-profile" ? `${profile.confidence} confidence` : "role-based estimate"}
+          {profile.source === "kit-profile" ? `${profile.confidence} confidence` : <><T>{"role-based estimate"}</T></>}
         </span>
       </div>
       <div className="mt-5 grid gap-x-6 gap-y-4 sm:grid-cols-2">
@@ -51,8 +52,8 @@ export function PlaystyleComparison({
   return (
     <div className="glass rounded-2xl p-4 sm:p-5">
       <div className="mb-5 text-center">
-        <h2 className="font-semibold">Playstyle comparison</h2>
-        <p className="mt-1 text-xs text-muted">Kit tendencies explain how the champions differ; they do not decide who wins.</p>
+        <h2 className="font-semibold"><T>{"Playstyle comparison"}</T></h2>
+        <p className="mt-1 text-xs text-muted"><T>{"Kit tendencies explain how the champions differ; they do not decide who wins."}</T></p>
       </div>
       <div className="space-y-4">
         {PLAYSTYLE_METRICS.map((metric) => {

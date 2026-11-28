@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useEffect, useState } from "react";
 import { CURRENT_PATCH } from "@/lib/patch";
 
@@ -58,12 +59,12 @@ export function SeasonCard() {
         <div>
           <div className="flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.18em]" style={{ color: WARM }}>
             <span className="h-2 w-2 rounded-full" style={{ background: WARM, boxShadow: `0 0 8px ${WARM}` }} />
-            Season in progress
+            <T>{"Season in progress"}</T>
           </div>
           <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span className="text-5xl font-black leading-none" style={{ color: WARM }}>{SEASON_NUM}</span>
             <span className="text-xl font-semibold tracking-tight">{SEASON_TITLE}</span>
-            <span className="rounded-md bg-white/[0.08] px-2 py-0.5 text-xs font-bold text-muted">Patch {PATCH}</span>
+            <span className="rounded-md bg-white/[0.08] px-2 py-0.5 text-xs font-bold text-muted"><T>{"Patch"}</T> {PATCH}</span>
           </div>
           <div className="mt-4 h-1.5 w-full max-w-lg overflow-hidden rounded-full bg-white/[0.08]">
             <div className="h-full rounded-full" style={{ width: `${pct}%`, background: `linear-gradient(90deg, ${WARM}, #8fb8ff)` }} />
@@ -74,10 +75,10 @@ export function SeasonCard() {
               ? "Riot has not published the exact end date. The patch notes say January 2027 and point to the in-game Ranked queue for the schedule, so the countdown is approximate."
               : undefined}
           >
-            {SEASON_END_ESTIMATED && "about "}
-            <strong className="text-text">{daysLeft ?? "-"}</strong> days left
-            <span className="mx-2 text-faint">·</span>ends {endsAt}
-            <span className="mx-2 text-faint">·</span>{pct.toFixed(0)}% complete
+            {SEASON_END_ESTIMATED && <><T>{"about"}</T> </>}
+            <strong className="text-text">{daysLeft ?? "-"}</strong> <T>{"days left"}</T>
+            <span className="mx-2 text-faint">·</span><T>{"ends"}</T> {endsAt}
+            <span className="mx-2 text-faint">·</span>{pct.toFixed(0)}<T>{"% complete"}</T>
           </p>
         </div>
 

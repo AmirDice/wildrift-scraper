@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useCallback, useEffect, useState } from "react";
 
 const storageKey = (buildId: string) => `wtm_like_${buildId}`;
@@ -94,7 +95,7 @@ export function BuildLikeButton({ buildId, className = "" }: { buildId: string; 
       } ${className}`}
     >
       <ThumbUp filled={liked} />
-      {liked ? "Liked" : "Like"}
+      {liked ? <><T>{"Liked"}</T></> : <><T>{"Like"}</T></>}
       {showCount && <span className="font-bold tabular-nums">{count}</span>}
     </button>
   );

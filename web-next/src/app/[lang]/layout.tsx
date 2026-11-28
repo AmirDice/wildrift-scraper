@@ -1,21 +1,27 @@
 import { notFound } from "next/navigation";
-import { HREFLANG, LOCALES, hasLocale } from "@/lib/i18n";
+import { HREFLANG, LOCALES, isPageLang } from "@/lib/i18n";
+import { uiTable } from "@/lib/ui-i18n";
+import { I18nProvider } from "@/components/i18n-provider";
 
 /**
- * Translated pages live under /<lang>/ (lib/i18n.ts). Only the six locales
- * are valid; any other first path segment that reaches this layout is a 404.
+ * One page tree for every language (2026-11-28). The home page, tier list,
+ * champion index and champion/lane/runes/counters pages live under /[lang];
+ * English is served at the unprefixed URLs by src/proxy.ts rewriting them to
+ * /en/..., so every language renders the exact same components.
  *
  * The root layout's <html lang="en"> cannot change per route without moving
  * every page under this segment, so the content carries its own lang here.
- * Search engines read hreflang and the text itself; this keeps screen readers
- * and translation prompts correct.
  */
 export function generateStaticParams() {
-  return LOCALES.map((lang) => ({ lang }));
+  return ["en", ...LOCALES].map((lang) => ({ lang }));
 }
 
 export default async function LangLayout(props: LayoutProps<"/[lang]">) {
   const { lang } = await props.params;
-  if (!hasLocale(lang)) notFound();
-  return <div lang={HREFLANG[lang]}>{props.children}</div>;
+  if (!isPageLang(lang)) notFound();
+  return (
+    <div lang={lang === "en" ? "en" : HREFLANG[lang]}>
+      <I18nProvider lang={lang} table={uiTable(lang)}>{props.children}</I18nProvider>
+    </div>
+  );
 }

@@ -1,50 +1,89 @@
+import { T } from "@/components/t";
+import { getT } from "@/lib/ui-i18n";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { isPageLang, lp } from "@/lib/i18n";
 import { notFound } from "next/navigation";
-import { getChampions } from "@/lib/data";
-import { Container, ChampionAvatar, TierChip } from "@/components/ui";
-import { HREFLANG, champName, fmtPct, hasLocale, languageAlternates, type Locale } from "@/lib/i18n";
-import { dict } from "@/lib/i18n-dict";
-import { LanguageSwitcher } from "@/components/i18n-parts";
+import { languageAlternates } from "@/lib/i18n";
+import Link from "next/link";
+import { site, getChampions, regionBoard } from "@/lib/data";
+import { getCnChampions, cnRoles, CN_META, cnChampionsWithoutData } from "@/lib/cn";
+import rosterData from "@/data/roster.json";
+import { AdSlot } from "@/components/ad-slot";
+import { Container } from "@/components/ui";
+import { ChampionsExplorer } from "@/components/champions-explorer";
+import { NewChampions } from "@/components/new-champions";
+import { NextStep } from "@/components/next-step";
 
-/** Translated champion index, the target of the nav's Champions link. */
-export const revalidate = 86400;
-
-type Props = PageProps<"/[lang]/champions">;
-
-export async function generateMetadata(props: Props): Promise<Metadata> {
+export async function generateMetadata(props: PageProps<"/[lang]/champions">): Promise<Metadata> {
   const { lang } = await props.params;
-  if (!hasLocale(lang)) return { title: "Not found" };
-  const t = dict(lang);
-  const title = `${t.allChampions} · Wild Rift`;
+  const t = getT(lang);
   return {
-    title, description: t.homeDescription,
-    alternates: { canonical: `/${lang}/champions`, languages: languageAlternates("/champions") },
-  };
+  title: t("Wild Rift Champions | Stats & Win Rates"),
+  description:
+    t("Every Wild Rift champion ranked by the real win rates of its top players on EU and NA. Search and filter by role, then open a champion for full stats and its best player."),
+  alternates: { canonical: lp(lang, "/champions"), languages: languageAlternates("/champions") },
+};
 }
 
-export default async function LocalizedChampions(props: Props) {
-  const { lang: rawLang } = await props.params;
-  if (!hasLocale(rawLang)) notFound();
-  const lang: Locale = rawLang;
-  const t = dict(lang);
-  const all = getChampions().filter((c) => !c.statsPending)
-    .sort((a, b) => champName(a.name, lang).localeCompare(champName(b.name, lang), HREFLANG[lang]));
+export default async function ChampionsPage(props: PageProps<"/[lang]/champions">) {
+  const { lang } = await props.params;
+  if (!isPageLang(lang)) notFound();
+  const champions = getChampions();
+  // Named per region so the explorer can say WHICH champions have no numbers,
+  // rather than just listing fewer than the game has.
+  const roster = Object.keys(rosterData);
+  const euNames = new Set(champions.map((c) => c.name));
+  const absent = {
+    CN: cnChampionsWithoutData(),
+    EU: roster.filter((name) => !euNames.has(name)).sort((a, b) => a.localeCompare(b)),
+  };
   return (
-    <Container className="py-10 sm:py-14">
-      <LanguageSwitcher path="/champions" current={lang} label={t.language} />
-      <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">{t.allChampions}</h1>
-      <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-        {all.map((c) => (
-          <Link key={c.slug} href={`/${lang}/champions/${c.slug}`} className="glass glass-hover flex items-center gap-2 rounded-xl p-2.5">
-            <ChampionAvatar champion={c} size={36} showBadges={false} />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-sm font-medium">{champName(c.name, lang)}</span>
-              <span className="flex items-center gap-1"><TierChip tier={c.tier} /><span className="text-xs tabular-nums text-accent">{fmtPct(lang, c.wr)}</span></span>
-            </span>
-          </Link>
-        ))}
+    <section
+      className="champions-revamp no-plate"
+      style={{
+        backgroundImage:
+          "radial-gradient(55rem 28rem at 88% 2%, rgba(52,170,173,.16), transparent 70%), radial-gradient(42rem 28rem at 8% 18%, rgba(82,130,225,.15), transparent 72%), linear-gradient(180deg, rgba(8,19,33,.84), rgba(6,15,29,.91))",
+      }}
+    >
+      <Container className="relative py-10 sm:py-14">
+      <div className="flex flex-wrap items-end justify-between gap-5">
+        <div className="max-w-2xl">
+          <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-emerald-300"><T>{"Champion atlas"}</T></p>
+          <h1 className="display-title text-6xl leading-[0.9] sm:text-7xl lg:text-[5.5rem]"><T>{"Champions"}</T></h1>
+          <p className="mt-4 text-base text-muted sm:text-lg"><T>{"Find the right pick. See what matters."}</T></p>
+        </div>
+        <Link
+          href="/compare"
+          className="liquid-glass glass-hover inline-flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-semibold text-text"
+        >
+          <T>{"Compare champions"}</T> <span aria-hidden>→</span>
+        </Link>
       </div>
-    </Container>
+      <div className="mt-8">
+        <ChampionsExplorer
+          champions={champions}
+          roles={site.roles}
+          cnChampions={getCnChampions()}
+          naChampions={regionBoard("NA").champions}
+          naRoles={regionBoard("NA").roles}
+          naUpdated={regionBoard("NA").collectedOn}
+          cnRoles={cnRoles()}
+          cnMeta={CN_META}
+          euUpdated={site.collectedOn}
+          absent={absent}
+          rosterSize={roster.length}
+        />
+      </div>
+      <AdSlot placement="inline" bare className="my-10" />
+      {/* Champions who are live in the game but have no ranked sample yet.
+          They cannot be placed in the explorer above without inventing a win
+          rate, so they get their own section with the kit we do have. */}
+      <div className="mt-14">
+        <NewChampions />
+      </div>
+      <NextStep steps={["build", "tierList"]} />
+
+      </Container>
+    </section>
   );
 }

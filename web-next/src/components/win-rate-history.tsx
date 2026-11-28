@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useMemo, useState } from "react";
 import type { Point, WinRateHistory as History } from "@/lib/wr-history";
 import { REGION_LONG, useRegionScope, type Region } from "@/components/region-scope";
@@ -60,7 +61,7 @@ export function WinRateHistory({ champion, history }: { champion: string; histor
   if (!frame || !primary.length) {
     return (
       <article className="rounded-2xl border border-white/[0.09] bg-black/20 p-5">
-        <h2 className="text-base font-semibold">Win rate over time</h2>
+        <h2 className="text-base font-semibold"><T>{"Win rate over time"}</T></h2>
         <p className="mt-2 text-sm text-muted">{`No ${REGION_LONG[region]} history for ${champion} yet.`}</p>
       </article>
     );
@@ -79,7 +80,7 @@ export function WinRateHistory({ champion, history }: { champion: string; histor
     <article className="relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[linear-gradient(145deg,rgba(214,231,255,.065),rgba(49,83,138,.025)),rgba(7,14,27,.82)] p-4 shadow-[inset_0_1px_rgba(255,255,255,.1)] sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-sm font-semibold sm:text-base">{champion} win rate over time</h2>
+          <h2 className="text-sm font-semibold sm:text-base"><T vars={{ name: champion }}>{"{name} win rate over time"}</T></h2>
           <p className="mt-0.5 text-xs text-faint">
             {`${REGION_LONG[region]} top-player boards, one point per collection.`}
           </p>
@@ -148,13 +149,13 @@ export function WinRateHistory({ champion, history }: { champion: string; histor
           </span>
         ))}
         {daily.length > 1 && (
-          <span className="flex items-center gap-1.5"><span className="w-4 border-t border-dashed border-gold/70" />China, all ranked games (daily)</span>
+          <span className="flex items-center gap-1.5"><span className="w-4 border-t border-dashed border-gold/70" /><T>{"China, all ranked games (daily)"}</T></span>
         )}
-        {patches.length > 0 && <span className="flex items-center gap-1.5"><span className="h-3 border-l border-dashed border-white/40" />Balance patch</span>}
+        {patches.length > 0 && <span className="flex items-center gap-1.5"><span className="h-3 border-l border-dashed border-white/40" /><T>{"Balance patch"}</T></span>}
       </div>
       {region === "global" && history.globalServers.some((n) => n < 3) && (
         <p className="mt-2 text-[0.7rem] leading-relaxed text-faint">
-          Global averages the latest board each server had at the time. Points before China&rsquo;s first collection are EU and NA only.
+          <T>{"Global averages the latest board each server had at the time. Points before China’s first collection are EU and NA only."}</T>
         </p>
       )}
     </article>

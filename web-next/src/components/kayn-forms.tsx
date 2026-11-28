@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useState } from "react";
 import Link from "next/link";
 import type { AbilityCard } from "@/lib/champion-details";
@@ -46,12 +47,12 @@ export function KaynFormGuide() {
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div><h2 className="text-lg font-semibold">Choose Kayn&apos;s form</h2><p className="mt-1 text-sm text-muted">The form changes the kit, matchups, runes, and item priorities—not just the label.</p></div>
-        {buildToolsVisible && <Link href={`/build?champion=kayn&tab=generate`} className="rounded-full bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent">Generate a form build →</Link>}
+        <div><h2 className="text-lg font-semibold"><T>{"Choose Kayn's form"}</T></h2><p className="mt-1 text-sm text-muted"><T>{"The form changes the kit, matchups, runes, and item priorities—not just the label."}</T></p></div>
+        {buildToolsVisible && <Link href={`/build?champion=kayn&tab=generate`} className="rounded-full bg-accent/15 px-3 py-1.5 text-xs font-semibold text-accent"><T>{"Generate a form build →"}</T></Link>}
       </div>
       <div className="mt-4 max-w-lg"><FormToggle value={form} onChange={setForm} /></div>
       <div className={`mt-4 rounded-xl border p-4 ${data.tone}`}>
-        <p className="text-xs font-bold uppercase tracking-wide opacity-80">Best into</p>
+        <p className="text-xs font-bold uppercase tracking-wide opacity-80"><T>{"Best into"}</T></p>
         <p className="mt-1 font-semibold">{data.bestInto}</p>
         <p className="mt-2 text-sm leading-relaxed text-muted">{data.identity}</p>
         <div className="mt-3 flex flex-wrap gap-1.5">{data.build.map((point) => <span key={point} className="rounded-md bg-black/15 px-2 py-1 text-xs">{point}</span>)}</div>
@@ -74,7 +75,7 @@ export function KaynAbilities({ shadowAbilities, rhaastAbilities }: {
   return (
     <div>
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div><h2 className="text-lg font-semibold">Kayn abilities by form</h2><p className="mt-1 text-sm text-muted">Switch forms to see the transformed effects and cooldowns.</p></div>
+        <div><h2 className="text-lg font-semibold"><T>{"Kayn abilities by form"}</T></h2><p className="mt-1 text-sm text-muted"><T>{"Switch forms to see the transformed effects and cooldowns."}</T></p></div>
         <div className="w-full sm:w-[310px]"><FormToggle value={form} onChange={setForm} /></div>
       </div>
       <div className="mt-6 space-y-5">
@@ -85,7 +86,7 @@ export function KaynAbilities({ shadowAbilities, rhaastAbilities }: {
               <span className="absolute -left-1.5 -top-1.5 grid h-5 min-w-5 place-items-center rounded-full bg-[#0e1322] px-1 text-[0.6rem] font-bold text-accent ring-1 ring-line">{ability.key}</span>
             </div>
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2"><span className="font-semibold">{ability.name}</span>{ability.cooldowns.length > 0 && <span className="text-[0.7rem] text-faint">CD {ability.cooldowns.join(" / ")}s</span>}</div>
+              <div className="flex flex-wrap items-center gap-2"><span className="font-semibold">{ability.name}</span>{ability.cooldowns.length > 0 && <span className="text-[0.7rem] text-faint"><T>{"CD"}</T> {ability.cooldowns.join(" / ")}s</span>}</div>
               <p className="mt-1 text-sm leading-relaxed text-muted">{ability.text}</p>
             </div>
           </div>

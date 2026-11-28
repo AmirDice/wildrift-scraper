@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
@@ -71,7 +72,7 @@ function slides(): Slide[] {
     out.push({
       id: "build",
       eyebrow: "Builds reasoned, not repeated",
-      title: <>Build for <em className="not-italic text-accent">this game</em> - not every game.</>,
+      title: <><T>{"Build for"}</T> <em className="not-italic text-accent"><T>{"this game"}</T></em> <T>{"- not every game."}</T></>,
       body:
         "Stop copying the same build every match. Generate a personalized Wild Rift build for your "
         + "champion, role, playstyle, and enemy team backed by current patch data and real "
@@ -84,7 +85,7 @@ function slides(): Slide[] {
     out.push({
       id: "counter",
       eyebrow: "Counter builder",
-      title: <>Build against <em className="not-italic text-emerald-300">their five</em>, item by item.</>,
+      title: <><T>{"Build against"}</T> <em className="not-italic text-emerald-300"><T>{"their five"}</T></em><T>{", item by item."}</T></>,
       body:
         "Name your champion and the five you are up against, and get the items, runes and purchase "
         + "order shaped to beat exactly those picks, each with the reason it is there.",
@@ -97,7 +98,7 @@ function slides(): Slide[] {
     out.push({
       id: "tier",
       eyebrow: "Real top-player win rates",
-      title: <>What actually wins, <em className="not-italic text-accent">not what is loud</em>.</>,
+      title: <><T>{"What actually wins,"}</T> <em className="not-italic text-accent"><T>{"not what is loud"}</T></em>.</>,
       body:
         "Every champion ranked by the real win rates of its best players, confidence-adjusted so "
         + "hype and lucky streaks never make the cut.",
@@ -111,7 +112,7 @@ function slides(): Slide[] {
     out.push({
       id: "draft",
       eyebrow: "Draft assistant",
-      title: <>Win the draft <em className="not-italic text-gold">before the game starts</em>.</>,
+      title: <><T>{"Win the draft"}</T> <em className="not-italic text-gold"><T>{"before the game starts"}</T></em>.</>,
       body:
         "Tap the lobby as it happens: all ten bans, their picks, your team. It ranks what to pick "
         + "from the champions you actually play, then turns their comp into a counter build.",
@@ -123,7 +124,7 @@ function slides(): Slide[] {
   out.push({
     id: "overlay",
     eyebrow: "Android overlay · alpha",
-    title: <>Your draft, <em className="not-italic text-emerald-300">on top of the game</em>.</>,
+    title: <><T>{"Your draft,"}</T> <em className="not-italic text-emerald-300"><T>{"on top of the game"}</T></em>.</>,
     body:
       "An overlay that reads champion select on your phone and shows the picks, the bans and the "
       + "build you need, without ever leaving Wild Rift.",
@@ -138,7 +139,7 @@ function slides(): Slide[] {
     out.push({
       id: "tier",
       eyebrow: "Real top-player win rates",
-      title: <>What actually wins, <em className="not-italic text-accent">not what is loud</em>.</>,
+      title: <><T>{"What actually wins,"}</T> <em className="not-italic text-accent"><T>{"not what is loud"}</T></em>.</>,
       body:
         "Every champion ranked by the real win rates of its best players, confidence-adjusted so "
         + "hype and lucky streaks never make the cut. It is the evidence the builds are made from.",
@@ -314,8 +315,8 @@ export function HeroCarousel() {
                   <span aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_72%_16%,rgba(85,165,210,.16),transparent_52%),linear-gradient(135deg,rgba(18,38,66,.7),rgba(4,9,18,.92))]" />
                   <span className="absolute bottom-4 left-4 right-4 z-[2] flex items-end justify-between rounded-2xl border border-white/10 bg-[#070d18]/78 p-4 backdrop-blur-xl sm:bottom-6 sm:left-6 sm:right-6">
                     <span>
-                      <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-faint">Live signal</span>
-                      <span className="mt-1 block text-sm font-semibold text-white">Built from top-player data</span>
+                      <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-faint"><T>{"Live signal"}</T></span>
+                      <span className="mt-1 block text-sm font-semibold text-white"><T>{"Built from top-player data"}</T></span>
                     </span>
                     <svg viewBox="0 0 120 34" className="h-8 w-28" aria-hidden>
                       <defs>

@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import Link from "next/link";
 import type { Freshness } from "@/lib/patch-freshness";
 
@@ -25,19 +26,15 @@ export function PatchLagNotice({
       role="note"
     >
       <p className="text-xs font-semibold uppercase tracking-wide text-gold">
-        Collected before patch {patch}
+        <T>{"Collected before patch"}</T> {patch}
       </p>
       <p className="mt-1.5 text-xs leading-relaxed text-muted">
-        These win rates come from games played on the previous patch. The board was collected
-        on <span className="text-text">{collectedOn}</span>, {days} before {patch} went live, so
-        any champion changed by it is still showing its pre-patch performance. Item and ability
-        numbers elsewhere on the site are already on {patch}; only the win rates lag, and they
-        update on the next collection.{" "}
+        <T>{"These win rates come from games played on the previous patch. The board was collected on"}</T> <span className="text-text">{collectedOn}</span>, {days} <T>{"before"}</T> {patch} <T>{"went live, so any champion changed by it is still showing its pre-patch performance. Item and ability numbers elsewhere on the site are already on"}</T> {patch}<T>{"; only the win rates lag, and they update on the next collection."}</T>{" "}
         {/* "The next collection" carries a lot of weight in that sentence while a
             patch is deliberately being skipped, so it links to the page that
             says which patch that actually is. */}
         <Link href="/updates" className="font-semibold text-gold hover:underline">
-          When that is
+          <T>{"When that is"}</T>
         </Link>
         .
       </p>

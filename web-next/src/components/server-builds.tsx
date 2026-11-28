@@ -1,5 +1,6 @@
 "use client";
 
+import { T } from "@/components/t";
 import { useEffect, useState } from "react";
 import { useRegionScope } from "@/components/region-scope";
 import Link from "next/link";
@@ -137,17 +138,17 @@ function ServerStats({ stats }: { stats: ServerBuildStats }) {
         ))}
         {stats.lifesteal != null && stats.lifesteal > 0 && (
           <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] text-muted">
-            {compactNumber(stats.lifesteal)}% lifesteal
+            {compactNumber(stats.lifesteal)}<T>{"% lifesteal"}</T>
           </span>
         )}
         {stats.physicalPenFlat != null && stats.physicalPenFlat > 0 && (
           <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] text-muted">
-            {compactNumber(stats.physicalPenFlat)} flat pen
+            {compactNumber(stats.physicalPenFlat)} <T>{"flat pen"}</T>
           </span>
         )}
       </div>
       <p className="mt-3 text-[10px] leading-relaxed text-faint">
-        Level 15 engine profile against standard reference targets. DPS, burst, TTK and effective HP are estimates for comparing these loadouts, not observed server performance.
+        <T>{"Level 15 engine profile against standard reference targets. DPS, burst, TTK and effective HP are estimates for comparing these loadouts, not observed server performance."}</T>
       </p>
     </div>
   );
@@ -161,7 +162,7 @@ function ServerComparison({ builds }: {
   return (
     <div className="mt-3 rounded-xl border border-line/60 bg-black/10 p-3">
       <p className="text-[10px] font-semibold uppercase tracking-wide text-faint">
-        Compare available server profiles
+        <T>{"Compare available server profiles"}</T>
       </p>
       <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
         {available.map((s) => {
@@ -173,13 +174,13 @@ function ServerComparison({ builds }: {
                 <span className="text-xs font-bold text-text">{SERVER_LABEL[s]}</span>
                 <span className="text-[10px] text-faint">{builds[s]?.sample
                   ? `${builds[s]?.sample?.count}/${builds[s]?.sample?.of} item consensus`
-                  : "ladder build"}</span>
+                  : <><T>{"ladder build"}</T></>}</span>
               </div>
               <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
-                <span className="text-faint">8s DPS</span><span className="text-right font-semibold text-accent">{compactNumber(stats.dps8)}</span>
-                <span className="text-faint">3s burst</span><span className="text-right font-semibold text-text">{compactNumber(stats.burst3)}</span>
-                <span className="text-faint">Effective HP</span><span className="text-right font-semibold text-text">{compactNumber(stats.ehp)}</span>
-                <span className="text-faint">Cost</span><span className="text-right font-semibold text-text">{compactNumber(stats.cost)}g</span>
+                <span className="text-faint"><T>{"8s DPS"}</T></span><span className="text-right font-semibold text-accent">{compactNumber(stats.dps8)}</span>
+                <span className="text-faint"><T>{"3s burst"}</T></span><span className="text-right font-semibold text-text">{compactNumber(stats.burst3)}</span>
+                <span className="text-faint"><T>{"Effective HP"}</T></span><span className="text-right font-semibold text-text">{compactNumber(stats.ehp)}</span>
+                <span className="text-faint"><T>{"Cost"}</T></span><span className="text-right font-semibold text-text">{compactNumber(stats.cost)}g</span>
               </div>
             </div>
           );
@@ -229,8 +230,8 @@ export function ServerBuilds({
       {compact && (
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Most-built by server</h2>
-            <p className="mt-0.5 text-xs text-faint">Top-player purchase order · not a recommendation</p>
+            <h2 className="text-lg font-semibold"><T>{"Most-built by server"}</T></h2>
+            <p className="mt-0.5 text-xs text-faint"><T>{"Top-player purchase order · not a recommendation"}</T></p>
           </div>
           <div className="flex flex-wrap items-center justify-end gap-2">
             {BUILD_SERVERS.map((s) => (
@@ -246,7 +247,7 @@ export function ServerBuilds({
                 {SERVER_LABEL[s]}{!builds[s] && <span className="ml-1 opacity-60">·</span>}
               </button>
             ))}
-            {personalizeHref && <Link href={personalizeHref} className="rounded-lg border border-accent/25 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition hover:bg-accent/15">Personalize →</Link>}
+            {personalizeHref && <Link href={personalizeHref} className="rounded-lg border border-accent/25 bg-accent/10 px-3 py-1.5 text-xs font-semibold text-accent transition hover:bg-accent/15"><T>{"Personalize →"}</T></Link>}
           </div>
         </div>
       )}
@@ -277,7 +278,7 @@ export function ServerBuilds({
               really a popularity rank, so there is none. */}
           {build.ordered && !compact && (
             <p className="mt-3 text-[11px] font-semibold uppercase tracking-wide text-faint">
-              In the order they buy them
+              <T>{"In the order they buy them"}</T>
             </p>
           )}
           <div className={compact
@@ -367,7 +368,7 @@ export function ServerBuilds({
                 : "border-accent/50 bg-accent/15 text-accent hover:bg-accent/25"}`}
               aria-expanded={expanded}
             >
-              <span>{expanded ? "Show less" : compact ? "Build stats" : "Show more · build stats"}</span>
+              <span>{expanded ? <><T>{"Show less"}</T></> : compact ? <><T>{"Build stats"}</T></> : <><T>{"Show more · build stats"}</T></>}</span>
               <span aria-hidden="true" className={`text-sm leading-none transition-transform ${expanded ? "rotate-180" : ""}`}>⌄</span>
             </button>
           )}
@@ -414,9 +415,9 @@ export function ServerBuildsPanel({ champion }: { champion: string }) {
     <div className="glass rounded-2xl p-4 sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-sm font-bold uppercase tracking-wide text-muted">
-          Most-built by server
+          <T>{"Most-built by server"}</T>
         </h3>
-        <span className="text-[11px] text-faint">what the top players hold, not what we recommend</span>
+        <span className="text-[11px] text-faint"><T>{"what the top players hold, not what we recommend"}</T></span>
       </div>
       <div className="mt-3">
         {data ? (
@@ -427,7 +428,7 @@ export function ServerBuildsPanel({ champion }: { champion: string }) {
             collected={data.collected}
           />
         ) : (
-          <p className="text-sm text-faint">Reading the boards…</p>
+          <p className="text-sm text-faint"><T>{"Reading the boards…"}</T></p>
         )}
       </div>
     </div>

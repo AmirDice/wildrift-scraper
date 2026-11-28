@@ -1,3 +1,4 @@
+import { T } from "@/components/t";
 import Link from "next/link";
 import type { Champion } from "@/lib/data";
 import { tierClass, tierLabel } from "@/lib/data";
@@ -67,7 +68,7 @@ export function ChampionAvatar({
       </span>
       {showBadges && champion.isOtp && (
         <span className="absolute -right-1 -top-1 rounded bg-gradient-to-br from-orange-400 to-orange-600 px-1 text-[9px] font-bold leading-tight text-white shadow">
-          OTP
+          <T>{"OTP"}</T>
         </span>
       )}
     </span>
@@ -135,8 +136,8 @@ export function Disclosure() {
       aria-hidden
       className="inline-flex shrink-0 items-center gap-1 rounded-full border border-line bg-white/[0.04] px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wide text-accent transition group-hover:border-accent/40 group-hover:bg-accent/10"
     >
-      <span className="group-open:hidden">Show</span>
-      <span className="hidden group-open:inline">Hide</span>
+      <span className="group-open:hidden"><T>{"Show"}</T></span>
+      <span className="hidden group-open:inline"><T>{"Hide"}</T></span>
       <span className="transition group-open:rotate-180">⌄</span>
     </span>
   );
