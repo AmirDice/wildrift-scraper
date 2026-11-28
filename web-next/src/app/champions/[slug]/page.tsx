@@ -45,6 +45,8 @@ import { WinRateHistory } from "@/components/win-rate-history";
 import { getWinRateHistory } from "@/lib/wr-history";
 import { CollectionSchedule } from "@/components/collection-schedule";
 import { CURRENT_PATCH } from "@/lib/patch";
+import { championFaq, championSubpages } from "@/lib/champion-seo";
+import { ChampionPageLinks, FaqSection } from "@/components/champion-seo-parts";
 
 /** One server choice on the champion page: its board record, its players
  *  and its best-player ranking. */
@@ -159,6 +161,7 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
   const headline = blended ?? champion;
   const summary = championSummary(champion.slug);
   const related = championsInRole(champion.role).filter((entry) => entry.slug !== champion.slug).slice(0, 6);
+  const subpages = championSubpages(champion);
   const wrHistory = getWinRateHistory(champion.slug, champion.name);
 
   // One view per server choice. Every region-dependent card on the page reads
@@ -485,6 +488,11 @@ export default async function ChampionPage(props: PageProps<"/champions/[slug]">
           {/* In-content, after the champion's own material and before the
               "other champions" grid: the seam where a reader has finished what
               they came for. */}
+          {/* SEO subpages and FAQ (2026-11-28): each subpage answers one search
+              ("<champion> mid build", "<champion> runes") with numbers this
+              page does not show; the FAQ answers the question searches. */}
+          {subpages.length > 0 && <ChampionPageLinks slug={champion.slug} name={champion.name} links={subpages} />}
+          <FaqSection faq={championFaq(champion, { tierLabel: `${tierLabel(champion.tier)} tier` })} title={`${champion.name} questions`} />
           <AdSlot placement="inline" bare className="my-8" />
           {related.length > 0 && <div className="mt-10"><h2 className="mb-4 text-lg font-semibold">Other {champion.role} champions</h2><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{related.map((entry) => <Link key={entry.slug} href={`/champions/${entry.slug}`} className="glass glass-hover flex flex-col items-center gap-2 rounded-xl p-3 text-center"><ChampionAvatar champion={entry} size={48}/><span className="w-full truncate text-sm font-medium">{entry.name}</span><div className="flex items-center gap-1.5"><TierChip tier={entry.tier}/><span className="text-xs font-semibold text-accent">{entry.wr.toFixed(1)}%</span></div></Link>)}</div></div>}
         </div>

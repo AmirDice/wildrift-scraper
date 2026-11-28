@@ -3,6 +3,7 @@ import { getChampions, pendingChampions, site } from "@/lib/data";
 import { getPosts } from "@/lib/blog";
 import { impactPatches } from "@/lib/patch-impact";
 import { hasCounterPage } from "@/lib/counters";
+import { hasRunesPage, lanePages } from "@/lib/champion-seo";
 import { BUILD_TOOLS_LIVE, DRAFT_TOOL_LIVE } from "@/lib/flags";
 
 const BASE = "https://wrtruemeta.com";
@@ -78,6 +79,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly",
     priority: 0.7,
   }));
+  // Lane and runes pages (2026-11-28), only where they have their own
+  // measured data (lib/champion-seo.ts).
+  const seoPages: MetadataRoute.Sitemap = getChampions().filter((c) => !c.statsPending).flatMap((c) => [
+    ...lanePages(c.slug).map((l) => ({
+      url: `${BASE}/champions/${c.slug}/${l.lane}`, lastModified: collected, changeFrequency: "weekly" as const, priority: 0.7,
+    })),
+    ...(hasRunesPage(c) ? [{ url: `${BASE}/champions/${c.slug}/runes`, lastModified: collected, changeFrequency: "weekly" as const, priority: 0.65 }] : []),
+  ]);
   const blogPages: MetadataRoute.Sitemap = getPosts().map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
     lastModified: new Date(post.date),
@@ -88,5 +97,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const impactPages: MetadataRoute.Sitemap = impactPatches().map((patch) => ({
     url: `${BASE}/patch-impact/${patch}`, lastModified: now, changeFrequency: "weekly", priority: 0.75,
   }));
-  return [...staticPages, ...championPages, ...counterPages, ...blogPages, ...impactPages];
+  return [...staticPages, ...championPages, ...counterPages, ...seoPages, ...blogPages, ...impactPages];
 }

@@ -1,0 +1,149 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getChampion, getChampions } from "@/lib/data";
+import { CURRENT_PATCH } from "@/lib/patch";
+import { Container, Card, ChampionAvatar } from "@/components/ui";
+import { JsonLd, breadcrumbJsonLd } from "@/lib/structured-data";
+import { LANE_LABEL, championSubpages, laneFor, lanePages, usableRows, type Faq, type Lane } from "@/lib/champion-seo";
+import { ChampionPageLinks, FaqSection, LoadoutRows } from "@/components/champion-seo-parts";
+
+/**
+ * "<champion> <lane> build": one page per champion and lane with its own
+ * measured China Legendary data (item cores, rune pages, boots, spells and
+ * lane matchups). See lib/champion-seo.ts for why these exist and the rule
+ * that a lane only gets a page when it has its own measured rows.
+ *
+ * Static segments win over this dynamic one, so /champions/<slug>/counters
+ * and /runes keep their own pages.
+ */
+
+export function generateStaticParams() {
+  return getChampions()
+    .filter((c) => !c.statsPending)
+    .flatMap((c) => lanePages(c.slug).map((l) => ({ slug: c.slug, lane: l.lane })));
+}
+export const dynamicParams = false;
+
+type Props = PageProps<"/champions/[slug]/[lane]">;
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const { slug, lane } = await props.params;
+  const champion = getChampion(slug);
+  const data = laneFor(slug, lane);
+  if (!champion || !data) return { title: "Not found" };
+  const label = LANE_LABEL[lane as Lane];
+  const core = usableRows(data.tabs.items, "items")[0];
+  const title = `${champion.name} ${label} Build in Wild Rift${CURRENT_PATCH ? ` (Patch ${CURRENT_PATCH})` : ""}: Items, Runes and Matchups`;
+  const description = `${champion.name} ${label.toLowerCase()} in Wild Rift: the most-played item cores${core ? ` (${core.entities.map((e) => e.name).join(", ")})` : ""}, rune pages, spells and lane matchups, with win and pick rates from China Legendary ranked.`;
+  return {
+    title, description,
+    alternates: { canonical: `/champions/${slug}/${lane}` },
+    openGraph: { title, description, url: `https://wrtruemeta.com/champions/${slug}/${lane}` },
+  };
+}
+
+export default async function LanePage(props: Props) {
+  const { slug, lane } = await props.params;
+  const champion = getChampion(slug);
+  const data = laneFor(slug, lane);
+  if (!champion || !data) notFound();
+  const label = LANE_LABEL[lane as Lane];
+  const items = usableRows(data.tabs.items, "items").slice(0, 6);
+  const runes = usableRows(data.tabs.runes, "runes").slice(0, 4);
+  const spells = usableRows(data.tabs.spells, "spells").slice(0, 3);
+  const boots = usableRows(data.tabs.boots, "boots").slice(0, 3);
+  const versus = usableRows(data.tabs.versus, "versus");
+  const isPartners = data.versusKind === "partners";
+  const good = [...versus].sort((a, b) => b.winRate - a.winRate).filter((r) => r.winRate >= 50).slice(0, 6);
+  const bad = [...versus].sort((a, b) => a.winRate - b.winRate).filter((r) => r.winRate < 50).slice(0, 6);
+  const captured = data.capturedAt?.slice(0, 10);
+
+  const faq: Faq = [];
+  if (items[0]) faq.push({
+    q: `What is the best ${champion.name} ${label.toLowerCase()} build?`,
+    a: `The most-played ${champion.name} ${label.toLowerCase()} core in China Legendary ranked is ${items[0].entities.map((e) => e.name).join(", ")} (${items[0].pickRate.toFixed(1)}% of games, ${items[0].winRate.toFixed(1)}% win rate).`,
+  });
+  if (runes[0]) faq.push({
+    q: `What runes does ${champion.name} take in the ${label.toLowerCase()}?`,
+    a: `The most-played page is ${runes[0].entities.map((e) => e.name).join(", ")} (${runes[0].pickRate.toFixed(1)}% pick, ${runes[0].winRate.toFixed(1)}% win).`,
+  });
+  if (!isPartners && bad[0]) faq.push({
+    q: `Who counters ${champion.name} ${label.toLowerCase()}?`,
+    a: `${bad.slice(0, 3).map((r) => `${r.entities[0]?.name} (${champion.name} wins ${r.winRate.toFixed(1)}%)`).join(", ")}.`,
+  });
+
+  const otherLanes = lanePages(slug).filter((l) => l.lane !== lane);
+  return (
+    <Container className="py-10 sm:py-14">
+      <JsonLd data={breadcrumbJsonLd([
+        { name: "Champions", path: "/champions" },
+        { name: champion.name, path: `/champions/${slug}` },
+        { name: label, path: `/champions/${slug}/${lane}` },
+      ])} />
+      <nav className="text-sm text-faint"><Link href={`/champions/${slug}`} className="hover:text-text">&larr; {champion.name}</Link></nav>
+      <div className="mt-4 flex items-center gap-4">
+        <ChampionAvatar champion={champion} size={64} showBadges={false} />
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">{champion.name} {label} build</h1>
+          <p className="mt-1 text-sm text-muted">
+            Wild Rift{CURRENT_PATCH ? ` patch ${CURRENT_PATCH}` : ""} · China Legendary ranked{captured ? ` · captured ${captured}` : ""}
+          </p>
+        </div>
+      </div>
+      <ChampionPageLinks slug={slug} name={champion.name} links={championSubpages(champion).filter((l) => l.href !== `/champions/${slug}/${lane}`)} />
+
+      <div className="mt-8 grid gap-5 lg:grid-cols-2">
+        {items.length > 0 && (
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-lg font-semibold">Item cores</h2>
+            <p className="mt-1 text-sm text-muted">The three-item cores {champion.name} {label.toLowerCase()} players finish most, by how often they are built.</p>
+            <LoadoutRows rows={items} />
+          </Card>
+        )}
+        {runes.length > 0 && (
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-lg font-semibold">Rune pages</h2>
+            <p className="mt-1 text-sm text-muted">Keystone and minor runes, most-played first.</p>
+            <LoadoutRows rows={runes} />
+          </Card>
+        )}
+        {spells.length > 0 && (
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-lg font-semibold">Summoner spells</h2>
+            <LoadoutRows rows={spells} />
+          </Card>
+        )}
+        {boots.length > 0 && (
+          <Card className="p-5 sm:p-6">
+            <h2 className="text-lg font-semibold">Boots</h2>
+            {data.tabs.boots.stale && <p className="mt-1 text-xs text-gold">Older data: China&rsquo;s app stopped updating its boots page in July 2026.</p>}
+            <LoadoutRows rows={boots} />
+          </Card>
+        )}
+      </div>
+
+      {(good.length > 0 || bad.length > 0) && (
+        <section className="mt-10">
+          <h2 className="text-xl font-semibold">{isPartners ? `Best partners for ${champion.name}` : `${champion.name} ${label.toLowerCase()} matchups`}</h2>
+          <p className="mt-1 text-sm text-muted">{champion.name}&rsquo;s win rate {isPartners ? "alongside" : "against"} each champion, where it makes up at least 1% of games.</p>
+          <div className="mt-4 grid gap-5 lg:grid-cols-2">
+            {good.length > 0 && <Card className="p-5"><h3 className="text-sm font-semibold text-emerald-300">{isPartners ? "Works well with" : `${champion.name} wins against`}</h3><LoadoutRows rows={good} /></Card>}
+            {bad.length > 0 && <Card className="p-5"><h3 className="text-sm font-semibold text-rose-300">{isPartners ? "Struggles with" : `${champion.name} loses to`}</h3><LoadoutRows rows={bad} /></Card>}
+          </div>
+        </section>
+      )}
+
+      {otherLanes.length > 0 && (
+        <p className="mt-8 text-sm text-muted">
+          {champion.name} is also played in{" "}
+          {otherLanes.map((l, i) => (
+            <span key={l.lane}>{i > 0 && ", "}<Link href={`/champions/${slug}/${l.lane}`} className="font-semibold text-text hover:text-accent">{LANE_LABEL[l.lane as Lane]}</Link></span>
+          ))}.
+        </p>
+      )}
+
+      <FaqSection faq={faq} title={`${champion.name} ${label.toLowerCase()} questions`} />
+    </Container>
+  );
+}
